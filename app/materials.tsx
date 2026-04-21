@@ -116,19 +116,19 @@ export default function MaterialsScreen() {
             }).format(i18n.language.startsWith('vi') ? (item.price || 0) : (item.price || 0) / 25000)}
             <Text style={[styles.unit, { color: colors.textSecondary }]}>/{item.unit}</Text>
           </Text>
-          {(item.location || item.supplier) && (
+          {(item.location || item.supplierName) && (
             <View style={{ flexDirection: 'row', marginTop: 4, gap: 10 }}>
               {item.location && <Text style={[styles.sku, { color: colors.textSecondary, fontSize: 11 }]}>📍 {item.location}</Text>}
-              {item.supplier && <Text style={[styles.sku, { color: colors.textSecondary, fontSize: 11 }]}>🚚 {item.supplier}</Text>}
+              {item.supplierName && <Text style={[styles.sku, { color: colors.textSecondary, fontSize: 11 }]}>🚚 {item.supplierName}</Text>}
             </View>
           )}
       </View>
       
       <View style={[styles.stockRow, { borderTopColor: colors.outline + '40' }]}>
         <View style={styles.stockInfo}>
-           <Text style={[styles.stockLabel, { color: colors.textSecondary }]}>{t('inventory.stockTitle')}</Text>
-           <Text style={[styles.stockValue, { color: item.stock < 10 ? '#FF5252' : PALETTE.primary }]}>
-             {item.stock || 0} {item.unit}
+           <Text style={[styles.stockLabel, { color: colors.textSecondary }]}>{t('inventory.stockTitle')} / Tối thiểu</Text>
+           <Text style={[styles.stockValue, { color: item.stock <= (item.minStock || 0) ? '#FF5252' : PALETTE.primary }]}>
+             {item.stock || 0} / {item.minStock || 0} {item.unit}
            </Text>
         </View>
         <Pressable 

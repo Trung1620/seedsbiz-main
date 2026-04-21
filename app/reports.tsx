@@ -95,12 +95,12 @@ export default function ReportsScreen() {
         ];
       } else {
         const amounts = cashInByDay.map((d: any) => Number(d.amount) || 0);
-        const max = Math.max(...amounts, 1);
+        const max = amounts.length > 0 ? Math.max(...amounts, 1) : 1;
         chartData = cashInByDay.map((d: any) => {
           const val = Number(d.amount) || 0;
           return {
             label: d.date ? String(d.date).slice(5) : '', 
-            height: Math.max(10, Math.min(100, (val / max) * 100))
+            height: Math.max(2, Math.min(100, (val / max) * 100)) || 2
           };
         });
       }
@@ -124,22 +124,28 @@ export default function ReportsScreen() {
   }, [authReady, activeOrg?.id, period, loadData]);
 
   const formatCurrency = (val: any) => {
-    const num = Number(val) || 0;
-    const isEn = i18n.language === 'en';
-    const rate = 25000;
-    const displayAmount = isEn ? num / rate : num;
+    try {
+      const num = Number(val) || 0;
+      const isEn = i18n.language === 'en';
+      
+      if (isEn) {
+        const rate = 25000;
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 2
+        }).format(num / rate);
+      }
 
-    if (isEn) {
-      return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD',
-        maximumFractionDigits: 2
-      }).format(displayAmount);
+      // Format Vietnamese style
+      if (num >= 1000000000) return (num / 1000000000).toFixed(1) + 'B';
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+      
+      return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+    } catch (e) {
+      return '0 đ';
     }
-
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   };
 
   const metrics = [
@@ -227,7 +233,7 @@ export default function ReportsScreen() {
            {[
              { name: String(t('home.dashboard.reports.sales')), icon: 'trending-up', route: '/report-sales' },
              { name: String(t('home.dashboard.reports.debts')), icon: 'account-balance', route: '/debts' },
-             { name: "BÁO CÁO KIỂM KÊ (HÀNG MỚI)", icon: 'bug-report', route: '/inventory-report' },
+             { name: String(t('home.dashboard.reports.inventory', 'Báo cáo Kiểm kê')), icon: 'inventory', route: '/inventory-report' },
            ].map((r, i) => (
              <Pressable key={i} style={[styles.reportRow, { borderBottomWidth: i === 2 ? 0 : 1, borderBottomColor: colors.outline + '40' }]} onPress={() => { console.log("NAV TO:", r.route); router.push(r.route as any); }}>
                <View style={[styles.reportIconBox, { backgroundColor: PALETTE.primary + '10' }]}>

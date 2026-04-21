@@ -81,9 +81,16 @@ export default function QuoteDetailsScreen() {
                 </Text>
              </View>
              
-             <Text style={[styles.custName, { color: colors.text }]}>{quote.contactName || "N/A"}</Text>
-             <Text style={[styles.label, { color: colors.textSecondary }]}>{t("quotes.address")}: {quote.contactAddress || "—"}</Text>
-             <Text style={[styles.label, { color: colors.textSecondary }]}>{t("quotes.phone")}: {quote.contactPhone || "—"}</Text>
+             <Text style={[styles.custName, { color: colors.text }]}>{quote.contactName || quote.customer?.name || quote.customer?.companyName || "Khách lẻ"}</Text>
+             <Text style={[styles.label, { color: colors.textSecondary }]}>{t("quotes.address")}: {quote.contactAddress || quote.customer?.address || "—"}</Text>
+             <Text style={[styles.label, { color: colors.textSecondary }]}>{t("quotes.phone")}: {quote.contactPhone || quote.customer?.phone || "—"}</Text>
+             
+             {!!quote.notes && (
+                <View style={{ marginTop: 15, paddingTop: 15, borderTopWidth: 1, borderTopColor: COLORS.background }}>
+                   <Text style={[styles.label, { color: PALETTE.primary, fontFamily: FONTS.bold, marginBottom: 5 }]}>THÔNG TIN BỔ SUNG & GHI CHÚ:</Text>
+                   <Text style={{ color: colors.textSecondary, fontSize: 13, lineHeight: 20 }}>{quote.notes}</Text>
+                </View>
+             )}
           </View>
 
           <View style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface, marginTop: 20 }]}>

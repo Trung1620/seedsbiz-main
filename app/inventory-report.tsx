@@ -56,8 +56,8 @@ export default function InventoryReportScreen() {
     p.sku?.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalStock = products.reduce((acc, p) => acc + (p.stockCount || 0), 0);
-  const lowStockCount = products.filter(p => (p.stockCount || 0) < 5).length;
+  const totalStock = products.reduce((acc, p) => acc + (p.inStock || 0), 0);
+  const lowStockCount = products.filter(p => (p.inStock || 0) < 5).length;
 
   if (loading) {
     return (
@@ -73,7 +73,7 @@ export default function InventoryReportScreen() {
         <Pressable style={[styles.backBtn, { backgroundColor: colors.surface }]} onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.pageTitle, { color: PALETTE.primary }]}>BÁO CÁO KIỂM KÊ (Chỉ xem)</Text>
+        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.inventory', 'Báo cáo Kiểm kê')}</Text>
       </View>
 
       <View style={styles.searchContainer}>
@@ -116,13 +116,13 @@ export default function InventoryReportScreen() {
                <View style={{ flex: 1, alignItems: 'flex-end' }}>
                   <View style={[
                     styles.stockBadge, 
-                    { backgroundColor: (p.stockCount || 0) < 5 ? '#FF6B6B15' : '#4CAF5015' }
+                    { backgroundColor: (p.inStock || 0) < 5 ? '#FF6B6B15' : '#4CAF5015' }
                   ]}>
                     <Text style={[
                       styles.stockText, 
-                      { color: (p.stockCount || 0) < 5 ? '#FF6B6B' : '#4CAF50' }
+                      { color: (p.inStock || 0) < 5 ? '#FF6B6B' : '#4CAF50' }
                     ]}>
-                      {p.stockCount || 0}
+                      {p.inStock || 0}
                     </Text>
                   </View>
                </View>

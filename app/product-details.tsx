@@ -28,7 +28,7 @@ export default function ProductDetailsScreen() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
-  const [product, setProduct] = useState<api.ProductDetail | null>(null);
+  const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function ProductDetailsScreen() {
            <View style={styles.infoGrid}>
               <View style={styles.infoItem}>
                  <Text style={styles.infoLabel}>{t("products.categoryLabel")}</Text>
-                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.category || "—"}</Text>
+                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.category?.name || (typeof product.category === 'string' ? product.category : "—")}</Text>
               </View>
               <View style={styles.infoItem}>
                  <Text style={styles.infoLabel}>{t("products.brandLabel")}</Text>
@@ -122,6 +122,22 @@ export default function ProductDetailsScreen() {
               <View style={styles.infoItem}>
                  <Text style={styles.infoLabel}>{t("products.sizeLabel")}</Text>
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.size || "—"}</Text>
+              </View>
+              <View style={styles.infoItem}>
+                 <Text style={styles.infoLabel}>MÃ VẠCH (BARCODE)</Text>
+                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.barcode || "—"}</Text>
+              </View>
+              <View style={styles.infoItem}>
+                 <Text style={styles.infoLabel}>KHỐI LƯỢNG (KG)</Text>
+                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.weight || "—"}</Text>
+              </View>
+              <View style={styles.infoItem}>
+                 <Text style={styles.infoLabel}>VỊ TRÍ KHO</Text>
+                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.location || "—"}</Text>
+              </View>
+              <View style={styles.infoItem}>
+                 <Text style={styles.infoLabel}>TỒN TỐI THIỂU</Text>
+                 <Text style={[styles.infoValue, { color: colors.text }]}>{product.minStock || "0"}</Text>
               </View>
            </View>
 

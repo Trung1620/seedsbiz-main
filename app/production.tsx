@@ -48,10 +48,11 @@ export default function ProductionScreen() {
 
   useFocusEffect(useCallback(() => { load(); }, [activeOrg?.id]));
 
-  const getStatusColor = (status: string) => {
-    switch (status?.toUpperCase()) {
+  const getStatusColor = (status: any) => {
+    const s = typeof status === 'string' ? status.toUpperCase() : '';
+    switch (s) {
       case 'COMPLETED': return '#4CAF50';
-      case 'IN_PROGRESS': return PALETTE.primary;
+      case 'IN_PROGRESS': return colors.primary;
       case 'CANCELLED': return '#FF5252';
       default: return '#FFA000';
     }
@@ -86,13 +87,15 @@ export default function ProductionScreen() {
          <View style={styles.detailItem}>
             <Ionicons name="people-outline" size={14} color={colors.textSecondary} />
             <Text style={[styles.detailText, { color: colors.textSecondary }]}>
-               {t('production.workersCount', { count: item.workers?.length || 0 })}
+               {t('production.workersCount', { count: item.jobSheets?.length || (item.artisan ? 1 : 0) })}
             </Text>
          </View>
          <View style={styles.detailItem}>
-            <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
+            <Ionicons name="calendar-outline" size={14} color={colors.textSecondary} />
             <Text style={[styles.detailText, { color: colors.textSecondary }]}>
-               {t('production.durationDays', { count: item.duration || '?' })}
+               {item.startDate ? new Date(item.startDate).toLocaleDateString("vi-VN") : "—"} 
+               {" - "} 
+               {item.expectedEndDate ? new Date(item.expectedEndDate).toLocaleDateString("vi-VN") : (item.duration ? `${item.duration} ngày` : "—")}
             </Text>
          </View>
          <View style={styles.detailItem}>
@@ -116,7 +119,7 @@ export default function ProductionScreen() {
          <View style={styles.verticalBar} />
          <View style={styles.costItem}>
             <Text style={styles.costLabel}>{t('production.totalCost')}</Text>
-            <Text style={[styles.costValue, { color: PALETTE.primary }]}>
+            <Text style={[styles.costValue, { color: colors.primary }]}>
                {formatMoney(item.actualTotalCost)}
             </Text>
          </View>
@@ -139,7 +142,7 @@ export default function ProductionScreen() {
         onBack={() => router.back()}
         rightAction={
           <Pressable
-            style={[{ width: 44, height: 44, borderRadius: 14, backgroundColor: PALETTE.primary, alignItems: 'center', justifyContent: 'center' }, SHADOWS.soft]}
+            style={[{ width: 44, height: 44, borderRadius: 14, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' }, SHADOWS.soft]}
             onPress={() => router.push("/production-new")}
           >
             <Ionicons name="add" size={24} color="#FFF" />
@@ -151,10 +154,10 @@ export default function ProductionScreen() {
         renderItem={renderItem}
         keyExtractor={(it) => it.id}
         contentContainerStyle={{ paddingHorizontal: SIZES.padding, paddingBottom: 100 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={PALETTE.primary} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor={colors.primary} />}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={loading ? (
-          <ActivityIndicator color={PALETTE.primary} style={{ marginTop: 60 }} />
+          <ActivityIndicator color={colors.primary} style={{ marginTop: 60 }} />
         ) : (
           <EmptyState
             icon="construct-outline"

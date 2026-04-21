@@ -52,16 +52,23 @@ export default function SalesReportDetailScreen() {
     }
   };
 
-  const formatMoney = (v: number) => {
-    const isEn = i18n.language === 'en';
-    const rate = 25000;
-    const val = v || 0;
-    const displayAmount = isEn ? val / rate : val;
-    
-    if (isEn) {
-       return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 }).format(displayAmount);
+  const formatMoney = (val: any) => {
+    try {
+      const num = Number(val) || 0;
+      const isEn = i18n.language === 'en';
+      
+      if (isEn) {
+        const rate = 25000;
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 2
+        }).format(num / rate);
+      }
+      return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+    } catch (e) {
+      return '0 đ';
     }
-    return val.toLocaleString('vi-VN') + ' đ';
   };
 
   if (loading) {
@@ -216,7 +223,7 @@ export default function SalesReportDetailScreen() {
 
         {/* Recent Orders Section */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>{t('reports.section.dailyTrend').toUpperCase()}</Text>
-        {quotes?.filter((q: any) => q.status === 'ACCEPTED' || q.status === 'CONVERTED').map((q: any, i: number) => (
+        {quotes?.filter((q: any) => q.status === 'CONFIRMED' || q.status === 'DONE').map((q: any, i: number) => (
           <Pressable 
             key={i} 
             style={[styles.orderCard, { backgroundColor: colors.surface, ...SHADOWS.soft }]}

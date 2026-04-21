@@ -227,23 +227,52 @@ export default function CustomersScreen() {
                  </Pressable>
               </View>
 
-              <TextInput value={form.name} onChangeText={(v) => setForm((s) => ({ ...s, name: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} />
+              <Text style={[styles.label, { color: colors.textSecondary }]}>
+                {form.type === 'individual' ? "TÊN KHÁCH HÀNG *" : "TÊN CÔNG TY *"}
+              </Text>
+              <TextInput 
+                value={form.name} 
+                onChangeText={(v) => setForm((s) => ({ ...s, name: v }))} 
+                style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} 
+                placeholder={form.type === 'individual' ? "Nhập họ tên khách hàng..." : "Nhập tên công ty..."}
+              />
               
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
                   <Text style={[styles.label, { color: colors.textSecondary }]}>MÃ KHÁCH HÀNG</Text>
                   <TextInput value={form.code} onChangeText={(v) => setForm((s) => ({ ...s, code: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} placeholder="KH-001" />
                 </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, { color: colors.textSecondary }]}>NHÓM KHÁCH</Text>
-                  <View style={styles.pickerContainer}>
-                    {['RETAIL', 'WHOLESALE', 'AGENCY'].map(g => (
-                      <Pressable key={g} onPress={() => setForm({...form, groupName: g as any})} style={[styles.smallBtn, form.groupName === g && { backgroundColor: PALETTE.primary }]}>
-                        <Text style={[styles.smallBtnText, { color: form.groupName === g ? '#FFF' : colors.textSecondary }]}>{g}</Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
+              </View>
+
+              <Text style={[styles.label, { color: colors.textSecondary }]}>NHÓM KHÁCH</Text>
+              <View style={styles.verticalPicker}>
+                {[
+                  { key: 'RETAIL', label: 'BÁN LẺ (RETAIL)' },
+                  { key: 'WHOLESALE', label: 'BÁN SỈ (WHOLESALE)' },
+                  { key: 'AGENCY', label: 'ĐẠI LÝ (AGENCY)' }
+                ].map(g => (
+                  <Pressable 
+                    key={g.key} 
+                    onPress={() => setForm({...form, groupName: g.key as any})} 
+                    style={[
+                      styles.groupOption, 
+                      { backgroundColor: colors.surface, borderColor: colors.outline },
+                      form.groupName === g.key && { backgroundColor: PALETTE.primary + '15', borderColor: PALETTE.primary }
+                    ]}
+                  >
+                    <MaterialIcons 
+                      name={form.groupName === g.key ? "radio-button-checked" : "radio-button-unchecked"} 
+                      size={18} 
+                      color={form.groupName === g.key ? PALETTE.primary : colors.textSecondary} 
+                    />
+                    <Text style={[
+                      styles.groupOptionText, 
+                      { color: form.groupName === g.key ? PALETTE.primary : colors.textSecondary }
+                    ]}>
+                      {g.label}
+                    </Text>
+                  </Pressable>
+                ))}
               </View>
 
               <Text style={[styles.label, { color: colors.textSecondary }]}>{t('customers.labelPhone')}</Text>
@@ -259,16 +288,24 @@ export default function CustomersScreen() {
                 </>
               )}
 
-              <TextInput value={form.email} onChangeText={(v) => setForm((s) => ({ ...s, email: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} keyboardType="email-address" />
+              <Text style={[styles.label, { color: colors.textSecondary }]}>EMAIL</Text>
+              <TextInput 
+                value={form.email} 
+                onChangeText={(v) => setForm((s) => ({ ...s, email: v }))} 
+                style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} 
+                keyboardType="email-address" 
+                placeholder="example@gmail.com"
+              />
 
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, { color: colors.textSecondary }]}>ZALO</Text>
-                  <TextInput value={form.zalo} onChangeText={(v) => setForm((s) => ({ ...s, zalo: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} />
-                </View>
-                <View style={{ flex: 1 }}>
                   <Text style={[styles.label, { color: colors.textSecondary }]}>NGÀY SINH</Text>
-                  <TextInput value={form.birthday} onChangeText={(v) => setForm((s) => ({ ...s, birthday: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} placeholder="YYYY-MM-DD" />
+                  <TextInput 
+                    value={form.birthday} 
+                    onChangeText={(v) => setForm((s) => ({ ...s, birthday: v }))} 
+                    style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} 
+                    placeholder="YYYY-MM-DD" 
+                  />
                 </View>
               </View>
 
@@ -327,7 +364,14 @@ const styles = StyleSheet.create({
   debtRow: { flexDirection: 'row', marginTop: 5 },
   debtText: { fontSize: 11, fontFamily: FONTS.bold },
   row: { flexDirection: 'row', gap: 12 },
-  pickerContainer: { flexDirection: 'row', gap: 5, marginTop: 5 },
-  smallBtn: { paddingHorizontal: 8, paddingVertical: 6, borderRadius: 8, backgroundColor: 'rgba(0,0,0,0.05)' },
-  smallBtnText: { fontSize: 10, fontFamily: FONTS.bold },
+  verticalPicker: { gap: 8, marginTop: 5 },
+  groupOption: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 12, 
+    borderRadius: 12, 
+    borderWidth: 1,
+    gap: 10
+  },
+  groupOptionText: { fontSize: 11, fontFamily: FONTS.bold },
 });

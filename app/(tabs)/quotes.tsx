@@ -93,9 +93,6 @@ export default function QuotesScreen() {
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top }]}>
       <View style={styles.header}>
          <Text style={[styles.headerTitle, { color: colors.text }]}>{t("quotes.list_title")}</Text>
-         <Pressable style={[styles.addBtn, { backgroundColor: PALETTE.primary }]} onPress={() => router.push(H("/quote-new"))}>
-            <Ionicons name="add" size={28} color="#FFFFFF" />
-         </Pressable>
       </View>
 
       <View style={styles.searchWrap}>

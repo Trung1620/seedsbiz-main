@@ -301,8 +301,11 @@ export default function ArtisansScreen() {
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('artisans.title')}</Text>
-          <Pressable style={styles.addBtn} onPress={() => { resetForm(); setIsAddModalVisible(true); }}>
-            <MaterialIcons name="person-add" size={28} color={PALETTE.primary} />
+          <Pressable 
+            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
+            onPress={() => { resetForm(); setIsAddModalVisible(true); }}
+          >
+            <Ionicons name="add" size={24} color="#FFF" />
           </Pressable>
         </View>
 
@@ -434,7 +437,14 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 15 },
   backBtn: { padding: 8 },
   headerTitle: { fontSize: 22, fontFamily: FONTS.bold },
-  addBtn: { padding: 8 },
+  addSquareBtn: { 
+    width: 44, 
+    height: 44, 
+    borderRadius: 14, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    ...SHADOWS.soft 
+  },
   searchContainer: { paddingHorizontal: 24, marginBottom: 20 },
   searchBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, height: 56, borderRadius: 15 },
   searchInput: { flex: 1, marginLeft: 15, fontFamily: FONTS.medium, fontSize: 16 },

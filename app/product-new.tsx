@@ -135,18 +135,18 @@ export default function ProductNewScreen() {
     };
 
     const InputField = ({ label, value, onChange, placeholder, keyboardType, autoCaps }: any) => (
-      <View style={s.inputGroup}>
-         <Text style={[s.label, { color: colors.textSecondary }]}>{label.toUpperCase()}</Text>
-         <TextInput
-            value={value}
-            onChangeText={onChange}
-            placeholder={placeholder}
-            placeholderTextColor={colors.textSecondary + '70'}
-            style={[s.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.outline }]}
-            keyboardType={keyboardType || 'default'}
-            autoCapitalize={autoCaps || 'none'}
-         />
-      </View>
+        <View style={s.inputGroup}>
+            <Text style={[s.label, { color: colors.textSecondary }]}>{label.toUpperCase()}</Text>
+            <TextInput
+                value={value}
+                onChangeText={onChange}
+                placeholder={placeholder}
+                placeholderTextColor={colors.textSecondary + '70'}
+                style={[s.input, { backgroundColor: colors.background, color: colors.text, borderColor: colors.outline }]}
+                keyboardType={keyboardType || 'default'}
+                autoCapitalize={autoCaps || 'none'}
+            />
+        </View>
     );
 
     return (
@@ -174,7 +174,7 @@ export default function ProductNewScreen() {
                         <InputField label={t('products.brandLabel')} value={brand} onChange={setBrand} placeholder={t('products.placeholderBrand')} />
                         <View style={s.inputGroup}>
                             <Text style={[s.label, { color: colors.textSecondary }]}>DANH MỤC</Text>
-                            <Pressable 
+                            <Pressable
                                 onPress={() => setCatModalVisible(true)}
                                 style={[s.input, { backgroundColor: colors.background, borderColor: colors.outline, justifyContent: 'center' }]}
                             >
@@ -211,7 +211,7 @@ export default function ProductNewScreen() {
                     <View style={s.switchRow}>
                         <Text style={[s.label, { color: colors.textSecondary, marginBottom: 0 }]}>{t('products.stockStatus')}</Text>
                         <Pressable onPress={() => setInStock(!inStock)} style={[s.toggle, { backgroundColor: inStock ? PALETTE.primary : colors.background }]}>
-                             <Text style={[s.toggleText, { color: inStock ? '#FFFFFF' : colors.textSecondary }]}>{inStock ? t('products.inStock') : t('products.outOfStock')}</Text>
+                            <Text style={[s.toggleText, { color: inStock ? '#FFFFFF' : colors.textSecondary }]}>{inStock ? t('products.inStock') : t('products.outOfStock')}</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -221,10 +221,10 @@ export default function ProductNewScreen() {
                     <View style={s.imageHeader}>
                         <Text style={[s.label, { color: colors.textSecondary, marginBottom: 0 }]}>ĐỊNH MỨC VẬT TƯ (BOM)</Text>
                         <Pressable onPress={() => setMaterialModalVisible(true)} style={[s.addImgBtn, { backgroundColor: PALETTE.primary + '15' }]}>
-                             <MaterialIcons name="playlist-add" size={24} color={PALETTE.primary} />
+                            <MaterialIcons name="playlist-add" size={24} color={PALETTE.primary} />
                         </Pressable>
                     </View>
-                    
+
                     {boms.map((b: any) => (
                         <View key={b.materialId} style={s.bomRow}>
                             <View style={s.bomInfo}>
@@ -235,7 +235,7 @@ export default function ProductNewScreen() {
                                 <TextInput
                                     value={String(b.quantity)}
                                     onChangeText={(val) => {
-                                        const nList = boms.map((item: any) => 
+                                        const nList = boms.map((item: any) =>
                                             item.materialId === b.materialId ? { ...item, quantity: Number(val) } : item
                                         );
                                         setBoms(nList);
@@ -257,7 +257,7 @@ export default function ProductNewScreen() {
                     <View style={s.imageHeader}>
                         <Text style={[s.label, { color: colors.textSecondary, marginBottom: 0 }]}>{t('products.imageLabel')}</Text>
                         <Pressable onPress={pickImage} style={[s.addImgBtn, { backgroundColor: PALETTE.primary + '15' }]}>
-                             <MaterialIcons name="add-a-photo" size={20} color={PALETTE.primary} />
+                            <MaterialIcons name="add-a-photo" size={20} color={PALETTE.primary} />
                         </Pressable>
                     </View>
                     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.imageGrid}>
@@ -275,9 +275,9 @@ export default function ProductNewScreen() {
 
                 {/* NÚT TẠO */}
                 <View style={{ paddingHorizontal: 24, marginTop: 30 }}>
-                  <Pressable style={[s.primaryBtn, { backgroundColor: PALETTE.primary, opacity: saving ? 0.7 : 1 }]} onPress={onSave} disabled={saving}>
-                      {saving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.primaryBtnText}>{t('products.createBtn')}</Text>}
-                  </Pressable>
+                    <Pressable style={[s.primaryBtn, { backgroundColor: PALETTE.primary, opacity: saving ? 0.7 : 1 }]} onPress={onSave} disabled={saving}>
+                        {saving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.primaryBtnText}>{t('products.createBtn')}</Text>}
+                    </Pressable>
                 </View>
 
                 {/* MODAL CHỌN VẬT TƯ */}
@@ -297,8 +297,8 @@ export default function ProductNewScreen() {
                                     data={allMaterials}
                                     keyExtractor={(m) => m.id}
                                     renderItem={({ item }) => (
-                                        <Pressable 
-                                            style={s.materialOption} 
+                                        <Pressable
+                                            style={s.materialOption}
                                             onPress={() => {
                                                 if (!boms.find(x => x.materialId === item.id)) {
                                                     setBoms([...boms, { materialId: item.id, name: item.name, unit: item.unit, quantity: 1 }]);
@@ -330,8 +330,8 @@ export default function ProductNewScreen() {
                                 data={categories}
                                 keyExtractor={(c) => c.id}
                                 renderItem={({ item }) => (
-                                    <Pressable 
-                                        style={s.materialOption} 
+                                    <Pressable
+                                        style={s.materialOption}
                                         onPress={() => {
                                             setCategoryId(item.id);
                                             setCategoryName(item.name);

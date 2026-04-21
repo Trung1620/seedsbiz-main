@@ -63,7 +63,7 @@ export default function QuotesScreen() {
       <View style={styles.cardHeader}>
         <View>
           <Text style={[styles.number, { color: colors.text }]}>{item.number || "QU-N/A"}</Text>
-          <Text style={[styles.custName, { color: colors.textSecondary }]}>{item.contactName || "Khách lẻ"}</Text>
+          <Text style={[styles.custName, { color: colors.textSecondary }]}>{item.contactName || item.customer?.name || item.customer?.companyName || "Khách lẻ"}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: item.status === 'ACCEPTED' ? '#E8F5E9' : PALETTE.primary + '15' }]}>
           <Text style={[styles.statusText, { color: item.status === 'ACCEPTED' ? '#2E7D32' : PALETTE.primary }]}>

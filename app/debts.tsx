@@ -72,16 +72,23 @@ export default function DebtsScreen() {
     .filter((d) => d.type?.toUpperCase() === 'PAYABLE' && d.status !== 'PAID_OFF')
     .reduce((sum, d) => sum + (d.amount || 0), 0);
 
-  const formatCurrency = (amount: number) => {
-    const isEn = t('language.current') === 'en';
-    const rate = 25000;
-    const displayAmount = isEn ? amount / rate : amount;
-    
-    return new Intl.NumberFormat(isEn ? 'en-US' : 'vi-VN', {
-      style: 'currency',
-      currency: isEn ? 'USD' : 'VND',
-      maximumFractionDigits: isEn ? 2 : 0
-    }).format(displayAmount);
+  const formatCurrency = (amount: any) => {
+    try {
+      const num = Number(amount) || 0;
+      const isEn = t('language.current') === 'en';
+      
+      if (isEn) {
+        const rate = 25000;
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+          maximumFractionDigits: 2
+        }).format(num / rate);
+      }
+      return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+    } catch (e) {
+      return '0 đ';
+    }
   };
 
   const calculateDaysLeft = (dueDate: string): number => {
@@ -191,18 +198,22 @@ export default function DebtsScreen() {
 
         {/* Tổng quan */}
         <View style={styles.summaryCards}>
-          <View style={[styles.summaryCard, NEUMORPHISM.cardInner, { borderWidth: 1, borderColor: COLORS.success + '30', backgroundColor: COLORS.success + '10' }]}>
-            <Text style={styles.summaryLabel}>{t('debts.receivable')}</Text>
-            <Text style={[styles.summaryAmount, { color: COLORS.success }]}>
-              {formatCurrency(totalReceivable)}
-            </Text>
-          </View>
-          <View style={[styles.summaryCard, NEUMORPHISM.cardInner, { borderWidth: 1, borderColor: COLORS.error + '30', backgroundColor: COLORS.error + '10' }]}>
-            <Text style={styles.summaryLabel}>{t('debts.payable')}</Text>
-            <Text style={[styles.summaryAmount, { color: COLORS.error }]}>
-              {formatCurrency(totalPayable)}
-            </Text>
-          </View>
+          {(activeTab === 'all' || activeTab === 'receivable') && (
+            <View style={[styles.summaryCard, NEUMORPHISM.cardInner, { borderWidth: 1, borderColor: COLORS.success + '30', backgroundColor: COLORS.success + '10' }]}>
+              <Text style={styles.summaryLabel}>{t('debts.receivable')}</Text>
+              <Text style={[styles.summaryAmount, { color: COLORS.success }]}>
+                {formatCurrency(totalReceivable)}
+              </Text>
+            </View>
+          )}
+          {(activeTab === 'all' || activeTab === 'payable') && (
+            <View style={[styles.summaryCard, NEUMORPHISM.cardInner, { borderWidth: 1, borderColor: COLORS.error + '30', backgroundColor: COLORS.error + '10' }]}>
+              <Text style={styles.summaryLabel}>{t('debts.payable')}</Text>
+              <Text style={[styles.summaryAmount, { color: COLORS.error }]}>
+                {formatCurrency(totalPayable)}
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Tab */}
@@ -249,9 +260,6 @@ export default function DebtsScreen() {
           <>
             <View style={styles.listHeader}>
               <Text style={styles.listTitle}>{t('debts.listTitle')}</Text>
-              <Pressable style={[styles.addButton, NEUMORPHISM.button]} onPress={handleAddDebt}>
-                <Text style={styles.addButtonText}>{t('debts.addBtn')}</Text>
-              </Pressable>
             </View>
 
             {debts.length === 0 ? (

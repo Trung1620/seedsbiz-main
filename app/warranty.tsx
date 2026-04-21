@@ -183,8 +183,11 @@ export default function WarrantyScreen() {
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('warranty.title')}</Text>
-          <Pressable style={styles.addBtn} onPress={() => { resetForm(); setIsModalVisible(true); }}>
-            <Ionicons name="add-circle" size={32} color={PALETTE.primary} />
+          <Pressable 
+            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
+            onPress={() => { resetForm(); setIsModalVisible(true); }}
+          >
+            <Ionicons name="add" size={24} color="#FFF" />
           </Pressable>
         </View>
 
@@ -281,7 +284,14 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 15 },
   headerTitle: { fontSize: 24, fontFamily: FONTS.bold },
   backBtn: { padding: 8 },
-  addBtn: { padding: 4 },
+  addSquareBtn: { 
+    width: 44, 
+    height: 44, 
+    borderRadius: 14, 
+    alignItems: 'center', 
+    justifyContent: 'center',
+    ...SHADOWS.soft 
+  },
   listContent: { padding: 24, paddingBottom: 100 },
   card: { padding: 20, marginBottom: 20, borderRadius: 25 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
