@@ -77,46 +77,46 @@ export default function ScanScreen() {
           barcodeTypes: ["qr", "ean13", "code128"], // Supports QR and common barcodes
         }}
         onBarcodeScanned={scanned ? undefined : handleBarcodeScanned}
-      >
-        <View style={styles.overlay}>
-          {/* Header Bar */}
-          <View style={[styles.header, { paddingTop: insets.top + 15 }]}>
-            <Pressable style={styles.iconBtn} onPress={() => router.back()}>
-              <MaterialIcons name="arrow-back" size={26} color="#FFFFFF" />
-            </Pressable>
-            <Text style={styles.headerTitle}>{t('scan.title')}</Text>
-            <Pressable style={styles.iconBtn} onPress={() => setTorch(!torch)}>
-              <MaterialIcons name={torch ? "flash-on" : "flash-off"} size={26} color="#FFFFFF" />
-            </Pressable>
-          </View>
+      />
+      
+      <View style={[styles.overlay, StyleSheet.absoluteFillObject]}>
+        {/* Header Bar */}
+        <View style={[styles.header, { paddingTop: insets.top + 15 }]}>
+          <Pressable style={styles.iconBtn} onPress={() => router.back()}>
+            <MaterialIcons name="arrow-back" size={26} color="#FFFFFF" />
+          </Pressable>
+          <Text style={styles.headerTitle}>{t('scan.title')}</Text>
+          <Pressable style={styles.iconBtn} onPress={() => setTorch(!torch)}>
+            <MaterialIcons name={torch ? "flash-on" : "flash-off"} size={26} color="#FFFFFF" />
+          </Pressable>
+        </View>
 
-          {/* Viewfinder - Standard frame */}
-          <View style={styles.centerArea}>
-            <View style={styles.viewfinder}>
-              <View style={[styles.corner, styles.topLeft]} />
-              <View style={[styles.corner, styles.topRight]} />
-              <View style={[styles.corner, styles.bottomLeft]} />
-              <View style={[styles.corner, styles.bottomRight]} />
-              
-              {/* Dynamic scan line effect */}
-              <View style={styles.scannerLine} />
-            </View>
-            <View style={styles.hintBox}>
-              <Text style={styles.hintText}>{t('scan.hint')}</Text>
-            </View>
+        {/* Viewfinder - Standard frame */}
+        <View style={styles.centerArea}>
+          <View style={styles.viewfinder}>
+            <View style={[styles.corner, styles.topLeft]} />
+            <View style={[styles.corner, styles.topRight]} />
+            <View style={[styles.corner, styles.bottomLeft]} />
+            <View style={[styles.corner, styles.bottomRight]} />
+            
+            {/* Dynamic scan line effect */}
+            <View style={styles.scannerLine} />
           </View>
-
-          {/* Footer Controls */}
-          <View style={[styles.footer, { paddingBottom: insets.bottom + 40 }]}>
-             {scanned && (
-               <Pressable style={styles.rescanBtn} onPress={() => setScanned(false)}>
-                  <MaterialIcons name="refresh" size={24} color="#FFFFFF" />
-                  <Text style={styles.rescanText}>{t('common.tryAgain')}</Text>
-               </Pressable>
-             )}
+          <View style={styles.hintBox}>
+            <Text style={styles.hintText}>{t('scan.hint')}</Text>
           </View>
         </View>
-      </CameraView>
+
+        {/* Footer Controls */}
+        <View style={[styles.footer, { paddingBottom: insets.bottom + 40 }]}>
+           {scanned && (
+             <Pressable style={styles.rescanBtn} onPress={() => setScanned(false)}>
+                <MaterialIcons name="refresh" size={24} color="#FFFFFF" />
+                <Text style={styles.rescanText}>{t('common.tryAgain')}</Text>
+             </Pressable>
+           )}
+        </View>
+      </View>
     </View>
   );
 }
