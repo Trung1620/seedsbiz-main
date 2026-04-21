@@ -25,9 +25,14 @@ export async function clearToken() {
   await AsyncStorage.multiRemove([KEY.token, KEY.loginTime]);
 }
 
-export async function setOrg(id: string, name: string) {
-  await AsyncStorage.setItem(KEY.orgId, id);
-  await AsyncStorage.setItem(KEY.orgName, name);
+export async function setOrg(idOrOrg: string | { id: string, name: string }, name?: string) {
+  if (typeof idOrOrg === 'object') {
+    await AsyncStorage.setItem(KEY.orgId, idOrOrg.id);
+    await AsyncStorage.setItem(KEY.orgName, idOrOrg.name);
+  } else {
+    await AsyncStorage.setItem(KEY.orgId, idOrOrg);
+    if (name) await AsyncStorage.setItem(KEY.orgName, name || "");
+  }
 }
 
 export async function getOrg() {

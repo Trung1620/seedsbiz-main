@@ -50,13 +50,14 @@ export default function ProductsScreen() {
       const query = (opts?.query ?? searchQuery).trim();
       const rows = await api.listProducts({ q: query, orgId: activeOrg.id });
       
-      if (Array.isArray(rows?.items)) {
+      if (Array.isArray(rows?.items) && rows.items.length > 0) {
         setItems(rows.items);
-      } else if (Array.isArray(rows)) {
+      } else if (Array.isArray(rows) && rows.length > 0) {
         setItems(rows);
-      } else if (rows && Array.isArray(rows.rows)) {
+      } else if (rows && Array.isArray(rows.rows) && rows.rows.length > 0) {
         setItems(rows.rows);
       } else {
+        // Nếu API trả về trống hoặc lỗi cấu trúc, hiện sản phẩm mẫu
         setItems(LOCAL_PRODUCTS as any);
       }
     } catch (e: any) {

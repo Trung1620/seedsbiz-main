@@ -49,19 +49,25 @@ export default function TabLayout() {
       }}
     >
       <Tabs.Screen
-        name="modules"
-        options={{
-          title: t('nav.modules') || "Danh mục",
-          tabBarIcon: ({ color, focused }) => renderTabIcon("apps", color, focused),
-        }}
-      />
-
-      <Tabs.Screen
         name="home"
         options={{
           title: t('nav.home') || 'Trang chủ',
           tabBarIcon: ({ color, focused }) => renderTabIcon("home", color, focused),
         }}
+      />
+
+      <Tabs.Screen
+        name="quote-new-dummy"
+        options={{
+          title: t('nav.create_quote') || 'Tạo báo giá',
+          tabBarIcon: ({ color, focused }) => renderTabIcon("add-shopping-cart", color, focused),
+        }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            e.preventDefault();
+            navigation.navigate('quote-new');
+          },
+        })}
       />
       
       <Tabs.Screen
@@ -70,14 +76,14 @@ export default function TabLayout() {
           title: '',
           tabBarIcon: () => (
             <View style={[styles.plusBtn, { backgroundColor: PALETTE.primary, borderColor: colors.surface, shadowColor: PALETTE.primary }]}>
-              <MaterialIcons name="add" size={32} color="#FFFFFF" />
+              <MaterialIcons name="qr-code-scanner" size={32} color="#FFFFFF" />
             </View>
           ),
         }}
         listeners={({ navigation }) => ({
             tabPress: (e) => {
               e.preventDefault();
-              navigation.navigate('quote-new');
+              navigation.navigate('scan');
             },
           })}
       />
@@ -100,6 +106,7 @@ export default function TabLayout() {
 
       {/* Ẩn các trang không cần hiện trên tab bar */}
       <Tabs.Screen name="index" options={{ href: null }} />
+      <Tabs.Screen name="modules" options={{ href: null }} />
       <Tabs.Screen name="settings" options={{ href: null }} />
       <Tabs.Screen name="layout" options={{ href: null }} />
     </Tabs>

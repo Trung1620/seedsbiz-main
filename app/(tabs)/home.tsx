@@ -1,6 +1,7 @@
 // app/(tabs)/home.tsx
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
+  Animated,
   View,
   Text,
   StyleSheet,
@@ -26,20 +27,41 @@ import { LOCAL_PRODUCTS } from "@/constants/localProducts";
 import { NEWS_DATA } from "@/constants/newsData";
 import { openUrl } from "@/utils/api";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
+const drawerWidth = width * 0.7;
+
+const getModuleGroups = (t: any) => [
+  {
+    title: "DANH MỤC",
+    icon: "grid-view",
+    color: PALETTE.primary,
+    items: [
+      { key: "profile", label: "Hồ sơ cá nhân", route: "/profile", icon: "account-circle" },
+      { key: "products", label: "Sản phẩm", route: "/products", icon: "category" },
+      { key: "materials", label: "Vật tư", route: "/materials", icon: "reorder" },
+      { key: "artisans", label: "Thợ thủ công", route: "/artisans", icon: "person" },
+      { key: "jobSheets", label: "Phiếu gia công", route: "/job-sheets", icon: "assignment" },
+      { key: "progress", label: "Tiến độ thợ", route: "/production-progress", icon: "hourglass-top" },
+      { key: "debts", label: "Công nợ", route: "/debts", icon: "money-off" },
+      { key: "expenses", label: "Phiếu chi", route: "/expenses", icon: "payments" },
+      { key: "settings", label: "Cài đặt", route: "/settings", icon: "settings" },
+    ]
+  }
+];
 
 const HorizontalProductCard = ({ item, onPress, colors }: any) => {
   const { t, i18n } = useTranslation();
   return (
     <Pressable style={[styles.prodCard, NEUMORPHISM.card, { backgroundColor: colors.surface }]} onPress={onPress}>
       {(() => {
-        const imgSource = api.getPublicFileUrl(item.image || item.images?.[0]?.url);
+        const imgUrl = item.image || (Array.isArray(item.images) && item.images.length > 0 ? (typeof item.images[0] === 'string' ? item.images[0] : item.images[0].url) : null);
+        const imgSource = api.getPublicFileUrl(imgUrl);
         if (imgSource) {
           return (
             <Image 
-              source={typeof imgSource === 'string' ? { uri: imgSource } : imgSource} 
+              source={imgSource} 
               style={styles.prodImage}
-              onError={(e) => console.log(`[IMAGE_LOAD_ERROR] Fail: ${imgSource}`, e.nativeEvent)}
+              onError={(e) => console.log(`[IMAGE_LOAD_ERROR] Fail: ${JSON.stringify(imgSource)}`, e.nativeEvent)}
             />
           );
         }
@@ -141,6 +163,20 @@ export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   const { user, activeOrg } = useAuth();
   const { colors, notificationsEnabled } = useTheme();
+  const groups = getModuleGroups(t);
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const slideAnim = useRef(new Animated.Value(-drawerWidth)).current;
+
+  const toggleDrawer = () => {
+    const toValue = isDrawerOpen ? -drawerWidth : 0;
+    Animated.timing(slideAnim, {
+      toValue,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+    setIsDrawerOpen(!isDrawerOpen);
+  };
 
   const [stats, setStats] = useState({ revenue: 0, debtTotal: 0, orders: 0 }); // Added orders to stats
   const [products, setProducts] = useState<any[]>([]);
@@ -192,15 +228,16 @@ export default function HomeScreen() {
         });
       }
       
-      if (Array.isArray(prodData?.items)) {
+      if (Array.isArray(prodData?.items) && prodData.items.length > 0) {
         setProducts(prodData.items.slice(0, 10));
-      } else if (Array.isArray(prodData?.products)) {
+      } else if (Array.isArray(prodData?.products) && prodData.products.length > 0) {
         setProducts(prodData.products.slice(0, 10));
-      } else if (Array.isArray(prodData?.rows)) {
+      } else if (Array.isArray(prodData?.rows) && prodData.rows.length > 0) {
         setProducts(prodData.rows.slice(0, 10));
-      } else if (Array.isArray(prodData)) {
+      } else if (Array.isArray(prodData) && prodData.length > 0) {
         setProducts(prodData.slice(0, 10));
       } else {
+        // Fallback sang dữ liệu mẫu nếu máy chủ trống
         setProducts(LOCAL_PRODUCTS.slice(0, 10));
       }
     } catch (e) { 
@@ -223,13 +260,25 @@ export default function HomeScreen() {
       >
         {/* HEADER */}
         <View style={styles.header}>
-          <Pressable style={styles.menuTrigger} onPress={() => router.push("/profile")}>
-             <Ionicons name="person-circle-outline" size={36} color={colors.text} />
+          <Pressable style={styles.menuTrigger} onPress={toggleDrawer}>
+             <Ionicons name={isDrawerOpen ? "close-outline" : "grid-outline"} size={32} color={PALETTE.primary} />
           </Pressable>
+
+          <Pressable 
+            style={({ pressed }) => [
+              styles.searchContainerHeader, 
+              NEUMORPHISM.input, 
+              { backgroundColor: colors.surface, opacity: pressed ? 0.8 : 1 }
+            ]}
+            onPress={() => router.push("/search")}
+          >
+            <Ionicons name="search-outline" size={18} color={PALETTE.primary} />
+            <Text style={[styles.searchTextSmall, { color: colors.textSecondary }]} numberOfLines={1}>
+              {t('search.placeholder')}
+            </Text>
+          </Pressable>
+
           <View style={styles.headerRight}>
-             <Pressable style={[styles.headerIconBtn, { backgroundColor: colors.surface }]} onPress={() => router.push("/scan")}>
-                <MaterialIcons name="qr-code-scanner" size={24} color={PALETTE.primary} />
-             </Pressable>
              <Pressable 
                 style={[styles.headerIconBtn, { backgroundColor: colors.surface }]} 
                 onPress={() => router.push("/notifications")}
@@ -238,22 +287,6 @@ export default function HomeScreen() {
              </Pressable>
           </View>
         </View>
-
-        {/* GLOBAL SEARCH BAR */}
-        <Pressable 
-          style={({ pressed }) => [
-            styles.searchContainer, 
-            NEUMORPHISM.input, 
-            { backgroundColor: colors.surface, opacity: pressed ? 0.8 : 1 }
-          ]}
-          android_ripple={{ color: colors.outline + '20', borderless: false }}
-          onPress={() => router.push("/search")}
-        >
-          <Ionicons name="search-outline" size={20} color={PALETTE.primary} />
-          <Text style={[styles.searchText, { color: colors.textSecondary }]}>
-            {t('search.placeholder')}
-          </Text>
-        </Pressable>
 
         {/* STATS ROW */}
         <Pressable 
@@ -373,6 +406,35 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
+      {/* SIDE DRAWER (DANH MỤC) */}
+      <Animated.View style={[styles.drawer, { left: slideAnim, backgroundColor: colors.surface, paddingTop: insets.top + 60 }]}>
+         <View style={styles.drawerHeader}>
+            <Text style={[styles.drawerTitle, { color: colors.text }]}>DANH MỤC</Text>
+         </View>
+         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+            {groups[0].items.map((item) => (
+              <Pressable 
+                key={item.key} 
+                style={({ pressed }) => [styles.drawerItem, pressed && { backgroundColor: colors.background }]} 
+                onPress={() => { toggleDrawer(); router.push(item.route as any); }}
+              >
+                <View style={[styles.drawerIconBox, { backgroundColor: PALETTE.primary + '10' }]}>
+                  <MaterialIcons name={item.icon as any} size={22} color={PALETTE.primary} />
+                </View>
+                <Text style={[styles.drawerLabel, { color: colors.text }]}>{item.label}</Text>
+              </Pressable>
+            ))}
+         </ScrollView>
+      </Animated.View>
+
+      {/* OVERLAY WHEN DRAWER IS OPEN */}
+      {isDrawerOpen && (
+        <Pressable 
+          style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.3)', zIndex: 99 }]} 
+          onPress={toggleDrawer} 
+        />
+      )}
+
       {/* MODAL PROFILE */}
       <Modal visible={isMenuVisible} transparent={true} animationType="fade">
         <Pressable style={[styles.modalOverlay, { backgroundColor: 'rgba(0,0,0,0.5)' }]} onPress={() => setIsMenuVisible(false)}>
@@ -394,13 +456,13 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   screen: { flex: 1 },
   contentArea: { flex: 1 },
-  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 24, paddingVertical: 15 },
-  menuTrigger: { width: 44, height: 44, justifyContent: 'center' },
-  headerRight: { flexDirection: "row", gap: 12, alignItems: 'center' },
-  headerIconBtn: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', ...SHADOWS.soft },
-  searchContainer: { flexDirection: 'row', alignItems: 'center', marginHorizontal: 24, marginVertical: 10, paddingHorizontal: 16, height: 54, borderRadius: 16, gap: 12 },
-  searchText: { fontSize: 15, fontFamily: FONTS.medium, opacity: 0.6 },
-  todayCard: { marginHorizontal: 24, padding: 22, marginBottom: 30, borderRadius: 28 },
+  header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingHorizontal: 20, paddingVertical: 12, gap: 12 },
+  menuTrigger: { width: 40, height: 40, justifyContent: 'center', alignItems: 'center' },
+  headerRight: { flexDirection: "row", alignItems: 'center' },
+  headerIconBtn: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', ...SHADOWS.soft },
+  searchContainerHeader: { flex: 1, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, height: 42, borderRadius: 12, gap: 8 },
+  searchTextSmall: { fontSize: 13, fontFamily: FONTS.medium, opacity: 0.5, flex: 1 },
+  todayCard: { marginHorizontal: 24, padding: 22, marginTop: 80, marginBottom: 30, borderRadius: 28 },
   todayHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 18 },
   todayIconBox: { width: 50, height: 50, borderRadius: 16, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
   todayTitle: { fontSize: 13, fontFamily: FONTS.bold, textTransform: 'uppercase', letterSpacing: 1 },
@@ -449,4 +511,10 @@ const styles = StyleSheet.create({
   newsDate: { fontSize: 11, fontFamily: FONTS.bold, marginBottom: 6, textTransform: 'uppercase' },
   newsTitle: { fontSize: 16, fontFamily: FONTS.bold, marginBottom: 8, lineHeight: 22 },
   newsSummary: { fontSize: 13, fontFamily: FONTS.medium, opacity: 0.7, lineHeight: 18 },
+  drawer: { position: 'absolute', top: 0, bottom: 0, width: drawerWidth, zIndex: 100, elevation: 10, shadowColor: '#000', shadowOffset: { width: 4, height: 0 }, shadowOpacity: 0.2, shadowRadius: 10, paddingHorizontal: 20 },
+  drawerHeader: { marginBottom: 30, paddingLeft: 10 },
+  drawerTitle: { fontSize: 22, fontFamily: FONTS.bold, letterSpacing: 1 },
+  drawerItem: { flexDirection: 'row', alignItems: 'center', paddingVertical: 15, paddingHorizontal: 10, borderRadius: 15, marginBottom: 5 },
+  drawerIconBox: { width: 40, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
+  drawerLabel: { fontSize: 15, fontFamily: FONTS.bold },
 });

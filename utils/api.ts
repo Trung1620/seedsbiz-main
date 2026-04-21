@@ -68,6 +68,13 @@ export type Product = {
   minStock?: number;
   location?: string;
   status?: string;
+  image?: string;
+};
+
+export type ProductImage = { 
+  url: string; 
+  colorName?: string; 
+  colorCode?: string; 
 };
 
 export type Material = {
@@ -267,14 +274,43 @@ export type ProfitLossReportData = {
 
 const isValidId = (id?: string) => id ? /^[0-9a-fA-F]{24}$/.test(id) : false;
 
-export const BASE_URL = __DEV__ 
-  ? "http://192.168.1.120:3000" 
-  : (process.env.EXPO_PUBLIC_API_BASE_URL || "http://192.168.1.120:3000");
+export const BASE_URL = "https://example-app-router-main.vercel.app";
+
+// Bản đồ ánh xạ các đường dẫn ảnh tĩnh sang file require() của Expo
+const LOCAL_ASSET_MAP: Record<string, any> = {
+  "assets/Picture_Products/222099207565965340910.jpg": require("../assets/Picture_Products/222099207565965340910.jpg"),
+  "assets/Picture_Products/222099207565965340911.jpg": require("../assets/Picture_Products/222099207565965340911.jpg"),
+  "assets/Picture_Products/222099207565965340913.jpg": require("../assets/Picture_Products/222099207565965340913.jpg"),
+  "assets/Picture_Products/22209920756596534092.jpg": require("../assets/Picture_Products/22209920756596534092.jpg"),
+  "assets/Picture_Products/22209920756596534093.jpg": require("../assets/Picture_Products/22209920756596534093.jpg"),
+  "assets/Picture_Products/22209920756596534095.jpg": require("../assets/Picture_Products/22209920756596534095.jpg"),
+  "assets/Picture_Products/22209920756596534097.jpg": require("../assets/Picture_Products/22209920756596534097.jpg"),
+  "assets/Picture_Products/22209920756596534098.jpg": require("../assets/Picture_Products/22209920756596534098.jpg"),
+  "assets/Picture_Products/26505959606523302671.jpg": require("../assets/Picture_Products/26505959606523302671.jpg"),
+  "assets/Picture_Products/277183524997547323312.jpg": require("../assets/Picture_Products/277183524997547323312.jpg"),
+  "assets/Picture_Products/27718352499754732334.jpg": require("../assets/Picture_Products/27718352499754732334.jpg"),
+  "assets/Picture_Products/27718352499754732336.jpg": require("../assets/Picture_Products/27718352499754732336.jpg"),
+  "assets/Picture_Products/27718352499754732339.jpg": require("../assets/Picture_Products/27718352499754732339.jpg"),
+  "assets/Picture_Products/69647783701679762614.jpg": require("../assets/Picture_Products/69647783701679762614.jpg"),
+  "assets/Picture_Products/69647783701679762615.jpg": require("../assets/Picture_Products/69647783701679762615.jpg"),
+  "assets/Picture_Products/69647783701679762616.jpg": require("../assets/Picture_Products/69647783701679762616.jpg"),
+};
 
 export function getPublicFileUrl(path?: any) {
   if (!path) return null;
   if (typeof path !== 'string') return path;
-  if (path.startsWith('http')) return path;
+  if (path.startsWith('http')) return { uri: path };
+  
+  // Kiểm tra trong bản đồ ảnh nội bộ trước
+  if (LOCAL_ASSET_MAP[path]) {
+    return LOCAL_ASSET_MAP[path];
+  }
+
+  // Nếu là assets nhưng không có trong map, trả về URI mẫu hoặc path nguyên bản
+  if (path.startsWith('assets/')) {
+     return path;
+  }
+
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
@@ -579,6 +615,49 @@ export async function updateDelivery(id: string, data: any) {
 
 export async function deleteDelivery(id: string) {
   const res = await authedFetch(`/api/deliveries/${id}`, { method: "DELETE" });
+  return await readJson(res);
+}
+
+// Warranty & Repair
+export async function listWarranties(orgId: string) {
+  const res = await authedFetch(`/api/warranty?orgId=${orgId}`);
+  return await readJson(res);
+}
+
+export async function createWarranty(data: any) {
+  const res = await authedFetch("/api/warranty", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function updateWarranty(id: string, data: any) {
+  const res = await authedFetch(`/api/warranty/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function deleteWarranty(id: string) {
+  const res = await authedFetch(`/api/warranty/${id}`, { method: "DELETE" });
+  return await readJson(res);
+}
+
+// Job Sheets
+export async function listJobSheets() {
+  const res = await authedFetch("/api/job-sheets");
+  return await readJson(res);
+}
+
+export async function createJobSheet(data: any) {
+  const res = await authedFetch("/api/job-sheets", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+// Production Progress
+export async function listProductionProgress(jobId?: string) {
+  const res = await authedFetch(`/api/production-progress${jobId ? `?jobId=${jobId}` : ""}`);
+  return await readJson(res);
+}
+
+export async function createProductionProgress(data: any) {
+  const res = await authedFetch("/api/production-progress", { method: "POST", body: JSON.stringify(data) });
   return await readJson(res);
 }
 

@@ -117,15 +117,16 @@ export default function ProductNewScreen() {
                 brand: brand.trim(),
                 category: category.trim(),
                 inStock,
-                status: "PUBLISHED",
+                status: "ACTIVE",
                 weight: weight ? Number(weight) : undefined,
                 productionTime: productionTime ? Number(productionTime) : undefined,
                 images: uploaded.map(u => u.url),
+                image: uploaded.length > 0 ? uploaded[0].url : undefined,
                 barcode: barcode.trim() || undefined,
                 location: location.trim() || undefined,
                 minStock: minStock ? Number(minStock) : undefined,
                 categoryId: categoryId || undefined,
-                boms: boms.map(b => ({ materialId: b.materialId, quantity: b.quantity })),
+                materialDetails: boms.length > 0 ? boms.map(b => ({ materialId: b.materialId, quantity: b.quantity })) : undefined,
             });
             Alert.alert(t('common.success'), t('products.alertSuccess'));
             router.replace(H("/products") as any);

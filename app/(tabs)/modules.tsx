@@ -40,8 +40,8 @@ const getModuleGroups = (t: any) => [
     color: "#FF9500",
     items: [
       { key: "artisans", label: t('modulesScreen.groups.production.artisans'), desc: t('home.modules.artisans.desc') || "Artisan Profiles", route: "/artisans", icon: "person" },
-      { key: "processing", label: t('modulesScreen.groups.production.processing'), desc: t('home.modules.production.desc') || "Job Sheets", route: "/production", icon: "assignment" },
-      { key: "progress", label: t('modulesScreen.groups.production.progress'), desc: t('home.modules.production.desc') || "Progress", route: "/production", icon: "hourglass-top" },
+      { key: "processing", label: t('modulesScreen.groups.production.processing'), desc: t('home.modules.production.desc') || "Job Sheets", route: "/job-sheets", icon: "assignment" },
+      { key: "progress", label: t('modulesScreen.groups.production.progress'), desc: t('home.modules.production.desc') || "Progress", route: "/production-progress", icon: "hourglass-top" },
       { key: "labor_cost", label: t('modulesScreen.groups.production.labor_cost'), desc: t('home.modules.expenses.desc') || "Labor Costing", route: "/debts", icon: "calculate" },
     ]
   },
@@ -61,7 +61,7 @@ const getModuleGroups = (t: any) => [
     color: "#007AFF",
     items: [
       { key: "shipping", label: t('modulesScreen.groups.shipping.tracking'), desc: t('home.modules.shipping.desc') || "Shipping tracking", route: "/shipping", icon: "local-shipping" },
-      { key: "repair", label: t('modulesScreen.groups.shipping.repair'), desc: "Care after sales", route: "/shipping", icon: "verified-user" },
+      { key: "repair", label: t('modulesScreen.groups.shipping.repair'), desc: "Care after sales", route: "/warranty", icon: "verified-user" },
     ]
   },
   {
