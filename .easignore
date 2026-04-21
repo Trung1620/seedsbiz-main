@@ -1,0 +1,48 @@
+# 👉 Node.js dependencies
+node_modules
+
+# 👉 Expo folders (cache, tạm, build)
+.expo
+.expo-shared
+dist
+web-build
+build
+tmp
+temp
+.cache
+
+# 👉 Output native build
+android/app/build
+ios/build
+*.apk
+*.aab
+
+# 👉 IDE/editor folders
+.vscode
+.idea
+
+# 👉 Debug & log files
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# 👉 Secrets & signing files
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+*.pem
+
+# 👉 Metro, TS
+.metro-health-check*
+*.tsbuildinfo
+
+# 👉 Env files
+.env
+.env*.local
+
+# 👉 Sample or test apps (tuỳ theo project bạn có)
+app-example/

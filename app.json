@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "Kho Mây Tre",
+    "slug": "kho-may-tre",
+    "scheme": "seedsbiz",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/app/icon-home.jpg",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "jsEngine": "hermes",
+    "splash": {
+      "image": "./assets/app/icon-home.jpg",
+      "resizeMode": "contain",
+      "backgroundColor": "#FFF5EB"
+    },
+    "android": {
+      "package": "com.seedsbiz.app",
+      "versionCode": 1,
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "edgeToEdgeEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/app/icon-home.jpg",
+        "backgroundColor": "#FFF5EB"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.seedsbiz.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Ứng dụng cần truy cập thư viện ảnh để bạn chọn ảnh sản phẩm và tải lên.",
+        "NSCameraUsageDescription": "Ứng dụng cần dùng camera để chụp ảnh sản phẩm.",
+        "NSPhotoLibraryAddUsageDescription": "Ứng dụng cần lưu ảnh (nếu bạn chọn lưu ảnh)."
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/app/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-localization",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "minSdkVersion": 24,
+            "kotlinVersion": "2.0.21",
+            "gradlePluginVersion": "8.8.2"
+          }
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "appType": "staff",
+      "product": "Warehouse : Eco Decor",
+      "router": {},
+      "eas": {
+        "projectId": "069e8285-79a1-4e39-b7f2-bcee4c44cceb"
+      }
+    }
+  }
+}

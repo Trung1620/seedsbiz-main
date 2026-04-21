@@ -1,0 +1,323 @@
+{
+   "loveDay": {
+    "title": "恋爱天数统计",
+    "selectDate": "选择恋爱开始日期",
+    "daysTogether": "今天是我们在一起的第 {{count}} 天！"
+  },
+  "settings": {
+    "unnamed": "未命名",
+    "accountInfo": "👤 账户信息",
+    "pairCode": "🔗 配对码管理",
+    "editInfo": "✏️ 编辑信息",
+    "register": "🔑 注册账号",
+    "changePassword": "🔐 更改密码",
+    "logout": "🚪 退出登录",
+    "themeSettings": "🎨 主题设置",
+    "language": "🌐 语言",
+    "alert": {
+      "logoutFailed": "登出失败",
+      "avatarSuccess": "✅ 更换头像成功！",
+      "avatarError": "❗️ 更换头像失败"
+    }
+  },
+  "welcome": {
+    "message": "欢迎来到我们的爱情旅程。\n请选择语言开始。",
+    "selectLanguageHint": "👉 点击选择你想使用的语言"
+  },
+  "loveday": {
+    "title": "恋爱天数统计",
+    "startButton": "选择恋爱开始的日期 💑",
+    "daysTogether": "今天是我们在一起的第 {{count}} 天 💖",
+    "selectDate": "选择日期",
+    "nextMilestone": "🎉 即将迎来第 {{milestone}} 天纪念日：还有 {{daysLeft}} 天！",
+    "pairButton": "💞 与恋人配对",
+    "passed": "💞 已经过去",
+    "togetherLabel": "💞 在一起",
+     "tabs": {
+      "share": "分享",
+      "memories": "回忆",
+      "plans": "计划",
+      "cycle": "月经周期",
+      "chat": "聊天"
+    }
+  },
+  "guestSetup": {
+    "title": "设置信息",
+    "yourName": "你的名字",
+    "partnerName": "恋人的名字",
+    "chooseYourAvatar": "选择你的头像",
+    "choosePartnerAvatar": "选择恋人的头像",
+    "startDate": "恋爱开始日期",
+    "startJourney": "开始恋爱之旅",
+    "fillRequired": "请填写所有必填信息"
+  },
+  "paircode": {
+    "managerTitle": "配对码管理",
+    "currentCode": "当前配对码",
+    "create": "创建新配对码",
+    "clear": "清除",
+    "startDate": "恋爱开始日期",
+    "enterPartnerCode": "输入恋人的配对码：",
+    "inputPlaceholder": "输入配对码...",
+    "connect": "连接",
+    "created": "已创建新配对码！",
+    "createError": "创建配对码失败",
+    "pairedSuccess": "配对成功！",
+    "pairError": "配对失败",
+    "cleared": "已清除配对码",
+    "clearError": "清除配对码失败",
+    "loginFirst": "请先登录",
+    "enterCode": "请输入配对码",
+    "notFound": "配对码不存在",
+    "alreadyPaired": "该配对码已被使用",
+    "dateUpdated": "已更新恋爱开始日期！",
+    "dateError": "更新日期失败",
+    "title": "💍 配对码管理",
+    "current": "📢 当前配对码",
+    "noCode": "❌ 暂无配对码",
+    "generate": "生成配对码",
+    "delete": "删除",
+    "close": "关闭",
+    "createSuccess": "🎉 已创建新配对码！",
+    "connectSuccess": "🎉 配对成功！",
+    "deleteSuccess": "❌ 已删除配对码"
+  },
+  "common": {
+    "close": "关闭",
+    "cancel": "取消",
+    "delete": "删除",
+    "confirm": "确认",
+    "loading": "加载中…",
+    "error": "错误"
+  },
+  "errors": {
+    "noUser": "请先登录",
+    "noInput": "请输入配对码",
+    "notExist": "❌ 配对码不存在",
+    "alreadyPaired": "❌ 此配对码已被使用",
+    "errorCreate": "创建配对码失败",
+    "errorConnect": "配对失败",
+    "errorDelete": "删除配对码失败",
+    "errorStartDate": "更新日期失败"
+  },
+  "timeline": {
+    "past": "过去",
+    "future": "未来",
+    "all": "全部",
+    "byYear": "按年份"
+  },
+  "future": {
+    "tripPlan": "旅行",
+    "livingPlan": "同居",
+    "weddingPlan": "结婚",
+    "savedPlans":"已保存"
+  },
+  "tripTabs": {
+    "travel": "旅游",
+    "movie": "看电影",
+    "adventure": "冒险",
+    "food": "美食"
+  },
+  "alert": {
+    "title": "通知",
+    "emptyFields": "请输入邮箱和密码",
+    "loginFailed": "登录失败"
+  },
+  "login": {
+    "title": "登录",
+    "emailPlaceholder": "邮箱",
+    "passwordPlaceholder": "密码",
+    "button": "登录",
+    "noAccount": "还没有账号？注册",
+    "continueAsGuest": "以游客身份继续"
+  },
+  "register": {
+    "title": "注册账号",
+    "namePlaceholder": "显示名称",
+    "emailPlaceholder": "邮箱",
+    "passwordPlaceholder": "密码",
+    "button": "注册",
+    "hasAccount": "已有账号？登录",
+    "emptyFields": "请填写所有信息",
+    "success": "注册成功！",
+    "failed": "注册失败"
+  },
+  "guest": {
+    "title": "💑 开始恋爱之旅",
+    "nameLabel": "👤 你的昵称",
+    "namePlaceholder": "请输入你的名字",
+    "createNew": "➕ 创建新情侣配对",
+    "or": "或",
+    "codeLabel": "🔗 输入配对码加入",
+    "codePlaceholder": "输入配对码",
+    "joinWithCode": "🔑 使用配对码加入",
+    "alert": {
+      "title": "通知",
+      "nameRequired": "请输入昵称",
+      "codeRequired": "请输入配对码",
+      "codeNotFound": "配对码不存在"
+    },
+    "success": {
+      "createdTitle": "✅ 已生成配对码！",
+      "pairCode": "配对码",
+      "joinedTitle": "✅ 加入成功！"
+    },
+    "guestChoice": {
+      "title": "🔗 同步情侣数据",
+      "haveCode": "输入你的配对码",
+      "codePlaceholder": "输入配对码...",
+      "syncButton": "🔗 使用配对码同步",
+      "createButton": "✨ 创建新情侣",
+      "successTitle": "🎉 同步成功！",
+      "alert": {
+        "invalidCodeTitle": "通知",
+        "invalidCode": "请输入6位有效配对码",
+        "notFound": "找不到配对码，请检查后重试",
+        "syncError": "同步数据失败"
+      }
+    }
+  },
+  "theme": {
+    "pickColor": "🎨 选择主色：",
+    "pickBackground": "🖼 选择背景图片：",
+    "uploadedLabel": "📸 上传的图片",
+    "removeUpload": "🗑 删除上传图片",
+    "uploadCustom": "📤 上传自定义图片",
+    "save": "保存主题",
+    "uploading": "上传中",
+    "confirmDelete": "你确定要删除上传的图片吗？",
+    "successDeleted": "✅ 已删除图片并恢复默认！",
+    "success": {
+      "saveTitle": "✅ 主题已保存到 Firestore！"
+    },
+    "error": {
+      "uploadTitle": "❌ 上传失败",
+      "deleteTitle": "❌ 删除图片失败",
+      "imageNotReady": "上传的图片尚未准备好保存",
+      "notLoggedIn": "未登录",
+      "saveFailed": "❌ 保存主题失败！"
+    }
+  },
+  "daysTogether": {
+    "loving": "相恋中",
+    "days": "天"
+  },
+  "heart": {
+    "header": "💖 相爱至今 💖",
+    "years": "年",
+    "months": "月",
+    "weeks": "周",
+    "days": "天"
+  },
+  "milestone": {
+    "100": "100天纪念日",
+    "365": "1周年纪念日",
+    "1095": "3周年纪念日",
+    "1825": "5周年纪念日",
+    "3650": "10周年纪念日",
+    "remaining": "还有 {{count}} 天"
+  },
+  "time": {
+    "header": "💖 相爱至今 💖",
+    "years": "年",
+    "months": "月",
+    "weeks": "周",
+    "days": "天"
+  },
+  "account": {
+    "info": "👤 账号信息",
+    "update": "✏️ 修改资料",
+    "register": "🔑 注册账号",
+    "registerNote": "注册账号可享更多功能：云同步、长期保存、更换设备...",
+    "changePassword": "🔐 更改密码",
+    "logout": "🚪 登出"
+  },
+  "avatar": {
+    "change": "🖼 更换头像",
+    "success": "✅ 头像更换成功！",
+    "errorTitle": "❗️ 更换头像失败"
+  },
+  "pair": {
+    "title": "💞 与恋人配对",
+    "generate": "生成配对码",
+    "yourCode": "你的配对码",
+    "share": "📤 通过邮箱或微信发送配对码",
+    "enterPartnerCode": "请输入恋人发送的配对码：",
+    "inputPlaceholder": "输入配对码...",
+    "connect": "连接",
+    "loginRequired": "请先登录",
+    "enterCode": "请输入配对码",
+    "notExist": "配对码不存在",
+    "alreadyUsed": "该配对码已被使用",
+    "success": "🎉 配对成功！",
+    "createError": "生成配对码失败",
+    "connectError": "配对失败",
+    "shareError": "无法打开分享应用"
+  },
+  "startDate": {
+    "label": "恋爱开始日期："
+  },
+  "password": {
+    "title": "更改密码",
+    "current": "当前密码",
+    "new": "新密码",
+    "confirm": "确认新密码",
+    "missingFields": "请填写所有信息",
+    "notMatch": "新密码不一致",
+    "noUser": "无法识别用户",
+    "success": "✅ 密码更改成功",
+    "failed": "密码更改失败"
+  },
+  "savedPlans": {
+    "title": "已保存的计划",
+    "empty": "还没有保存任何计划"
+  },
+  "livingTab": {
+    "rent": "租房",
+    "buy": "买房",
+    "baby": "生孩子"
+  },
+  "transportation": "交通",
+  "hotel": "酒店",
+  "expense": "费用",
+  "note": "备注",
+  "addToPlan": "添加到计划",
+  "selectDate": "选择{{title}}的日期",
+  "savePlan": "保存计划",
+  "cancel": "取消",
+  "success": "已成功保存旅行计划！",
+  "distanceFromYou": "距离您约 {{km}} 公里",
+  "foodType": "菜系类型",
+  "priceRange": "价格范围",
+  "permissionAlertTitle": "通知",
+  "permissionAlertMessage": "需要位置权限以计算距离",
+  "planSavedSuccess": "已保存计划!",
+  "period": {
+    "title": "情侣日历",
+    "legend": {
+      "ovulation": "排卵期・受孕概率高",
+      "dangerPre": "排卵前易受孕窗口",
+      "safe": "估算的安全期",
+      "periodDot": "预计月经（接下来的 2 个周期）",
+      "recordedRing": "已记录的月经开始日",
+      "periodBg": "经期中（已记录）"
+    },
+    "modal": {
+      "addTitle": "确认作为月经开始日？",
+      "removeTitle": "删除此开始日？",
+      "date": "日期：{{date}}",
+      "hint": "我们将使用该日期来预测排卵和下一个周期。"
+    },
+    "alert": {
+      "savedTitle": "✅ 已保存",
+      "savedMsg": "已记录月经开始日。",
+      "deletedTitle": "🗑️ 已删除",
+      "deletedMsg": "已删除月经开始日。"
+    },
+    "status": {
+      "upcoming": "你的月经将在几天内开始。",
+      "missed": "月经是否出现异常？"
+    },
+    "disclaimer": "日历信息仅供参考。你需对自己的生殖健康负责，并应始终注意安全性行为。"
+  }
+}

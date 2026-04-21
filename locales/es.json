@@ -1,0 +1,324 @@
+{
+ "loveDay": {
+    "title": "Contador de Días de Amor",
+    "selectDate": "Selecciona la fecha de inicio del amor",
+    "daysTogether": "¡Hoy es el día número {{count}} que están juntos!"
+  },
+  "settings": {
+    "unnamed": "Sin nombre",
+    "accountInfo": "👤 Información de la cuenta",
+    "pairCode": "🔗 Código de Pareja",
+    "editInfo": "✏️ Editar información",
+    "register": "🔑 Registrar cuenta",
+    "changePassword": "🔐 Cambiar contraseña",
+    "logout": "🚪 Cerrar sesión",
+    "themeSettings": "🎨 Configuración del tema",
+    "language": "🌐 Idioma",
+    "alert": {
+      "logoutFailed": "Error al cerrar sesión",
+      "avatarSuccess": "✅ ¡Avatar cambiado con éxito!",
+      "avatarError": "❗️ Error al cambiar el avatar"
+    }
+  },
+  "welcome": {
+    "message": "Bienvenido al viaje del amor.\nPor favor selecciona un idioma para comenzar.",
+    "selectLanguageHint": "👉 Toca para elegir el idioma que deseas usar"
+  },
+  "loveday": {
+    "title": "Contador de Días de Amor",
+    "startButton": "Selecciona el día que comenzaron a salir 💑",
+    "daysTogether": "Hoy es el día {{count}} juntos 💖",
+    "selectDate": "Seleccionar fecha",
+    "nextMilestone": "🎉 Próximo hito: {{milestone}} días en {{daysLeft}} días!",
+    "pairButton": "💞 Emparejar con tu pareja",
+    "passed": "💞 Días pasados",
+    "togetherLabel": "💞 Juntos",
+     "tabs": {
+      "share": "Compartir",
+      "memories": "Recuerdos",
+      "plans": "Planes",
+      "cycle": "Ciclo",
+      "chat": "Chat"
+    }
+  },
+  "guestSetup": {
+    "title": "Configurar información",
+    "yourName": "Tu nombre",
+    "partnerName": "Nombre de tu pareja",
+    "chooseYourAvatar": "Elige tu avatar",
+    "choosePartnerAvatar": "Elige el avatar de tu pareja",
+    "startDate": "Fecha de inicio del amor",
+    "startJourney": "Comenzar viaje del amor",
+    "fillRequired": "Por favor completa toda la información"
+  },
+  "paircode": {
+    "managerTitle": "Gestión del Código de Pareja",
+    "currentCode": "Código actual",
+    "create": "Crear nuevo código",
+    "clear": "Borrar",
+    "startDate": "Fecha de inicio del amor",
+    "enterPartnerCode": "Ingresa el código de tu pareja:",
+    "inputPlaceholder": "Ingresa código...",
+    "connect": "Conectar",
+    "created": "¡Código de pareja creado!",
+    "createError": "Error al crear código",
+    "pairedSuccess": "¡Emparejamiento exitoso!",
+    "pairError": "Error al emparejar",
+    "cleared": "Código de pareja eliminado",
+    "clearError": "Error al eliminar el código",
+    "loginFirst": "Debes iniciar sesión",
+    "enterCode": "Por favor ingresa el código",
+    "notFound": "Código no encontrado",
+    "alreadyPaired": "Este código ya ha sido emparejado",
+    "dateUpdated": "¡Fecha de inicio actualizada!",
+    "dateError": "Error al actualizar la fecha",
+    "title": "💍 Gestión del Código de Pareja",
+    "current": "📢 Código actual",
+    "noCode": "❌ Sin código de pareja",
+    "generate": "Generar código",
+    "delete": "Eliminar",
+    "close": "Cerrar",
+    "createSuccess": "🎉 ¡Nuevo código creado!",
+    "connectSuccess": "🎉 ¡Emparejado con éxito!",
+    "deleteSuccess": "❌ Código eliminado"
+  },
+  "common": {
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "loading": "Cargando…",
+    "error": "Error"
+  },
+  "errors": {
+    "noUser": "Debes iniciar sesión",
+    "noInput": "Por favor ingresa el código",
+    "notExist": "❌ Código no existe",
+    "alreadyPaired": "❌ Este código ya ha sido emparejado",
+    "errorCreate": "Error al crear el código",
+    "errorConnect": "Error al emparejar",
+    "errorDelete": "Error al eliminar el código",
+    "errorStartDate": "Error al actualizar la fecha"
+  },
+  "timeline": {
+    "past": "Pasado",
+    "future": "Futuro",
+    "all": "Todo",
+    "byYear": "Por año"
+  },
+  "future": {
+    "tripPlan": "Viaje",
+    "livingPlan": "Vivir juntos",
+    "weddingPlan": "Boda"
+  },
+  "tripTabs": {
+    "travel": "Viajar",
+    "movie": "Cine",
+    "adventure": "Aventura",
+    "food": "Comida"
+  },
+  "alert": {
+    "title": "Alerta",
+    "emptyFields": "Por favor ingresa correo y contraseña",
+    "loginFailed": "Error de inicio de sesión"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "button": "Iniciar sesión",
+    "noAccount": "¿No tienes cuenta? Regístrate",
+    "continueAsGuest": "Continuar como invitado"
+  },
+  "register": {
+    "title": "Registrar cuenta",
+    "namePlaceholder": "Nombre visible",
+    "emailPlaceholder": "Correo electrónico",
+    "passwordPlaceholder": "Contraseña",
+    "button": "Registrar",
+    "hasAccount": "¿Ya tienes cuenta? Inicia sesión",
+    "emptyFields": "Por favor completa todos los campos",
+    "success": "¡Registro exitoso!",
+    "failed": "Error al registrar"
+  },"guest": {
+    "title": "💑 Comienza tu viaje amoroso",
+    "nameLabel": "👤 Tu nombre visible",
+    "namePlaceholder": "Ingresa tu nombre",
+    "createNew": "➕ Crear nueva pareja",
+    "or": "o",
+    "codeLabel": "🔗 Ingresa el código de pareja para unirte",
+    "codePlaceholder": "Ingresa el código de pareja",
+    "joinWithCode": "🔑 Unirse con código",
+    "alert": {
+      "title": "Aviso",
+      "nameRequired": "Debes ingresar un nombre visible",
+      "codeRequired": "Debes ingresar un código de pareja",
+      "codeNotFound": "El código de pareja no existe"
+    },
+    "success": {
+      "createdTitle": "✅ ¡Código de pareja creado!",
+      "pairCode": "Código",
+      "joinedTitle": "✅ ¡Te has unido exitosamente!"
+    },
+    "guestChoice": {
+      "title": "🔗 Sincroniza datos de pareja",
+      "haveCode": "Ingresa tu código de pareja",
+      "codePlaceholder": "Ingresa el código de pareja...",
+      "syncButton": "🔗 Sincronizar con código",
+      "createButton": "✨ Crear nueva pareja",
+      "successTitle": "🎉 ¡Sincronización exitosa!",
+      "alert": {
+        "invalidCodeTitle": "Aviso",
+        "invalidCode": "Por favor ingresa un código de 6 caracteres válido.",
+        "notFound": "Código no encontrado. Por favor verifica.",
+        "syncError": "Error al sincronizar los datos."
+      }
+    }
+  },
+  "theme": {
+    "pickColor": "🎨 Elige el color principal:",
+    "pickBackground": "🖼 Elige una imagen de fondo:",
+    "uploadedLabel": "📸 Imagen recién subida",
+    "removeUpload": "🗑 Eliminar imagen subida",
+    "uploadCustom": "📤 Subir imagen personalizada",
+    "save": "Guardar Tema",
+    "uploading": "subiendo",
+    "confirmDelete": "¿Estás seguro de que deseas eliminar la imagen subida?",
+    "successDeleted": "✅ Imagen eliminada y restablecida a la predeterminada!",
+    "success": {
+      "saveTitle": "✅ ¡Tema guardado en Firestore!"
+    },
+    "error": {
+      "uploadTitle": "❌ Error al subir",
+      "deleteTitle": "❌ Error al eliminar imagen",
+      "imageNotReady": "La imagen aún no está lista para guardar",
+      "notLoggedIn": "No has iniciado sesión.",
+      "saveFailed": "❌ Error al guardar el tema!"
+    }
+  },
+  "daysTogether": {
+    "loving": "enamorados",
+    "days": "días"
+  },
+  "heart": {
+    "header": "💖 FELICES JUNTOS 💖",
+    "years": "AÑOS",
+    "months": "MESES",
+    "weeks": "SEMANAS",
+    "days": "DÍAS"
+  },
+  "milestone": {
+    "100": "100 días de amor",
+    "365": "1 año de amor",
+    "1095": "3 años de amor",
+    "1825": "5 años de amor",
+    "3650": "10 años de amor",
+    "remaining": "quedan {{count}} días"
+  },
+  "time": {
+    "header": "💖 FELICES JUNTOS 💖",
+    "years": "AÑOS",
+    "months": "MESES",
+    "weeks": "SEMANAS",
+    "days": "DÍAS"
+  },
+  "account": {
+    "info": "👤 Información de la cuenta",
+    "update": "✏️ Actualizar información",
+    "register": "🔑 Registrar cuenta",
+    "registerNote": "Regístrate para más funciones: sincronización en la nube, almacenamiento permanente, cambio de dispositivo...",
+    "changePassword": "🔐 Cambiar contraseña",
+    "logout": "🚪 Cerrar sesión"
+  },
+  "avatar": {
+    "change": "🖼 Cambiar avatar",
+    "success": "✅ ¡Avatar actualizado exitosamente!",
+    "errorTitle": "❗️ Error al cambiar el avatar"
+  },
+  "pair": {
+    "title": "💞 Emparejar con tu pareja",
+    "generate": "Generar código de pareja",
+    "yourCode": "Tu código",
+    "share": "📤 Compartir por Email o Zalo",
+    "enterPartnerCode": "Ingresa el código de tu pareja:",
+    "inputPlaceholder": "Ingresa el código...",
+    "connect": "Conectar",
+    "loginRequired": "Debes iniciar sesión primero",
+    "enterCode": "Por favor ingresa el código de pareja",
+    "notExist": "El código no existe",
+    "alreadyUsed": "Este código ya ha sido usado",
+    "success": "🎉 ¡Emparejamiento exitoso!",
+    "createError": "Error al generar el código",
+    "connectError": "Error al conectar el código",
+    "shareError": "No se puede abrir la aplicación para compartir"
+  },
+  "startDate": {
+    "label": "Fecha de inicio del amor:"
+  },
+  "password": {
+    "title": "Cambiar contraseña",
+    "current": "Contraseña actual",
+    "new": "Nueva contraseña",
+    "confirm": "Confirmar nueva contraseña",
+    "missingFields": "Por favor completa toda la información",
+    "notMatch": "Las contraseñas no coinciden",
+    "noUser": "No se puede identificar al usuario",
+    "success": "✅ ¡Contraseña cambiada exitosamente!",
+    "failed": "Error al cambiar la contraseña"
+  },
+  "savedPlans": {
+    "title": "Planes guardados",
+    "empty": "Aún no hay planes guardados"
+  },
+  "livingTab": {
+    "rent": "Alquilar casa",
+    "buy": "Comprar casa",
+    "baby": "Tener un bebé"
+  },
+  "transportation": "Transporte",
+  "hotel": "Hotel",
+  "expense": "Costo",
+  "note": "Nota",
+  "addToPlan": "Agregar al plan",
+  "selectDate": "Seleccionar fecha para {{title}}",
+  "savePlan": "Guardar plan",
+  "cancel": "Cancelar",
+  "success": "¡Plan guardado exitosamente!",
+  "distanceFromYou": "Aproximadamente {{km}} km de distancia",
+  "foodType": "Tipo de comida",
+  "priceRange": "Rango de precios",
+  "permissionAlertTitle": "Aviso",
+  "permissionAlertMessage": "Se requiere permiso de ubicación para calcular la distancia",
+  "planSavedSuccess": "¡Plan de compra de casa guardado exitosamente!",
+  "period": {
+    "title": "Calendario para parejas",
+    "legend": {
+      "ovulation": "Ovulación y alta fertilidad",
+      "dangerPre": "Ventana fértil previa a la ovulación",
+      "safe": "Días seguros estimados",
+      "periodDot": "Menstruación prevista (próximos 2 ciclos)",
+      "recordedRing": "Inicio de menstruación registrado",
+      "periodBg": "En menstruación (registrado)"
+    },
+    "modal": {
+      "addTitle": "¿Confirmar inicio de la menstruación?",
+      "removeTitle": "¿Eliminar este inicio de menstruación?",
+      "date": "Fecha: {{date}}",
+      "hint": "Usaremos esta fecha para pronosticar la ovulación y el próximo ciclo."
+    },
+    "alert": {
+      "savedTitle": "✅ Guardado",
+      "savedMsg": "Inicio de la menstruación registrado.",
+      "deletedTitle": "🗑️ Eliminado",
+      "deletedMsg": "Inicio de la menstruación eliminado."
+    },
+    "status": {
+      "upcoming": "La menstruación comenzará en unos días.",
+      "missed": "¿Tienes algún problema con tu menstruación?"
+    },
+    "disclaimer": "La información del calendario es solo de referencia. Eres responsable de tu salud reproductiva y debes practicar siempre sexo seguro."
+  }
+  
+  
+
+}
