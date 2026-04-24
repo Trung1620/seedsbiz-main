@@ -148,6 +148,13 @@ export default function DebtsScreen() {
     
     if (!debt.isAuto) {
       buttons.push({
+        text: t('common.edit'),
+        onPress: () => router.push({
+          pathname: '/debts-new',
+          params: { id: debt.id, type: debt.type?.toLowerCase() }
+        } as any)
+      });
+      buttons.push({
         text: t('common.delete'),
         style: 'destructive',
         onPress: () => confirmDelete(debt.id)

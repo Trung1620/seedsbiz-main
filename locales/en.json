@@ -295,8 +295,23 @@
     "suggest_title": "Customer Suggestions",
     "tax_id": "Tax ID",
     "placeholder_tax": "Enter Tax ID (if any)",
-    "address": "Address",
-    "placeholder_address": "Enter address",
+    "labelAddress": "Address",
+    "debtLabel": "Debt",
+    "spentLabel": "Spent",
+    "labelNameInd": "CUSTOMER NAME *",
+    "labelNameBus": "COMPANY NAME *",
+    "placeholderNameInd": "Enter customer name...",
+    "placeholderNameBus": "Enter company name...",
+    "labelCode": "CUSTOMER CODE",
+    "labelGroup": "CUSTOMER GROUP",
+    "groupRetail": "RETAIL",
+    "groupWholesale": "WHOLESALE",
+    "groupAgency": "AGENCY",
+    "labelBirthday": "BIRTHDAY",
+    "modal": {
+      "address": "Address",
+      "placeholder_address": "Enter address"
+    },
     "note": "Note",
     "placeholder_note": "Enter additional notes",
     "how_it_works_title": "💡 How it works",
@@ -337,6 +352,7 @@
     "total": "GRAND TOTAL",
     "complete_btn": "COMPLETE ORDER",
     "alert_no_items": "Please select at least 1 product",
+    "status_draft": "DRAFT",
     "detail_title": "Quote Details",
     "items_list": "Items List",
     "add_item_btn": "+ Add Item",
@@ -389,7 +405,13 @@
     "pick_product_tip_desc": "Search and select a product first, then enter quantity and price.",
     "no_products_found": "No products found.",
     "search_tip": "Enter keyword and tap Search to pick a product.",
-    "pick_main": "Pick Main"
+    "pick_main": "Pick Main",
+    "sub_total": "Subtotal",
+    "share_link": "Share Link",
+    "create_contract": "Convert to Contract",
+    "item": "Product",
+    "items": "Product List",
+    "grand_total": "Grand Total"
   },
   "salesOverview": {
     "title": "Sales Overview",
@@ -674,7 +696,6 @@
     "secProduct": "1. Product & Quantity",
     "secWorkers": "2. Artisan Team",
     "secMaterials": "3. Material Quota",
-    "selectProduct": "Select product (Basket, Tray...)",
     "targetQty": "Target Quantity",
     "targetDays": "Estimated Days",
     "addWorker": "Add Worker",
@@ -691,6 +712,8 @@
     "modalSelectProduct": "Select Product",
     "modalSelectWorker": "Select Worker",
     "modalSelectMaterial": "Select Material",
+    "selectProduct": "Select Product",
+    "selectWorker": "Select Artisan",
     "errMissingProductWorker": "Please select product and workers.",
     "successCreated": "Production order created successfully!"
   },
@@ -777,6 +800,8 @@
       "netSales": "Net Sales",
       "orders": "Orders",
       "debts": "Debts",
+      "receivable": "Receivable",
+      "payable": "Payable",
       "lowStock": "Low Stock",
       "netProfit": "Net Profit",
       "grossMargin": "Margin:",
@@ -830,6 +855,13 @@
       "productSku": "PRODUCT / SKU",
       "stock": "STOCK",
       "noResults": "No products found"
+    },
+    "guide": {
+      "title": "Metric Explanation",
+      "profit": "Calculated based on actual COGS from stock-out records.",
+      "labor": "Total labor cost based on quotas in production orders.",
+      "material": "Value of raw materials (Bamboo, Rattan...) released for production.",
+      "taxes": "Management fees, VAT, or non-production expenses."
     }
   },
   "common": {
@@ -880,7 +912,10 @@
     "delete": "Delete",
     "actions": "Actions",
     "unit": "Unit",
-    "image": "Image"
+    "image": "Image",
+    "updateSuccess": "Updated successfully!",
+    "addSuccess": "Added successfully!",
+    "confirmDelete": "Are you sure you want to delete this item?"
   },
   "search": {
     "placeholder": "SKU, customer name, order #...",

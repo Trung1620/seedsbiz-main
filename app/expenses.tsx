@@ -105,6 +105,41 @@ export default function ExpensesScreen() {
     }
   };
 
+  const handleDeleteExpense = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa phiếu chi này?",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.deleteExpense(id);
+              load(period);
+            } catch (e: any) {
+              Alert.alert(t('common.error'), e.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
+  const [editingExpense, setEditingExpense] = useState<any>(null);
+
+  const handleEdit = (item: any) => {
+    setEditingExpense(item);
+    setNewTitle(item.title);
+    setNewAmount(String(item.amount));
+    setNewCategory(item.category || "OTHER");
+    setNewMethod(item.paymentMethod || "CASH");
+    setNewDate(new Date(item.date || item.createdAt).toISOString().split('T')[0]);
+    setNewReceiptImage(item.receiptImage || "");
+    setShowNewModal(true);
+  };
+
   const renderItem = ({ item }: { item: any }) => (
     <View style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]}>
       <View style={styles.cardLeft}>
@@ -134,7 +169,7 @@ export default function ExpensesScreen() {
           {new Date(item.date || item.createdAt).toLocaleDateString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US')}
         </Text>
       </View>
-
+ 
       <View style={styles.cardRight}>
         <Text style={[styles.amount, { color: '#FF5252' }]}>
           -{new Intl.NumberFormat(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US', { 
@@ -142,6 +177,16 @@ export default function ExpensesScreen() {
             currency: i18n.language.startsWith('vi') ? 'VND' : 'USD' 
           }).format(item.amount || 0)}
         </Text>
+        {!item.isProduction && (
+          <View style={{ flexDirection: 'row', gap: 10, alignSelf: 'flex-end', marginTop: 8 }}>
+            <Pressable onPress={() => handleEdit(item)}>
+               <MaterialIcons name="edit" size={18} color="#0288D1" />
+            </Pressable>
+            <Pressable onPress={() => handleDeleteExpense(item.id)}>
+               <MaterialIcons name="delete-outline" size={18} color="#FF5252" />
+            </Pressable>
+          </View>
+        )}
       </View>
     </View>
   );
@@ -316,8 +361,10 @@ export default function ExpensesScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>{t('expenses.newTitle')}</Text>
-              <Pressable onPress={() => setShowNewModal(false)}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {editingExpense ? t('common.edit') : t('expenses.newTitle')}
+              </Text>
+              <Pressable onPress={() => { setShowNewModal(false); setEditingExpense(null); }}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
@@ -389,7 +436,7 @@ export default function ExpensesScreen() {
                   if (!newTitle || !newAmount) return Alert.alert(t('common.error'), t('common.missingInfo'));
                   setSaving(true);
                   try {
-                    activeOrg?.id && await api.createExpense({
+                    const payload = {
                       title: newTitle,
                       amount: Number(newAmount),
                       category: newCategory,
@@ -397,8 +444,18 @@ export default function ExpensesScreen() {
                       expenseDate: newDate,
                       receiptImage: newReceiptImage || undefined,
                       orgId: activeOrg?.id
-                    });
+                    };
+
+                    if (editingExpense) {
+                      await api.updateExpense(editingExpense.id, payload);
+                      Alert.alert(t('common.success'), t('common.updateSuccess'));
+                    } else {
+                      activeOrg?.id && await api.createExpense(payload);
+                      Alert.alert(t('common.success'), t('common.addSuccess'));
+                    }
+                    
                     setShowNewModal(false);
+                    setEditingExpense(null);
                     setNewTitle("");
                     setNewAmount("");
                     setNewReceiptImage("");

@@ -42,6 +42,28 @@ export default function QuoteDetailsScreen() {
     })();
   }, [id]);
 
+  const handleDelete = () => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa báo giá này? Hành động này không thể hoàn tác.",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              if (id) {
+                await api.deleteQuote(id);
+                router.back();
+              }
+            } catch (e: any) { Alert.alert(t('common.error'), e.message); }
+          }
+        }
+      ]
+    );
+  };
+
   if (loading) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -65,9 +87,14 @@ export default function QuoteDetailsScreen() {
           <Ionicons name="chevron-back" size={28} color={colors.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{quote.number || t("quotes.detail_title")}</Text>
-        <Pressable style={styles.editBtn} onPress={() => Alert.alert("Sắp ra mắt", "Chỉnh sửa sẽ sớm khả dụng.")}>
-           <MaterialIcons name="edit" size={24} color={PALETTE.primary} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', gap: 5 }}>
+           <Pressable style={styles.editBtn} onPress={() => router.push({ pathname: "/quote-new", params: { id: quote.id } } as any)}>
+              <MaterialIcons name="edit" size={24} color={PALETTE.primary} />
+           </Pressable>
+           <Pressable style={styles.editBtn} onPress={handleDelete}>
+              <MaterialIcons name="delete-outline" size={24} color="#FF5252" />
+           </Pressable>
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>

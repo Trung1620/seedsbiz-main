@@ -23,33 +23,22 @@ export default function ContractDetailsScreen() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<any>(null);
 
+  const { t } = useTranslation();
+
   useEffect(() => {
-    if (!id) {
-       // Mock for now if no ID
-       setData({
-         number: "HD-2026/001",
-         status: "DRAFT",
-         sellerCompanyName: "CÔNG TY TNHH KHÁNH NGUYÊN",
-         buyerName: "Công ty Minh Khôi",
-         paymentTerms: "Thanh toán 100% sau khi giao hàng",
-         deliveryTerms: "Giao hàng trong vòng 7 ngày",
-         grandTotal: 50000000
-       });
-       setLoading(false);
-       return;
-    };
+    if (!id) return;
     (async () => {
       try {
         setLoading(true);
-        // const res = await api.getContractById(id);
-        // setData(res);
+        const res = await api.getQuoteById(id);
+        setData(res);
       } catch (e: any) {
         Alert.alert(t('common.error'), e.message);
       } finally {
         setLoading(false);
       }
     })();
-  }, [id]);
+  }, [id, t]);
 
   if (loading) {
     return (

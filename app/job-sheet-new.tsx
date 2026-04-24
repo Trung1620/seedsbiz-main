@@ -12,7 +12,7 @@ import {
   FlatList,
   Modal,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PALETTE, FONTS, NEUMORPHISM, SHADOWS } from "@/utils/theme";
@@ -29,7 +29,11 @@ export default function NewJobSheetScreen() {
   const { t, i18n } = useTranslation();
   const { activeOrg } = useAuth();
 
+  const params = useLocalSearchParams();
+  const jobId = params.id as string;
+
   const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const [artisans, setArtisans] = useState<any[]>([]);
 
@@ -49,20 +53,35 @@ export default function NewJobSheetScreen() {
     const fetchData = async () => {
       if (!activeOrg?.id) return;
       try {
+        setFetching(true);
         const [pData, aData] = await Promise.all([
           api.listProducts({ orgId: activeOrg.id }),
           api.listArtisans(activeOrg.id)
         ]);
         setProducts(pData || []);
         setArtisans(aData || []);
+
+        if (jobId) {
+          const job = await api.getJobSheet(jobId);
+          if (job) {
+            setSelectedProduct(job.product);
+            setSelectedArtisan(job.artisan);
+            setQuantity(String(job.quantity || 0));
+            setUnitPrice(String(job.unitPrice || 0));
+            setStartDate(job.startDate ? job.startDate.split('T')[0] : "");
+            setEndDate(job.endDate ? job.endDate.split('T')[0] : "");
+          }
+        }
       } catch (e) {
         console.error("Fetch error", e);
+      } finally {
+        setFetching(false);
       }
     };
     fetchData();
-  }, [activeOrg?.id]);
+  }, [activeOrg?.id, jobId]);
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!selectedProduct || !selectedArtisan) {
       Alert.alert(t('common.error'), t('production.errMissingProductWorker'));
       return;
@@ -70,15 +89,22 @@ export default function NewJobSheetScreen() {
 
     setLoading(true);
     try {
-      await api.createJobSheet({
+      const payload = {
         productId: selectedProduct.id,
         artisanId: selectedArtisan.id,
         quantity: parseInt(quantity),
         unitPrice: parseFloat(unitPrice),
         startDate,
         endDate: endDate || null,
-      });
-      Alert.alert(t('common.success'), t('production.successCreated'));
+      };
+
+      if (jobId) {
+        await api.updateJobSheet(jobId, payload);
+        Alert.alert(t('common.success'), t('common.updateSuccess'));
+      } else {
+        await api.createJobSheet(payload);
+        Alert.alert(t('common.success'), t('production.successCreated'));
+      }
       router.back();
     } catch (e: any) {
       Alert.alert(t('common.error'), e.message || t('common.tryAgain'));
@@ -94,13 +120,20 @@ export default function NewJobSheetScreen() {
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
             <Ionicons name="close" size={28} color={colors.text} />
           </Pressable>
-          <Text style={[styles.title, { color: colors.text }]}>{t('jobSheet.addNew')}</Text>
-          <Pressable onPress={handleCreate} disabled={loading}>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {jobId ? t('common.edit') : t('jobSheet.addNew')}
+          </Text>
+          <Pressable onPress={handleSave} disabled={loading || fetching}>
             {loading ? <ActivityIndicator size="small" color={PALETTE.primary} /> : <Text style={styles.saveBtn}>{t('common.saveChanges').toUpperCase()}</Text>}
           </Pressable>
         </View>
 
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {fetching ? (
+          <View style={styles.center}>
+             <ActivityIndicator size="large" color={PALETTE.primary} />
+          </View>
+        ) : (
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
 
           {/* ARTISAN SELECTION */}
           <Text style={styles.sectionTitle}>{t('jobSheet.artisan')}</Text>
@@ -181,6 +214,7 @@ export default function NewJobSheetScreen() {
 
           <View style={{ height: 100 }} />
         </ScrollView>
+        )}
 
         {/* MODALS */}
         <Modal visible={isProductModal} animationType="slide">
@@ -253,4 +287,5 @@ const styles = StyleSheet.create({
   summaryTitle: { fontSize: 12, fontFamily: FONTS.bold, color: PALETTE.primary, marginBottom: 5, letterSpacing: 1 },
   summaryRow: { flexDirection: 'row', justifyContent: 'center' },
   summaryLabel: { fontSize: 14, fontFamily: FONTS.medium },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

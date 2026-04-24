@@ -9,10 +9,13 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
   Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import * as api from "@/utils/api";
 import { H } from "@/utils/href";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { COLORS, FONTS, SIZES, NEUMORPHISM } from "@/utils/theme";
@@ -44,14 +47,34 @@ export default function ContractsScreen() {
   async function loadData() {
     try {
       setLoading(true);
-      // TODO: replace with actual api.listContracts
-      setItems([]);
+      const data = await api.authedFetch("/api/contracts").then(res => res.json());
+      setItems(Array.isArray(data) ? data : (data.contracts || []));
     } catch (e: any) {
       Alert.alert(t('common.error'), e?.message || t('contracts.loadingFailed', { defaultValue: 'Could not load contracts.' }));
     } finally {
       setLoading(false);
     }
   }
+
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa hợp đồng này?",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.authedFetch(`/api/contracts/${id}`, { method: 'DELETE' });
+              loadData();
+            } catch (e: any) { Alert.alert(t('common.error'), e.message); }
+          }
+        }
+      ]
+    );
+  };
 
   React.useEffect(() => {
     if (!authReady || !activeOrg?.id) return;
@@ -114,7 +137,7 @@ export default function ContractsScreen() {
         </View>
       ) : (
         <FlatList
-          data={items}
+          data={items.filter(it => it.number?.toLowerCase().includes(q.toLowerCase()) || it.buyerName?.toLowerCase().includes(q.toLowerCase()))}
           keyExtractor={(item) => item.id}
           contentContainerStyle={{ padding: 16, gap: 14 }}
           showsVerticalScrollIndicator={false}
@@ -126,11 +149,18 @@ export default function ContractsScreen() {
               }
             >
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>
-                  {item.number || t('contracts.draftName')}
-                </Text>
-                <View style={styles.statusBadge}>
-                  <Text style={styles.statusText}>{item.status || "DRAFT"}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cardTitle}>
+                    {item.number || t('contracts.draftName')}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', gap: 10, alignItems: 'center' }}>
+                   <View style={styles.statusBadge}>
+                      <Text style={styles.statusText}>{item.status || "DRAFT"}</Text>
+                   </View>
+                   <Pressable onPress={() => handleDelete(item.id)}>
+                      <Ionicons name="trash-outline" size={18} color="#FF5252" />
+                   </Pressable>
                 </View>
               </View>
 

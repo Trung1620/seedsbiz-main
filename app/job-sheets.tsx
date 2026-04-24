@@ -8,6 +8,7 @@ import {
   Pressable,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
@@ -47,6 +48,28 @@ export default function JobSheetsScreen() {
 
   useFocusEffect(useCallback(() => { loadData(); }, [activeOrg?.id]));
 
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa phiếu gia công này?",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.deleteJobSheet(id);
+              loadData(false);
+            } catch (e: any) {
+              Alert.alert(t('common.error'), e.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const formatMoney = (val?: number) => {
     const isEn = i18n.language.startsWith('en');
     return new Intl.NumberFormat(isEn ? 'en-US' : 'vi-VN', {
@@ -59,11 +82,21 @@ export default function JobSheetsScreen() {
   const JobCard = ({ item }: { item: any }) => (
     <View style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]}>
        <View style={styles.cardHeader}>
-          <Text style={[styles.artisanName, { color: colors.text }]}>{item.artisan?.name}</Text>
-          <View style={[styles.statusTag, { backgroundColor: PALETTE.primary + '15' }]}>
-             <Text style={[styles.statusText, { color: PALETTE.primary }]}>
-               {t(`jobSheet.status${item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}`)}
-             </Text>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.artisanName, { color: colors.text }]}>{item.artisan?.name}</Text>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <View style={[styles.statusTag, { backgroundColor: PALETTE.primary + '15' }]}>
+               <Text style={[styles.statusText, { color: PALETTE.primary }]}>
+                 {t(`jobSheet.status${item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}`)}
+               </Text>
+            </View>
+            <Pressable onPress={() => router.push({ pathname: "/job-sheet-new", params: { id: item.id } } as any)}>
+               <MaterialIcons name="edit" size={20} color="#0288D1" />
+            </Pressable>
+            <Pressable onPress={() => handleDelete(item.id)}>
+               <MaterialIcons name="delete-outline" size={20} color="#FF5252" />
+            </Pressable>
           </View>
        </View>
        

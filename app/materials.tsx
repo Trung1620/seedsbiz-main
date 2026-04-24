@@ -101,6 +101,9 @@ export default function MaterialsScreen() {
           <Text style={[styles.sku, { color: colors.textSecondary }]}>{item.sku || "N/A"}</Text>
         </View>
         <View style={styles.actionIcons}>
+          <Pressable onPress={() => router.push({ pathname: '/material-new', params: { id: item.id } } as any)} style={styles.smallIconBtn}>
+             <MaterialIcons name="edit" size={20} color="#0288D1" />
+          </Pressable>
           <Pressable onPress={() => handleRemove(item.id)} style={styles.smallIconBtn}>
              <MaterialIcons name="delete-outline" size={20} color="#FF5252" />
           </Pressable>

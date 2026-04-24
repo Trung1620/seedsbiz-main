@@ -429,8 +429,18 @@ export async function listMaterials() {
   return await readJson(res);
 }
 
+export async function getMaterial(id: string) {
+  const res = await authedFetch(`/api/materials/${id}`);
+  return await readJson(res);
+}
+
 export async function createMaterial(data: any) {
   const res = await authedFetch("/api/materials", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function updateMaterial(id: string, data: any) {
+  const res = await authedFetch(`/api/materials/${id}`, { method: "PATCH", body: JSON.stringify(data) });
   return await readJson(res);
 }
 
@@ -577,6 +587,21 @@ export async function createQuote(data: any): Promise<Quote> {
   return await readJson(res);
 }
 
+export async function getQuoteById(id: string) {
+  const res = await authedFetch(`/api/quotes/${id}`);
+  return await readJson(res);
+}
+
+export async function updateQuote(id: string, data: any) {
+  const res = await authedFetch(`/api/quotes/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function deleteQuote(id: string) {
+  const res = await authedFetch(`/api/quotes/${id}`, { method: "DELETE" });
+  return await readJson(res);
+}
+
 // Expenses
 export async function listExpenses(params?: any) {
   const query = new URLSearchParams(params).toString();
@@ -586,6 +611,16 @@ export async function listExpenses(params?: any) {
 
 export async function createExpense(data: any) {
   const res = await authedFetch("/api/expenses", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function updateExpense(id: string, data: any) {
+  const res = await authedFetch(`/api/expenses/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function deleteExpense(id: string) {
+  const res = await authedFetch(`/api/expenses/${id}`, { method: "DELETE" });
   return await readJson(res);
 }
 
@@ -665,8 +700,23 @@ export async function listJobSheets() {
   return await readJson(res);
 }
 
+export async function getJobSheet(id: string) {
+  const res = await authedFetch(`/api/job-sheets/${id}`);
+  return await readJson(res);
+}
+
 export async function createJobSheet(data: any) {
   const res = await authedFetch("/api/job-sheets", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function updateJobSheet(id: string, data: any) {
+  const res = await authedFetch(`/api/job-sheets/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function deleteJobSheet(id: string) {
+  const res = await authedFetch(`/api/job-sheets/${id}`, { method: "DELETE" });
   return await readJson(res);
 }
 

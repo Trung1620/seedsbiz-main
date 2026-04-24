@@ -24,7 +24,7 @@ export default function NewDebtScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { activeOrg } = useAuth();
-  const { type } = useLocalSearchParams<{ type: string }>();
+  const { type, id } = useLocalSearchParams<{ type: string; id: string }>();
 
   const [debtType, setDebtType] = useState<"CUSTOMER" | "ARTISAN" | "SUPPLIER">(
     "CUSTOMER"
@@ -45,6 +45,25 @@ export default function NewDebtScreen() {
   const [sources, setSources] = useState<any[]>([]);
   const [sourceLoading, setSourceLoading] = useState(false);
   const [activeSourceCategory, setActiveSourceCategory] = useState<string>('all');
+
+  // Load existing debt if editing
+  React.useEffect(() => {
+    if (id) {
+      setLoading(true);
+      authedFetch(`/api/debts/${id}`).then(res => res.json()).then(data => {
+        if (data) {
+          setDebtType(data.referenceType || "CUSTOMER");
+          setCustomerName(data.customer?.name || data.artisan?.name || data.supplier?.name || data.customerName || "");
+          setCustomerId(data.referenceId || null);
+          setAmount(String(data.amount || ""));
+          setDueDate(data.dueDate ? data.dueDate.split('T')[0] : new Date().toISOString().split('T')[0]);
+          setNote(data.note || "");
+          setSourceId(data.sourceId || null);
+          setSourceType(data.sourceType || null);
+        }
+      }).catch(console.error).finally(() => setLoading(false));
+    }
+  }, [id]);
 
   const formatCurrency = (amount: number) => {
     const isEn = t('language.current') === 'en';
@@ -162,7 +181,7 @@ export default function NewDebtScreen() {
 
     setLoading(true);
     try {
-      await api.createDebt({
+      const payload = {
         debtType,
         customerName,
         customerId,
@@ -172,11 +191,18 @@ export default function NewDebtScreen() {
         status: "PENDING",
         sourceId,
         sourceType
-      });
-      Alert.alert(t("common.success"), t("debts.alertCreated"));
+      };
+
+      if (id) {
+        await api.updateDebt(id, payload as any);
+        Alert.alert(t("common.success"), t("common.updateSuccess"));
+      } else {
+        await api.createDebt(payload);
+        Alert.alert(t("common.success"), t("debts.alertCreated"));
+      }
       router.back();
     } catch (error: any) {
-      Alert.alert(t("common.error"), error.message || "Failed to create debt");
+      Alert.alert(t("common.error"), error.message || "Failed to save debt");
     } finally {
       setLoading(false);
     }

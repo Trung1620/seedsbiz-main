@@ -11,7 +11,7 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FONTS, PALETTE, SHADOWS, COLORS, NEUMORPHISM } from '@/utils/theme';
@@ -22,6 +22,9 @@ import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function NewMaterialScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams();
+  const materialId = params.id as string;
+
   const insets = useSafeAreaInsets();
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
@@ -52,6 +55,28 @@ export default function NewMaterialScreen() {
     }).catch(console.error);
   }, []);
 
+  // Fetch material for editing
+  React.useEffect(() => {
+    if (materialId) {
+      api.getMaterial(materialId).then(res => {
+        if (res) {
+          setForm({
+            name: res.name || '',
+            sku: res.sku || '',
+            unit: res.unit || 'kg',
+            price: String(res.price || ''),
+            stock: String(res.stock || '0'),
+            image: res.image || '',
+            minStock: String(res.minStock || '0'),
+            supplierId: res.supplierId || '',
+            supplierName: res.supplierName || '',
+            location: res.location || '',
+          });
+        }
+      });
+    }
+  }, [materialId]);
+
   const handleSave = async () => {
     if (!form.name || !form.unit) {
       Alert.alert(t('common.error'), t('materials.errMissingInfo'));
@@ -60,7 +85,7 @@ export default function NewMaterialScreen() {
 
     try {
       setLoading(true);
-      await api.createMaterial({
+      const payload = {
         ...form,
         price: parseFloat(form.price) || 0,
         stock: parseFloat(form.stock) || 0,
@@ -68,7 +93,15 @@ export default function NewMaterialScreen() {
         supplierId: form.supplierId || undefined,
         supplierName: form.supplierName || undefined,
         location: form.location,
-      });
+      };
+
+      if (materialId) {
+        await api.updateMaterial(materialId, payload);
+        Alert.alert(t('common.success'), t('common.updateSuccess'));
+      } else {
+        await api.createMaterial(payload);
+        Alert.alert(t('common.success'), t('materials.addSuccess', { defaultValue: 'Thêm nguyên liệu thành công' }));
+      }
       router.back();
     } catch (e: any) {
       Alert.alert(t('common.error'), e.message || t('materials.errCreate'));

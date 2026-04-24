@@ -723,7 +723,6 @@
     "secProduct": "1. Sản phẩm & Số lượng",
     "secWorkers": "2. Đội ngũ thợ",
     "secMaterials": "3. Định mức vật tư",
-    "selectProduct": "Chọn thành phẩm (Giỏ tre, Làn...)",
     "targetQty": "Số lượng cần làm",
     "targetDays": "Số ngày dự kiến",
     "addWorker": "Thêm thợ",
@@ -740,6 +739,8 @@
     "modalSelectProduct": "Chọn Sản Phẩm",
     "modalSelectWorker": "Chọn Thợ",
     "modalSelectMaterial": "Chọn Vật Liệu",
+    "selectProduct": "Chọn Sản phẩm",
+    "selectWorker": "Chọn Thợ thủ công",
     "errMissingProductWorker": "Vui lòng chọn sản phẩm và thợ.",
     "successCreated": "Đã tạo lệnh sản xuất thành công!",
     "startDateLabel": "NGÀY BẮT ĐẦU",
@@ -829,6 +830,8 @@
       "netSales": "Doanh thu thuần",
       "orders": "Đơn hàng",
       "debts": "Công nợ",
+      "receivable": "Phải thu",
+      "payable": "Phải trả",
       "lowStock": "Sắp hết hàng",
       "netProfit": "Lợi nhuận gộp",
       "grossMargin": "Tỷ suất LN:",
@@ -882,6 +885,13 @@
       "productSku": "SẢN PHẨM / SKU",
       "stock": "TỒN KHO",
       "noResults": "Không tìm thấy sản phẩm nào"
+    },
+    "guide": {
+      "title": "Giải thích chỉ số",
+      "profit": "Tính dựa trên Giá vốn thực tế từ các phiếu xuất kho.",
+      "labor": "Tổng tiền công tính theo định mức trong Lệnh sản xuất.",
+      "material": "Giá trị nguyên liệu thô (Mây, Tre...) đã xuất kho để sản xuất.",
+      "taxes": "Các khoản phí quản lý, thuế VAT hoặc chi phí phát sinh ngoài sản xuất."
     }
   },
   "common": {
@@ -928,11 +938,14 @@
     "later": "Để sau",
     "user": "Người dùng",
     "copied": "Đã sao chép",
-    "edit": "Sửa",
+    "edit": "Chỉnh sửa",
     "delete": "Xóa",
     "actions": "Thao tác",
     "unit": "Đơn vị",
-    "image": "Ảnh"
+    "image": "Ảnh",
+    "updateSuccess": "Cập nhật thành công!",
+    "addSuccess": "Thêm thành công!",
+    "confirmDelete": "Bạn có chắc chắn muốn xóa mục này?"
   },
   "search": {
     "placeholder": "SKU, tên khách, số đơn...",

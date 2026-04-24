@@ -14,7 +14,7 @@ import {
     FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
+import { useRouter, useLocalSearchParams } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { H } from "@/utils/href";
 import * as api from "@/utils/api";
@@ -30,6 +30,9 @@ type ImgDraft = { uri: string; colorName: string; colorCode: string };
 
 export default function ProductNewScreen() {
     const router = useRouter();
+    const params = useLocalSearchParams();
+    const productId = params.id as string;
+
     const insets = useSafeAreaInsets();
     const { colors } = useTheme();
     const { t } = useTranslation();
@@ -58,6 +61,41 @@ export default function ProductNewScreen() {
     const [unit, setUnit] = useState("cái");
     const [productionTime, setProductionTime] = useState("");
     const [saving, setSaving] = useState(false);
+
+    // Fetch product for editing
+    React.useEffect(() => {
+        if (productId) {
+            api.getProduct(productId).then(res => {
+                if (res) {
+                    setNameVi(res.nameVi || "");
+                    setSku(res.sku || "");
+                    setNameEn(res.nameEn || "");
+                    setBrand(res.brand || "");
+                    setCategory(res.category || "");
+                    setCategoryId(res.categoryId || "");
+                    setSize(res.size || "");
+                    setPriceVnd(String(res.priceVnd || ""));
+                    setCostPriceVnd(String(res.costPriceVnd || ""));
+                    setPriceUsd(String(res.priceUsd || ""));
+                    setBarcode(res.barcode || "");
+                    setLocation(res.location || "");
+                    setMinStock(String(res.minStock || ""));
+                    setWeight(String(res.weight || ""));
+                    setProductionTime(String(res.productionTime || ""));
+                    setUnit(res.unit || "cái");
+                    
+                    if (res.images && res.images.length > 0) {
+                        const existingImages = res.images.map((img: any) => ({
+                            uri: typeof img === 'string' ? img : img.url,
+                            colorName: "default",
+                            colorCode: "#000"
+                        }));
+                        setImages(existingImages);
+                    }
+                }
+            });
+        }
+    }, [productId]);
 
     // BOM
     const [boms, setBoms] = useState<any[]>([]);
@@ -97,17 +135,22 @@ export default function ProductNewScreen() {
     const removeImage = (uri: string) => setImages((prev) => prev.filter((x) => x.uri !== uri));
 
     const onSave = async () => {
-        if (!brand.trim() || !category.trim() || (!nameVi.trim() && !nameEn.trim()) || images.length === 0) {
+        if ((!nameVi.trim() && !nameEn.trim()) || images.length === 0) {
             return Alert.alert(t('common.info'), t('products.alertMissingInfo'));
         }
         setSaving(true);
         try {
-            const uploaded: api.ProductImage[] = [];
+            const uploaded: string[] = [];
             for (const img of images) {
-                const url = await uploadImageUriToCloudinary(img.uri);
-                uploaded.push({ url, colorName: img.colorName, colorCode: img.colorCode });
+                if (img.uri.startsWith("http")) {
+                    uploaded.push(img.uri);
+                } else {
+                    const url = await uploadImageUriToCloudinary(img.uri);
+                    uploaded.push(url);
+                }
             }
-            await api.createProduct({
+
+            const payload = {
                 nameVi: nameVi.trim() || undefined,
                 sku: sku.trim() || undefined,
                 nameEn: nameEn.trim() || undefined,
@@ -122,15 +165,23 @@ export default function ProductNewScreen() {
                 status: "ACTIVE",
                 weight: weight ? Number(weight) : undefined,
                 productionTime: productionTime ? Number(productionTime) : undefined,
-                images: uploaded.map(u => u.url),
-                image: uploaded.length > 0 ? uploaded[0].url : undefined,
+                images: uploaded,
+                image: uploaded.length > 0 ? uploaded[0] : undefined,
                 barcode: barcode.trim() || undefined,
                 location: location.trim() || undefined,
                 minStock: minStock ? Number(minStock) : undefined,
                 categoryId: categoryId || undefined,
                 materialDetails: boms.length > 0 ? boms.map(b => ({ materialId: b.materialId, quantity: b.quantity })) : undefined,
-            });
-            Alert.alert(t('common.success'), t('products.alertSuccess'));
+                orgId: activeOrg?.id,
+            };
+
+            if (productId) {
+                await api.updateProduct(productId, payload);
+                Alert.alert(t('common.success'), t('common.updateSuccess'));
+            } else {
+                await api.createProduct(payload);
+                Alert.alert(t('common.success'), t('products.alertSuccess'));
+            }
             router.replace(H("/products") as any);
         } catch (e: any) { Alert.alert(t('common.error'), e?.message || t('products.alertError')); }
         finally { setSaving(false); }

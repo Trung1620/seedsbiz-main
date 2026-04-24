@@ -75,6 +75,28 @@ export default function ProductsScreen() {
     }, [canUse, searchQuery])
   );
 
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa sản phẩm này?",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.deleteProduct(id);
+              load();
+            } catch (e: any) {
+              Alert.alert(t('common.error'), e.message);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const renderItem = ({ item }: { item: api.Product }) => {
     return (
       <View style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]}>
@@ -103,12 +125,21 @@ export default function ProductsScreen() {
           <Text style={[styles.skuText, { color: colors.textSecondary }]}>
             {item.sku || "NO-SKU"}
           </Text>
-          {((item as any).weight || (item as any).location) && (
-            <View style={{ flexDirection: 'row', marginTop: 4, gap: 8 }}>
-              {(item as any).weight && <Text style={{ fontSize: 10, color: colors.textSecondary }}>⚖️ {(item as any).weight}kg</Text>}
-              {(item as any).location && <Text style={{ fontSize: 10, color: colors.textSecondary }}>📍 {(item as any).location}</Text>}
-            </View>
-          )}
+          
+          <View style={{ flexDirection: 'row', marginTop: 10, gap: 10 }}>
+             <Pressable 
+               style={[styles.actionBtn, { backgroundColor: '#E1F5FE' }]} 
+               onPress={() => router.push({ pathname: "/product-new", params: { id: item.id } } as any)}
+             >
+                <MaterialIcons name="edit" size={16} color="#0288D1" />
+             </Pressable>
+             <Pressable 
+               style={[styles.actionBtn, { backgroundColor: '#FFF5F5' }]} 
+               onPress={() => handleDelete(item.id)}
+             >
+                <MaterialIcons name="delete-outline" size={16} color="#FF5252" />
+             </Pressable>
+          </View>
         </View>
 
         <View style={styles.cardRight}>
@@ -187,6 +218,7 @@ const styles = StyleSheet.create({
   stockChip: { alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, paddingVertical: 8, borderRadius: 15, borderWidth: 1 },
   stockLabel: { fontSize: 9, fontFamily: FONTS.bold, marginBottom: 2, opacity: 0.6 },
   stockValue: { fontSize: 20, fontFamily: FONTS.bold },
+  actionBtn: { width: 34, height: 34, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   emptyBox: { alignItems: 'center', marginTop: 100 },
   emptyText: { fontFamily: FONTS.medium, fontSize: 16 },
 });

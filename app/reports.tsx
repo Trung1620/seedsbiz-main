@@ -245,52 +245,78 @@ export default function ReportsScreen() {
            ))}
         </View>
 
-        {/* PHÂN TÍCH CHI TIẾT - BIỂU ĐỒ TRÒN */}
+        {/* PHÂN TÍCH CHI TIẾT - BIỂU ĐỒ CỘT */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: 35, marginBottom: 20 }]}>
           {t('extra.financialAnalysisTitle')}
         </Text>
         
-        <View style={[styles.pieChartContainer, { backgroundColor: colors.surface, ...SHADOWS.soft }]}>
-           <View style={styles.pieWrapper}>
-              {/* Vòng tròn nền */}
-              <View style={[styles.pieCircle, { backgroundColor: '#F0F0F0' }]}>
-                 {/* Đoạn Lợi nhuận (Xanh) - Quadrant 1 */}
-                 <View style={[styles.pieSegment, { backgroundColor: '#4CAF50', right: 0, top: 0 }]} />
-                 {/* Tiền thợ (Đỏ) - Quadrant 2 */}
-                 <View style={[styles.pieSegment, { backgroundColor: '#FF6B6B', right: 0, bottom: 0 }]} />
-                 {/* Vật tư (Nâu) - Quadrant 3 */}
-                 <View style={[styles.pieSegment, { backgroundColor: '#8d7b68', left: 0, bottom: 0 }]} />
-                 {/* Thuế (Xám) - Quadrant 4 */}
-                 <View style={[styles.pieSegment, { backgroundColor: '#78716C', left: 0, top: 0 }]} />
-                 
-                 {/* Tâm vòng tròn (Donut style) */}
-                 <View style={styles.pieCenter}>
-                    <Text style={styles.pieCenterText}>{t('inventory.stockTitle')}</Text>
-                 </View>
-              </View>
+        <View style={[styles.barChartContainer, { backgroundColor: colors.surface, ...SHADOWS.soft }]}>
+           <View style={styles.barWrapper}>
+              {(data?.pieData || [
+                { name: t('reports.metrics.profit'), color: '#4CAF50', amount: 0, percentage: 0 },
+                { name: t('reports.metrics.labor'), color: '#FF6B6B', amount: 0, percentage: 0 },
+                { name: t('reports.metrics.material'), color: '#8d7b68', amount: 0, percentage: 0 },
+                { name: t('reports.metrics.taxes'), color: '#78716C', amount: 0, percentage: 0 },
+              ]).map((item: any, idx: number) => (
+                <View key={idx} style={styles.barCol}>
+                   <View style={styles.barTrack}>
+                      <View style={[styles.barFill, { height: `${item.percentage || 2}%`, backgroundColor: item.color }]} />
+                   </View>
+                   <Text style={[styles.barPercent, { color: item.color }]}>{item.percentage || 0}%</Text>
+                   <View style={[styles.barLabelDot, { backgroundColor: item.color }]} />
+                </View>
+              ))}
            </View>
 
-              <View style={styles.legendContainer}>
-                {(data?.pieData || [
-                  { name: t('reports.metrics.profit'), color: '#4CAF50', amount: 0, percentage: 0 },
-                  { name: t('reports.metrics.labor'), color: '#FF6B6B', amount: 0, percentage: 0 },
-                  { name: t('reports.metrics.material'), color: '#8d7b68', amount: 0, percentage: 0 },
-                  { name: t('reports.metrics.taxes'), color: '#78716C', amount: 0, percentage: 0 },
-                ]).map((item: any, idx: number) => (
+           <View style={styles.legendContainer}>
+              {(data?.pieData || []).map((item: any, idx: number) => {
+                const translatedNames = [
+                  t('reports.metrics.profit'),
+                  t('reports.metrics.labor'),
+                  t('reports.metrics.material'),
+                  t('reports.metrics.taxes')
+                ];
+                return (
                   <View key={idx} style={styles.legendRow}>
                      <View style={[styles.legendDot, { backgroundColor: item.color }]} />
                      <View style={styles.legendInfo}>
-                        <View style={styles.legendHeaderRow}>
-                          <Text style={styles.legendLabel} numberOfLines={1}>{item.name}</Text>
-                          <Text style={[styles.legendPercentage, { color: item.color }]}>{item.percentage || 0}%</Text>
-                        </View>
+                        <Text style={styles.legendLabel}>{translatedNames[idx] || item.name}</Text>
                         <Text style={styles.legendValue}>{formatCurrency(item.amount)}</Text>
                      </View>
                   </View>
-                ))}
-             </View>
+                );
+              })}
+           </View>
         </View>
 
+        {/* PHẦN GIẢI THÍCH CHỈ SỐ */}
+        <View style={[styles.guideBox, { backgroundColor: colors.surface + '80' }]}>
+           <Text style={styles.guideTitle}>{t('reports.guide.title').toUpperCase()}</Text>
+           <View style={styles.guideRow}>
+              <View style={[styles.miniDot, { backgroundColor: '#4CAF50' }]} />
+              <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                <Text style={{ fontWeight: 'bold', color: colors.text }}>{t('reports.metrics.profit')}:</Text> {t('reports.guide.profit')}
+              </Text>
+           </View>
+           <View style={styles.guideRow}>
+              <View style={[styles.miniDot, { backgroundColor: '#FF6B6B' }]} />
+              <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                <Text style={{ fontWeight: 'bold', color: colors.text }}>{t('reports.metrics.labor')}:</Text> {t('reports.guide.labor')}
+              </Text>
+           </View>
+           <View style={styles.guideRow}>
+              <View style={[styles.miniDot, { backgroundColor: '#8d7b68' }]} />
+              <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                <Text style={{ fontWeight: 'bold', color: colors.text }}>{t('reports.metrics.material')}:</Text> {t('reports.guide.material')}
+              </Text>
+           </View>
+           <View style={styles.guideRow}>
+              <View style={[styles.miniDot, { backgroundColor: '#78716C' }]} />
+              <Text style={[styles.guideText, { color: colors.textSecondary }]}>
+                <Text style={{ fontWeight: 'bold', color: colors.text }}>{t('reports.metrics.taxes')}:</Text> {t('reports.guide.taxes')}
+              </Text>
+           </View>
+        </View>
 
         {/* INSIGHTS TỪ HỆ THỐNG */}
         {data?.businessInsights && (
@@ -332,20 +358,19 @@ const styles = StyleSheet.create({
   chartBarCol: { alignItems: 'center' },
   chartBar: { width: 12, borderRadius: 6 },
   chartDay: { fontSize: 9, fontFamily: FONTS.medium, marginTop: 8, opacity: 0.5 },
-  pieChartContainer: { flexDirection: 'row', alignItems: 'center', padding: 20, borderRadius: 28, marginBottom: 15 },
-  pieWrapper: { width: 120, height: 120, justifyContent: 'center', alignItems: 'center' },
-  pieCircle: { width: 100, height: 100, borderRadius: 50, overflow: 'hidden', position: 'relative', backgroundColor: '#F0F0F0' },
-  pieSegment: { position: 'absolute', width: 50, height: 50 },
-  pieCenter: { position: 'absolute', width: 60, height: 60, borderRadius: 30, top: 20, left: 20, backgroundColor: 'white', justifyContent: 'center', alignItems: 'center', zIndex: 10, ...SHADOWS.soft },
-  pieCenterText: { fontSize: 10, fontFamily: FONTS.bold, opacity: 0.5, textAlign: 'center' },
-  legendContainer: { flex: 1, paddingLeft: 10 },
-  legendRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12, width: '100%' },
-  legendDot: { width: 8, height: 8, borderRadius: 4, marginTop: 4, marginRight: 10 },
-  legendInfo: { flex: 1 },
-  legendHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 2 },
-  legendLabel: { flex: 1, fontSize: 12, color: '#444', fontFamily: FONTS.medium },
-  legendPercentage: { fontSize: 12, fontFamily: FONTS.bold, marginLeft: 10 },
-  legendValue: { fontSize: 13, fontFamily: FONTS.bold, color: '#000' },
+  barChartContainer: { flexDirection: 'column', alignItems: 'center', padding: 24, borderRadius: 28, marginBottom: 15 },
+  barWrapper: { flexDirection: 'row', width: '100%', height: 200, justifyContent: 'space-around', alignItems: 'flex-end', paddingBottom: 20, marginBottom: 20, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  barCol: { alignItems: 'center', width: 60 },
+  barTrack: { width: 34, height: 160, backgroundColor: '#F0F0F0', borderRadius: 10, justifyContent: 'flex-end', overflow: 'hidden' },
+  barFill: { width: '100%', borderRadius: 10 },
+  barPercent: { fontSize: 12, fontFamily: FONTS.bold, marginTop: 8 },
+  barLabelDot: { width: 8, height: 8, borderRadius: 4, marginTop: 6 },
+  legendContainer: { width: '100%', paddingTop: 10 },
+  legendRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, width: '100%', justifyContent: 'space-between' },
+  legendDot: { width: 10, height: 10, borderRadius: 5, marginRight: 12 },
+  legendInfo: { flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  legendLabel: { fontSize: 14, color: '#444', fontFamily: FONTS.medium },
+  legendValue: { fontSize: 15, fontFamily: FONTS.bold, color: '#000' },
 
 
   insightsBox: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 20, marginBottom: 25, borderWidth: 1 },
@@ -365,4 +390,9 @@ const styles = StyleSheet.create({
   errorText: { flex: 1, fontSize: 13, fontFamily: FONTS.medium, color: '#FF6B6B', marginLeft: 10 },
   retryBtn: { paddingHorizontal: 12, paddingVertical: 6, backgroundColor: '#FF6B6B', borderRadius: 8, marginLeft: 10 },
   retryText: { color: '#FFF', fontSize: 12, fontFamily: FONTS.bold },
+  guideBox: { padding: 20, borderRadius: 24, marginBottom: 25 },
+  guideTitle: { fontSize: 11, fontFamily: FONTS.bold, marginBottom: 15, opacity: 0.6, textTransform: 'uppercase', letterSpacing: 1 },
+  guideRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 10 },
+  miniDot: { width: 6, height: 6, borderRadius: 3, marginTop: 6, marginRight: 10 },
+  guideText: { flex: 1, fontSize: 13, lineHeight: 18, fontFamily: FONTS.medium },
 });

@@ -113,6 +113,29 @@ export default function CustomersScreen() {
     finally { setSaving(false); }
   };
 
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa khách hàng này? Hành động này không thể hoàn tác.",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.deleteCustomer(id);
+              loadCustomers();
+            } catch (e: any) {
+              const msg = e.response?.data?.error || e.message;
+              Alert.alert(t('common.error'), msg === "Cannot delete customer because it has quotes" ? "Không thể xóa khách hàng này vì đã có đơn hàng/báo giá liên quan." : msg);
+            }
+          }
+        }
+      ]
+    );
+  };
+
   const renderItem = ({ item }: { item: CustomerItem }) => (
     <Pressable 
       style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]} 
@@ -160,7 +183,12 @@ export default function CustomersScreen() {
              <Text style={[styles.debtText, { color: '#4CAF50' }]}> | {t('customers.spentLabel')}: {(item.totalSpent || 0).toLocaleString()}{t('common.currencySymbol')}</Text>
           </View>
         </View>
-        <MaterialIcons name="edit" size={20} color={colors.textSecondary} />
+        <View style={{ flexDirection: 'row', gap: 10 }}>
+           <MaterialIcons name="edit" size={20} color={colors.textSecondary} />
+           <Pressable onPress={() => handleDelete(item.id)}>
+              <MaterialIcons name="delete-outline" size={20} color="#FF5252" />
+           </Pressable>
+        </View>
       </View>
     </Pressable>
   );

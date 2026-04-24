@@ -32,6 +32,7 @@ export default function SuppliersScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [isAddModal, setIsAddModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingItem, setEditingItem] = useState<api.Supplier | null>(null);
   const [form, setForm] = useState({ code: "", name: "", phone: "", address: "", email: "", taxId: "" });
 
   const load = async () => {
@@ -46,16 +47,60 @@ export default function SuppliersScreen() {
 
   useEffect(() => { load(); }, [activeOrg?.id]);
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!form.name) return Alert.alert(t('common.error'), t('suppliers.errMissingName'));
     setSaving(true);
     try {
-      await api.createSupplier(form);
+      if (editingItem) {
+        await api.updateSupplier(editingItem.id, form);
+        Alert.alert(t('common.success'), t('common.updateSuccess'));
+      } else {
+        await api.createSupplier(form);
+        Alert.alert(t('common.success'), t('suppliers.addSuccess'));
+      }
       setIsAddModal(false);
-      setForm({ code: "", name: "", phone: "", address: "", email: "", taxId: "" });
+      resetForm();
       load();
-    } catch (e) { Alert.alert(t('common.error'), t('suppliers.errCreate')); }
+    } catch (e) { Alert.alert(t('common.error'), t('common.tryAgain')); }
     finally { setSaving(false); }
+  };
+
+  const handleDelete = (id: string) => {
+    Alert.alert(
+      t('common.confirm'),
+      "Bạn có chắc muốn xóa nhà cung cấp này?",
+      [
+        { text: t('common.cancel'), style: 'cancel' },
+        { 
+          text: t('common.delete'), 
+          style: 'destructive', 
+          onPress: async () => {
+            try {
+              await api.deleteSupplier(id);
+              load();
+            } catch (e: any) { Alert.alert(t('common.error'), e.message); }
+          }
+        }
+      ]
+    );
+  };
+
+  const resetForm = () => {
+    setEditingItem(null);
+    setForm({ code: "", name: "", phone: "", address: "", email: "", taxId: "" });
+  };
+
+  const handleEdit = (item: api.Supplier) => {
+    setEditingItem(item);
+    setForm({
+      code: item.code || "",
+      name: item.name,
+      phone: item.phone || "",
+      address: item.address || "",
+      email: item.email || "",
+      taxId: item.taxId || "",
+    });
+    setIsAddModal(true);
   };
 
   const filtered = items.filter(it =>
@@ -97,6 +142,14 @@ export default function SuppliersScreen() {
                   {item.email && <Text style={[styles.info, { color: colors.textSecondary }]} numberOfLines={1}>✉️ {item.email}</Text>}
                 </View>
               </View>
+              <View style={{ flexDirection: 'row', gap: 8 }}>
+                 <Pressable style={styles.actionIcon} onPress={() => handleEdit(item)}>
+                    <MaterialIcons name="edit" size={18} color="#0288D1" />
+                 </Pressable>
+                 <Pressable style={styles.actionIcon} onPress={() => handleDelete(item.id)}>
+                    <MaterialIcons name="delete-outline" size={18} color="#FF5252" />
+                 </Pressable>
+              </View>
             </View>
             {item.address && (
               <View style={[styles.addressRow, { borderTopColor: colors.outline }]}>
@@ -120,14 +173,14 @@ export default function SuppliersScreen() {
         }
       />
 
-      <FAB onPress={() => setIsAddModal(true)} icon="add" />
+      <FAB onPress={() => { resetForm(); setIsAddModal(true); }} icon="add" />
 
-      {/* MODAL THÊM NCC */}
+      {/* MODAL THÊM/SỬA NCC */}
       <Modal visible={isAddModal} animationType="slide" transparent>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
           <Pressable style={styles.overlay} onPress={() => setIsAddModal(false)} />
           <View style={[styles.sheet, { backgroundColor: colors.background }]}>
-            <BottomSheetHeader title={t('suppliers.addTitle')} onClose={() => setIsAddModal(false)} />
+            <BottomSheetHeader title={editingItem ? "Sửa nhà cung cấp" : t('suppliers.addTitle')} onClose={() => setIsAddModal(false)} />
             <ScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
               <InputField label={t('suppliers.codeLabel')} placeholder={t('suppliers.codePlaceholder')} value={form.code} onChangeText={v => setForm({ ...form, code: v })} />
               <InputField label={t('suppliers.nameLabel')} placeholder={t('suppliers.namePlaceholder')} value={form.name} onChangeText={v => setForm({ ...form, name: v })} />
@@ -135,7 +188,7 @@ export default function SuppliersScreen() {
               <InputField label={t('suppliers.emailLabel')} placeholder={t('suppliers.placeholderEmailExample')} value={form.email} onChangeText={v => setForm({ ...form, email: v })} keyboardType="email-address" autoCapitalize="none" />
               <InputField label={t('suppliers.addressLabel')} placeholder={t('suppliers.placeholderAddressExample')} value={form.address} onChangeText={v => setForm({ ...form, address: v })} />
               <InputField label={t('suppliers.taxIdLabel')} placeholder={t('suppliers.placeholderTaxIdExample')} value={form.taxId} onChangeText={v => setForm({ ...form, taxId: v })} />
-              <PrimaryButton label={t('suppliers.saveBtn')} onPress={handleCreate} loading={saving} style={{ marginTop: 8 }} />
+              <PrimaryButton label={t('suppliers.saveBtn')} onPress={handleSave} loading={saving} style={{ marginTop: 8 }} />
             </ScrollView>
           </View>
         </KeyboardAvoidingView>
@@ -155,6 +208,7 @@ const styles = StyleSheet.create({
   info: { fontSize: 12, fontFamily: FONTS.medium },
   addressRow: { flexDirection: "row", alignItems: "center", marginTop: 12, borderTopWidth: 1, paddingTop: 12, gap: 5 },
   address: { fontSize: 12, fontFamily: FONTS.medium, flex: 1 },
+  actionIcon: { padding: 6, borderRadius: 10 },
   overlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.45)" },
   sheet: { borderTopLeftRadius: 30, borderTopRightRadius: 30, paddingBottom: 40 },
   sheetContent: { paddingHorizontal: SIZES.padding, paddingBottom: 20 },
