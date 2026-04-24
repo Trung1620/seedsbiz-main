@@ -8,10 +8,6 @@ import {
   Pressable,
   ActivityIndicator,
   RefreshControl,
-  Modal,
-  ScrollView,
-  TextInput,
-  Alert,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
@@ -34,16 +30,6 @@ export default function JobSheetsScreen() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [formData, setFormData] = useState({
-    artisanId: "",
-    productId: "",
-    quantity: "",
-    unitPrice: "",
-    startDate: new Date().toISOString().split('T')[0],
-    endDate: ""
-  });
 
   const loadData = async (showLoading = true) => {
     if (!activeOrg?.id) return;
@@ -115,7 +101,7 @@ export default function JobSheetsScreen() {
           title={t('jobSheet.title')}
           onBack={() => router.back()}
           rightAction={
-            <Pressable onPress={() => setIsModalVisible(true)} style={styles.addBtn}>
+            <Pressable onPress={() => router.push("/job-sheet-new")} style={styles.addBtn}>
                <Ionicons name="add-circle" size={32} color={PALETTE.primary} />
             </Pressable>
           }
@@ -134,28 +120,12 @@ export default function JobSheetsScreen() {
               <EmptyState
                 icon="assignment-ind"
                 title={t('jobSheet.noData')}
-                subtitle="Hãy bắt đầu giao việc cho thợ bằng cách tạo phiếu gia công mới."
+                subtitle={t('jobSheet.noDataSubtitle')}
               />
             }
           />
         )}
       </View>
-      
-      {/* Modal tạo phiếu gia công (Rút gọn) */}
-      <Modal visible={isModalVisible} animationType="slide" transparent>
-         <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
-               <View style={styles.modalHeader}>
-                  <Text style={[styles.modalTitle, { color: colors.text }]}>{t('jobSheet.addNew')}</Text>
-                  <Pressable onPress={() => setIsModalVisible(false)}><MaterialIcons name="close" size={24} color={colors.text} /></Pressable>
-               </View>
-               <Text style={{ color: colors.textSecondary, marginBottom: 20 }}>Tính năng tạo phiếu chi tiết đang được đồng bộ...</Text>
-               <Pressable style={[styles.submitBtn, { backgroundColor: PALETTE.primary }]} onPress={() => setIsModalVisible(false)}>
-                  <Text style={styles.submitBtnText}>{t('common.confirm')}</Text>
-               </Pressable>
-            </View>
-         </View>
-      </Modal>
     </ScreenBackground>
   );
 }

@@ -183,7 +183,7 @@ export default function DebtsScreen() {
     <ScreenBackground style={{ paddingTop: insets.top }}>
       <AppHeader
         title={t('debts.title')}
-        subtitle={`${debts.filter(d => d.status !== 'PAID_OFF').length} khoản đang mở`}
+        subtitle={t('extra.openDebtsCount', { count: debts.filter(d => d.status !== 'PAID_OFF').length })}
         onBack={() => router.back()}
         rightAction={
           <Pressable
@@ -310,10 +310,10 @@ export default function DebtsScreen() {
                     {(debt.paidAmount || 0) > 0 && (
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 }}>
                         <Text style={{ fontSize: 12, color: COLORS.success, fontFamily: FONTS.medium }}>
-                          ✓ Đã trả: {formatCurrency(debt.paidAmount || 0)}
+                          {t('extra.paidAmountLabel', { amount: formatCurrency(debt.paidAmount || 0) })}
                         </Text>
                         <Text style={{ fontSize: 12, color: COLORS.error, fontFamily: FONTS.medium }}>
-                          Còn lại: {formatCurrency((debt.amount || 0) - (debt.paidAmount || 0))}
+                          {t('extra.remainingAmountLabel', { amount: formatCurrency((debt.amount || 0) - (debt.paidAmount || 0)) })}
                         </Text>
                       </View>
                     )}

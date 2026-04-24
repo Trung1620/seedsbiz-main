@@ -316,22 +316,22 @@ export default function ExpensesScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>Tạo phiếu chi mới</Text>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>{t('expenses.newTitle')}</Text>
               <Pressable onPress={() => setShowNewModal(false)}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </Pressable>
             </View>
 
             <ScrollView showsVerticalScrollIndicator={false}>
-              <Text style={styles.label}>NỘI DUNG CHI</Text>
+              <Text style={styles.label}>{t('expenses.labelTitle')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: colors.background, color: colors.text }]}
-                placeholder="Vd: Tiền điện tháng 10"
+                placeholder={t('expenses.placeholderTitle')}
                 value={newTitle}
                 onChangeText={setNewTitle}
               />
 
-              <Text style={styles.label}>SỐ TIỀN</Text>
+              <Text style={styles.label}>{t('expenses.labelAmount')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: colors.background, color: colors.text }]}
                 keyboardType="numeric"
@@ -340,7 +340,7 @@ export default function ExpensesScreen() {
                 onChangeText={setNewAmount}
               />
 
-              <Text style={styles.label}>PHÂN LOẠI</Text>
+              <Text style={styles.label}>{t('expenses.labelCategory')}</Text>
               <View style={styles.pickerRow}>
                 {['UTILITY', 'EQUIPMENT', 'SALARY', 'MARKETING', 'OTHER'].map(cat => (
                   <Pressable 
@@ -353,7 +353,7 @@ export default function ExpensesScreen() {
                 ))}
               </View>
 
-              <Text style={styles.label}>PHƯƠNG THỨC</Text>
+              <Text style={styles.label}>{t('expenses.labelMethod')}</Text>
               <View style={styles.pickerRow}>
                 {['CASH', 'BANK'].map(m => (
                   <Pressable 
@@ -366,7 +366,7 @@ export default function ExpensesScreen() {
                 ))}
               </View>
 
-              <Text style={styles.label}>NGÀY CHI</Text>
+              <Text style={styles.label}>{t('expenses.labelDate')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: colors.background, color: colors.text }]}
                 placeholder="YYYY-MM-DD"
@@ -374,7 +374,7 @@ export default function ExpensesScreen() {
                 onChangeText={setNewDate}
               />
 
-              <Text style={styles.label}>ẢNH BIÊN LAI (URL)</Text>
+              <Text style={styles.label}>{t('expenses.labelReceipt')}</Text>
               <TextInput 
                 style={[styles.input, { backgroundColor: colors.background, color: colors.text }]}
                 placeholder="images/receipt_001.jpg"
@@ -386,7 +386,7 @@ export default function ExpensesScreen() {
                 style={[styles.primaryBtn, { backgroundColor: PALETTE.primary, marginTop: 20, opacity: saving ? 0.7 : 1 }]}
                 disabled={saving}
                 onPress={async () => {
-                  if (!newTitle || !newAmount) return Alert.alert("Lỗi", "Vui lòng nhập đủ thông tin");
+                  if (!newTitle || !newAmount) return Alert.alert(t('common.error'), t('common.missingInfo'));
                   setSaving(true);
                   try {
                     activeOrg?.id && await api.createExpense({
@@ -404,13 +404,13 @@ export default function ExpensesScreen() {
                     setNewReceiptImage("");
                     load();
                   } catch (e: any) {
-                    Alert.alert("Lỗi", e.message);
+                    Alert.alert(t('common.error'), e.message);
                   } finally {
                     setSaving(false);
                   }
                 }}
               >
-                {saving ? <ActivityIndicator color="#FFF" /> : <Text style={styles.primaryBtnText}>LƯU PHIẾU CHI</Text>}
+                {saving ? <ActivityIndicator color="#FFF" /> : <Text style={styles.primaryBtnText}>{t('expenses.saveBtn')}</Text>}
               </Pressable>
             </ScrollView>
           </View>

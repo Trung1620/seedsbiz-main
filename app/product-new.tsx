@@ -55,6 +55,7 @@ export default function ProductNewScreen() {
 
     const [images, setImages] = useState<ImgDraft[]>([]);
     const [weight, setWeight] = useState("");
+    const [unit, setUnit] = useState("cái");
     const [productionTime, setProductionTime] = useState("");
     const [saving, setSaving] = useState(false);
 
@@ -116,6 +117,7 @@ export default function ProductNewScreen() {
                 size: size.trim() || undefined,
                 brand: brand.trim(),
                 category: category.trim(),
+                unit: unit.trim() || "cái",
                 inStock,
                 status: "ACTIVE",
                 weight: weight ? Number(weight) : undefined,
@@ -173,32 +175,35 @@ export default function ProductNewScreen() {
                     <View style={s.row}>
                         <InputField label={t('products.brandLabel')} value={brand} onChange={setBrand} placeholder={t('products.placeholderBrand')} />
                         <View style={s.inputGroup}>
-                            <Text style={[s.label, { color: colors.textSecondary }]}>DANH MỤC</Text>
+                            <Text style={[s.label, { color: colors.textSecondary }]}>{t('products.categoryLabel')}</Text>
                             <Pressable
                                 onPress={() => setCatModalVisible(true)}
                                 style={[s.input, { backgroundColor: colors.background, borderColor: colors.outline, justifyContent: 'center' }]}
                             >
                                 <Text style={{ color: categoryName ? colors.text : colors.textSecondary + '70' }}>
-                                    {categoryName || "Chọn danh mục"}
+                                    {categoryName || t('extra.selectCategory')}
                                 </Text>
                             </Pressable>
                         </View>
                     </View>
                     <View style={s.row}>
                         <InputField label={t('products.sizeLabel')} value={size} onChange={setSize} placeholder="25 x 15 x 10" />
-                        <InputField label="MÃ VẠCH (BARCODE)" value={barcode} onChange={setBarcode} placeholder="893..." />
+                        <InputField label={t('extra.barcodeLabel')} value={barcode} onChange={setBarcode} placeholder="893..." />
+                    </View>
+                    <View style={s.row}>
+                        <InputField label={t('common.unit', { defaultValue: 'Đơn vị tính' })} value={unit} onChange={setUnit} placeholder="cái, bộ, chiếc..." />
                     </View>
                 </View>
 
                 {/* VỊ TRÍ & ĐỊNH MỨC KHO */}
                 <View style={[s.card, NEUMORPHISM.card, { backgroundColor: colors.surface, marginTop: 20 }]}>
                     <View style={s.row}>
-                        <InputField label="VỊ TRÍ KHO" value={location} onChange={setLocation} placeholder="Kệ A1" />
-                        <InputField label="TỒN KHO TỐI THIỂU" value={minStock} onChange={setMinStock} placeholder="10" keyboardType="numeric" />
+                        <InputField label={t('extra.locationLabel')} value={location} onChange={setLocation} placeholder="Kệ A1" />
+                        <InputField label={t('extra.minStockLabel')} value={minStock} onChange={setMinStock} placeholder="10" keyboardType="numeric" />
                     </View>
                     <View style={s.row}>
-                        <InputField label="KHỐI LƯỢNG (KG)" value={weight} onChange={setWeight} placeholder="0.5" keyboardType="numeric" />
-                        <InputField label="THỜI GIAN SX (PHÚT)" value={productionTime} onChange={setProductionTime} placeholder="120" keyboardType="numeric" />
+                        <InputField label={t('extra.weightLabel')} value={weight} onChange={setWeight} placeholder="0.5" keyboardType="numeric" />
+                        <InputField label={t('extra.productionTimeLabel')} value={productionTime} onChange={setProductionTime} placeholder="120" keyboardType="numeric" />
                     </View>
                 </View>
 
@@ -219,7 +224,7 @@ export default function ProductNewScreen() {
                 {/* ĐỊNH MỨC VẬT TƯ (BOM) */}
                 <View style={[s.card, NEUMORPHISM.card, { backgroundColor: colors.surface, marginTop: 20 }]}>
                     <View style={s.imageHeader}>
-                        <Text style={[s.label, { color: colors.textSecondary, marginBottom: 0 }]}>ĐỊNH MỨC VẬT TƯ (BOM)</Text>
+                        <Text style={[s.label, { color: colors.textSecondary, marginBottom: 0 }]}>{t('extra.bomTitle')}</Text>
                         <Pressable onPress={() => setMaterialModalVisible(true)} style={[s.addImgBtn, { backgroundColor: PALETTE.primary + '15' }]}>
                             <MaterialIcons name="playlist-add" size={24} color={PALETTE.primary} />
                         </Pressable>
@@ -249,7 +254,7 @@ export default function ProductNewScreen() {
                             </View>
                         </View>
                     ))}
-                    {boms.length === 0 && <Text style={s.emptyImgText}>Chưa có định mức vật tư</Text>}
+                    {boms.length === 0 && <Text style={s.emptyImgText}>{t('extra.noBom')}</Text>}
                 </View>
 
                 {/* HÌNH ẢNH */}
@@ -285,7 +290,7 @@ export default function ProductNewScreen() {
                     <View style={s.modalOverlay}>
                         <View style={[s.modalContent, { backgroundColor: colors.surface }]}>
                             <View style={s.modalHeader}>
-                                <Text style={[s.modalTitle, { color: colors.text }]}>Chọn nguyên liệu</Text>
+                                <Text style={[s.modalTitle, { color: colors.text }]}>{t('extra.selectMaterial')}</Text>
                                 <Pressable onPress={() => setMaterialModalVisible(false)}>
                                     <Ionicons name="close" size={24} color={colors.text} />
                                 </Pressable>
@@ -321,7 +326,7 @@ export default function ProductNewScreen() {
                     <View style={s.modalOverlay}>
                         <View style={[s.modalContent, { backgroundColor: colors.surface }]}>
                             <View style={s.modalHeader}>
-                                <Text style={[s.modalTitle, { color: colors.text }]}>Chọn danh mục</Text>
+                                <Text style={[s.modalTitle, { color: colors.text }]}>{t('extra.selectCategory')}</Text>
                                 <Pressable onPress={() => setCatModalVisible(false)}>
                                     <Ionicons name="close" size={24} color={colors.text} />
                                 </Pressable>

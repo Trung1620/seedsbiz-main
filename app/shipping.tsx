@@ -31,7 +31,7 @@ const getVehicleOptions = (t: any) => [
 ];
 
 const getCarrierOptions = (t: any) => [
-  { label: "GHTK", value: "ghtk" },
+  { label: t('shipping.carrierGhtk'), value: "ghtk" },
   { label: "Viettel Post", value: "viettel" },
   { label: "Shopee", value: "shopee" },
   { label: "Lazada", value: "lazada" },
@@ -56,7 +56,7 @@ export default function ShippingScreen() {
   const [editingDelivery, setEditingDelivery] = useState<any>(null);
   const [formData, setFormData] = useState({
     number: "VN-" + Math.floor(10000 + Math.random() * 90000),
-    carrier: "Giao Hàng Tiết Kiệm",
+    carrier: t('shipping.carrierGhtk'),
     vehicleType: "motorcycle",
     carrierType: "ghtk",
     vehicleNumber: "",
@@ -116,7 +116,7 @@ export default function ShippingScreen() {
     setEditingDelivery(null);
     setFormData({
       number: "VN-" + Math.floor(10000 + Math.random() * 90000),
-      carrier: "Giao Hàng Tiết Kiệm",
+      carrier: t('shipping.carrierGhtk'),
       vehicleType: "motorcycle",
       carrierType: "ghtk",
       vehicleNumber: "",
@@ -312,7 +312,7 @@ export default function ShippingScreen() {
                      ))}
                   </View>
 
-                  <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>TRẠNG THÁI VẬN CHUYỂN</Text>
+                  <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.statusLabel')}</Text>
                   <View style={styles.chipRow}>
                      {['PENDING', 'PICKED_UP', 'DELIVERED'].map(s => (
                        <Pressable 
@@ -320,7 +320,7 @@ export default function ShippingScreen() {
                          onPress={() => setFormData({...formData, status: s})}
                          style={[styles.chip, formData.status === s && { backgroundColor: getStatusColor(s), borderColor: getStatusColor(s) }]}
                        >
-                          <Text style={[styles.chipText, formData.status === s && { color: '#FFFFFF' }]}>{s}</Text>
+                          <Text style={[styles.chipText, formData.status === s && { color: '#FFFFFF' }]}>{t(`shipping.status${s.charAt(0) + s.slice(1).toLowerCase().replace(/_([a-z])/g, (g) => g[1].toUpperCase())}`)}</Text>
                        </Pressable>
                      ))}
                   </View>
@@ -339,10 +339,10 @@ export default function ShippingScreen() {
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('shipping.driverPhoneLabel')}</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder={t('common.phone')} keyboardType="phone-pad" value={formData.driverPhone} onChangeText={t => setFormData({...formData, driverPhone: t})} />
 
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>BIỂN SỐ XE</Text>
+                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('shipping.vehiclePlateLabel')}</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="51F-12345" value={formData.vehicleNumber} onChangeText={t => setFormData({...formData, vehicleNumber: t})} />
                    
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>MÃ VẬN ĐƠN (TRACKING)</Text>
+                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.trackingLabel')}</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="GHTK123456789" value={formData.trackingNumber} onChangeText={t => setFormData({...formData, trackingNumber: t})} />
                    
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.shippingCostLabel')} ({t('common.currencySymbol').toUpperCase()})</Text>

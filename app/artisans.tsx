@@ -217,10 +217,10 @@ export default function ArtisansScreen() {
             <View style={[styles.statusBadge, { backgroundColor: item.status === 'ACTIVE' ? '#E8F5E9' : '#FFEBEE' }]}>
                 <View style={[styles.statusDot, { backgroundColor: item.status === 'ACTIVE' ? '#4CAF50' : '#F44336' }]} />
                 <Text style={[styles.statusText, { color: item.status === 'ACTIVE' ? '#2E7D32' : '#C62828' }]}>
-                    {item.status === 'ACTIVE' ? "ĐANG LÀM" : "NGHỈ TẠM"}
+                    {item.status === 'ACTIVE' ? t('artisans.statusWorking') : t('artisans.statusOff')}
                 </Text>
             </View>
-            <Text style={[styles.specialtyText, { color: colors.textSecondary }]}>{item.skills || "Thợ đan"}</Text>
+            <Text style={[styles.specialtyText, { color: colors.textSecondary }]}>{item.skills || t('artisans.defaultSkill')}</Text>
           </View>
          <View style={{ flexDirection: 'row', gap: 10 }}>
            <Pressable style={[styles.callBtn, { backgroundColor: '#E1F5FE' }]} onPress={() => {
@@ -256,13 +256,13 @@ export default function ArtisansScreen() {
 
       <View style={styles.financeRow}>
           <View style={styles.financeItem}>
-            <Text style={[styles.financeLabel, { color: colors.textSecondary }]}>LƯƠNG NGÀY</Text>
+            <Text style={[styles.financeLabel, { color: colors.textSecondary }]}>{t('artisans.dailyWageSmall')}</Text>
             <Text style={[styles.salaryValue, { color: PALETTE.primary }]}>{formatMoney(item.dailyWage)}</Text>
          </View>
          <View style={[styles.verticalDivider, { backgroundColor: colors.background }]} />
          <View style={styles.financeItem}>
             <Text style={[styles.financeLabel, { color: colors.textSecondary }]}>{t('artisans.daysWorked')}</Text>
-            <Text style={[styles.salaryValue, { color: '#2E7D32' }]}>{item.totalDaysWorked || 0} {t('common.days', { defaultValue: 'ngày' }).toLowerCase()}</Text>
+            <Text style={[styles.salaryValue, { color: '#2E7D32' }]}>{item.totalDaysWorked || 0} {t('common.days', { defaultValue: 'days' }).toLowerCase()}</Text>
          </View>
          <View style={[styles.verticalDivider, { backgroundColor: colors.background }]} />
          <View style={styles.financeItem}>
@@ -289,7 +289,7 @@ export default function ArtisansScreen() {
       await api.submitAttendance({ artisanId: id, status: isPresent ? 'PRESENT' : 'ABSENT' });
       loadWorkers(false);
     } catch (e: any) {
-      Alert.alert("Lỗi", "Không thể điểm danh");
+      Alert.alert(t('common.error'), t('artisans.errAttendance'));
     }
   };
 
@@ -369,14 +369,13 @@ export default function ArtisansScreen() {
                         <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} keyboardType="numeric" value={formData.age} onChangeText={t => setFormData({...formData, age: t})} />
                      </View>
                      <View style={{ flex: 1 }}>
-                        <InputField label={t('artisans.dailyWageLabel', 'LƯƠNG NGÀY (VNĐ)')} value={formData.dailyWage} onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} placeholder="150,000" keyboardType="numeric" />
+                        <InputField label={t('artisans.dailyWageLabel')} value={formData.dailyWage} onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} placeholder={t('artisans.wagePlaceholder')} keyboardType="numeric" />
                      </View>
                   </View>
 
-                  <InputField label={t('artisans.dailyTargetLabel', 'ĐỊNH MỨC (SP/NGÀY)')} value={formData.dailyTarget} onChangeText={(v: string) => setFormData({ ...formData, dailyTarget: v })} placeholder="10" keyboardType="numeric" />
+                  <InputField label={t('artisans.dailyTargetLabel')} value={formData.dailyTarget} onChangeText={(v: string) => setFormData({ ...formData, dailyTarget: v })} placeholder={t('artisans.targetPlaceholder')} keyboardType="numeric" />
 
-                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('artisans.skillsLabel', 'CHUYÊN MÔN (SKILLS)')}</Text>
-                  <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} value={formData.skills} onChangeText={t => setFormData({...formData, skills: t})} placeholder="Vd: Đan mây, Khung sắt..." />
+                  <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} value={formData.skills} onChangeText={t => setFormData({...formData, skills: t})} placeholder={t('artisans.skillsPlaceholder')} />
 
                   <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('common.image', { defaultValue: 'Ảnh (URL hoặc Assets)' })}</Text>
                   <TextInput 

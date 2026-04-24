@@ -68,7 +68,7 @@ export default function AuthRegisterScreen() {
               placeholderTextColor={COLORS.textSecondary}
             />
 
-            <Text style={styles.label}>Email</Text>
+            <Text style={styles.label}>{t('profile.email')}</Text>
             <TextInput
               style={[styles.input, NEUMORPHISM.cardInner]}
               value={email}

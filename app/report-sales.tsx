@@ -65,9 +65,9 @@ export default function SalesReportDetailScreen() {
           maximumFractionDigits: 2
         }).format(num / rate);
       }
-      return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+      return new Intl.NumberFormat('vi-VN').format(num) + ' ' + t('common.currencySymbol');
     } catch (e) {
-      return '0 đ';
+      return '0 ' + t('common.currencySymbol');
     }
   };
 
@@ -87,7 +87,7 @@ export default function SalesReportDetailScreen() {
         <Pressable style={[styles.backBtn, { backgroundColor: colors.surface }]} onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.sales', 'Báo cáo Doanh thu')}</Text>
+        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.sales')}</Text>
       </View>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
@@ -130,7 +130,7 @@ export default function SalesReportDetailScreen() {
                  <View style={styles.analysisMetric}>
                     <Text style={styles.analysisMetricLabel}>{t('reports.analysis.metricsAov')}</Text>
                     <Text style={[styles.analysisMetricValue, { color: colors.text }]}>
-                       {formatMoney(reportData.analysis?.aov || 0).replace(' đ', '')}
+                       {formatMoney(reportData.analysis?.aov || 0).replace(' ' + t('common.currencySymbol'), '')}
                     </Text>
                  </View>
                  <View style={styles.analysisMetric}>

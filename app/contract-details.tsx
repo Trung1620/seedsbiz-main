@@ -44,7 +44,7 @@ export default function ContractDetailsScreen() {
         // const res = await api.getContractById(id);
         // setData(res);
       } catch (e: any) {
-        Alert.alert("Lỗi", e.message);
+        Alert.alert(t('common.error'), e.message);
       } finally {
         setLoading(false);
       }

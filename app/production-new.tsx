@@ -192,7 +192,7 @@ export default function NewProductionScreen() {
 
           <View style={styles.row}>
              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>NGÀY BẮT ĐẦU</Text>
+                <Text style={styles.label}>{t('production.startDateLabel')}</Text>
                 <TextInput 
                   style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} 
                   placeholder="YYYY-MM-DD"
@@ -201,7 +201,7 @@ export default function NewProductionScreen() {
                 />
              </View>
              <View style={{ flex: 1 }}>
-                <Text style={styles.label}>NGÀY DỰ KIẾN XONG</Text>
+                <Text style={styles.label}>{t('production.endDateLabel')}</Text>
                 <TextInput 
                   style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} 
                   placeholder="YYYY-MM-DD"

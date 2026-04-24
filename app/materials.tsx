@@ -126,7 +126,7 @@ export default function MaterialsScreen() {
       
       <View style={[styles.stockRow, { borderTopColor: colors.outline + '40' }]}>
         <View style={styles.stockInfo}>
-           <Text style={[styles.stockLabel, { color: colors.textSecondary }]}>{t('inventory.stockTitle')} / Tối thiểu</Text>
+           <Text style={[styles.stockLabel, { color: colors.textSecondary }]}>{t('inventory.stockTitle')} / {t('inventory.stockLimit')}</Text>
            <Text style={[styles.stockValue, { color: item.stock <= (item.minStock || 0) ? '#FF5252' : PALETTE.primary }]}>
              {item.stock || 0} / {item.minStock || 0} {item.unit}
            </Text>
@@ -146,7 +146,7 @@ export default function MaterialsScreen() {
     <ScreenBackground style={{ paddingTop: insets.top }}>
       <AppHeader
         title={t('materials.title')}
-        subtitle={`${items.length} nguyên liệu`}
+        subtitle={`${items.length} ${t('materials.countSuffix')}`}
         onBack={() => router.back()}
         rightAction={
           <Pressable
@@ -177,8 +177,8 @@ export default function MaterialsScreen() {
           <EmptyState
             icon="leaf-outline"
             title={t('materials.noData')}
-            subtitle="Thêm nguyên liệu đầu tiên để bắt đầu quản lý kho"
-            action={{ label: t('materials.addBtn', { defaultValue: 'Thêm vật liệu' }), onPress: () => router.push('/material-new') }}
+            subtitle={t('materials.noDataSub')}
+            action={{ label: t('materials.addBtn'), onPress: () => router.push('/material-new') }}
           />
         )}
       />

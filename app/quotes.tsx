@@ -63,7 +63,7 @@ export default function QuotesScreen() {
       <View style={styles.cardHeader}>
         <View>
           <Text style={[styles.number, { color: colors.text }]}>{item.number || "QU-N/A"}</Text>
-          <Text style={[styles.custName, { color: colors.textSecondary }]}>{item.contactName || item.customer?.name || item.customer?.companyName || "Khách lẻ"}</Text>
+          <Text style={[styles.custName, { color: colors.textSecondary }]}>{item.contactName || item.customer?.name || item.customer?.companyName || t('common.retailCustomer')}</Text>
         </View>
         <View style={[styles.statusBadge, { backgroundColor: item.status === 'ACCEPTED' ? '#E8F5E9' : PALETTE.primary + '15' }]}>
           <Text style={[styles.statusText, { color: item.status === 'ACCEPTED' ? '#2E7D32' : PALETTE.primary }]}>
@@ -80,7 +80,7 @@ export default function QuotesScreen() {
           </Text>
         </View>
         <Text style={[styles.amount, { color: colors.text }]}>
-          {new Intl.NumberFormat('vi-VN').format(item.grandTotal || 0)} đ
+          {new Intl.NumberFormat('vi-VN').format(item.grandTotal || 0)} {t('common.currencySymbol')}
         </Text>
       </View>
     </Pressable>
@@ -92,7 +92,7 @@ export default function QuotesScreen() {
         <Pressable onPress={() => router.back()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={28} color={colors.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('quotes.title') || "Danh sách báo giá"}</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>{t('quotes.list_title')}</Text>
         <Pressable style={styles.addBtn} onPress={() => router.push(H("/quote-new"))}>
           <Ionicons name="add" size={28} color={PALETTE.primary} />
         </Pressable>
@@ -102,7 +102,7 @@ export default function QuotesScreen() {
         <View style={[styles.searchBar, NEUMORPHISM.input, { backgroundColor: colors.surface }]}>
           <Ionicons name="search" size={20} color={colors.textSecondary} />
           <TextInput
-            placeholder="Tìm theo mã, tên khách hàng..."
+            placeholder={t('quotes.searchPlaceholder')}
             placeholderTextColor={colors.textSecondary + '80'}
             style={[styles.searchInput, { color: colors.text }]}
             value={search}
@@ -129,9 +129,9 @@ export default function QuotesScreen() {
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Feather name="file-text" size={60} color={colors.textSecondary} style={{ opacity: 0.2 }} />
-              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>Chưa có báo giá nào</Text>
+              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('quotes.no_quotes')}</Text>
               <Pressable style={styles.emptyCreateBtn} onPress={() => router.push(H("/quote-new"))}>
-                 <Text style={styles.emptyCreateText}>Tạo báo giá ngay</Text>
+                 <Text style={styles.emptyCreateText}>{t('quotes.new_quote')}</Text>
               </Pressable>
             </View>
           }

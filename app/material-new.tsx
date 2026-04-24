@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -25,13 +26,9 @@ export default function NewMaterialScreen() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
 
-  const SUGGESTIONS = i18n.language.startsWith('vi') 
-    ? ["Mây", "Tre", "Nứa", "Cói", "Xong", "Mành", "Ruột mây"] 
-    : ["Rattan", "Bamboo", "Reed", "Sedge", "Wicker", "Blinds", "Rattan Core"];
+  const SUGGESTIONS = t('materials.suggestList', { returnObjects: true }) as string[] || [];
     
-  const UNITS = i18n.language.startsWith('vi')
-    ? ["kg", "mét", "cây", "bó", "tấm"]
-    : ["kg", "meter", "pcs", "bundle", "sheet"];
+  const UNITS = t('materials.unitList', { returnObjects: true }) as string[] || [];
 
   const [form, setForm] = useState({
     name: '',
@@ -41,10 +38,19 @@ export default function NewMaterialScreen() {
     stock: '0',
     image: '',
     minStock: '0',
+    supplierId: '',
     supplierName: '',
     location: '',
   });
+  const [suppliers, setSuppliers] = useState<api.Supplier[]>([]);
+  const [showSupplierPicker, setShowSupplierPicker] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    api.listSuppliers().then(res => {
+      setSuppliers(Array.isArray(res) ? res : []);
+    }).catch(console.error);
+  }, []);
 
   const handleSave = async () => {
     if (!form.name || !form.unit) {
@@ -59,6 +65,7 @@ export default function NewMaterialScreen() {
         price: parseFloat(form.price) || 0,
         stock: parseFloat(form.stock) || 0,
         minStock: parseFloat(form.minStock) || 0,
+        supplierId: form.supplierId || undefined,
         supplierName: form.supplierName || undefined,
         location: form.location,
       });
@@ -108,7 +115,7 @@ export default function NewMaterialScreen() {
             <TextInput
               value={form.sku}
               onChangeText={(v) => setForm(f => ({ ...f, sku: v }))}
-              placeholder="VT-001"
+              placeholder={t('materials.placeholderSku')}
               style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
             />
           </View>
@@ -128,7 +135,7 @@ export default function NewMaterialScreen() {
           </View>
         </View>
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image', 'Ảnh (URL hoặc Assets)')}</Text>
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image')}</Text>
         <TextInput
           value={form.image}
           onChangeText={(v) => setForm(f => ({ ...f, image: v }))}
@@ -139,40 +146,78 @@ export default function NewMaterialScreen() {
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>NGƯỠNG BÁO ĐỘNG</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.minStockLabel')}</Text>
             <TextInput
               value={form.minStock}
               onChangeText={(v) => setForm(f => ({ ...f, minStock: v }))}
               keyboardType="numeric"
-              placeholder="0"
+              placeholder={t('materials.placeholderMinStock')}
               style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
             />
           </View>
           <View style={{ flex: 1, marginLeft: 15 }}>
-            <Text style={[styles.label, { color: colors.textSecondary }]}>VỊ TRÍ KHO</Text>
+            <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.locationLabel')}</Text>
             <TextInput
               value={form.location}
               onChangeText={(v) => setForm(f => ({ ...f, location: v }))}
-              placeholder="Kệ B2"
+              placeholder={t('materials.placeholderLocation')}
               style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
             />
           </View>
         </View>
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>NHÀ CUNG CẤP</Text>
-        <TextInput
-          value={form.supplierName}
-          onChangeText={(v) => setForm(f => ({ ...f, supplierName: v }))}
-          placeholder="Tên nhà cung cấp hoặc cá nhân..."
-          placeholderTextColor={colors.textSecondary + '70'}
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
-        />
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.supplierLabel')}</Text>
+        <Pressable 
+          style={[styles.input, { backgroundColor: colors.surface, justifyContent: 'center' }]} 
+          onPress={() => setShowSupplierPicker(true)}
+        >
+          <Text style={{ color: form.supplierName ? colors.text : colors.textSecondary + '70', fontSize: 16 }}>
+            {form.supplierName || t('materials.placeholderSupplier', { defaultValue: 'Chọn nhà cung cấp...' })}
+          </Text>
+        </Pressable>
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>GIÁ NHẬP TRUNG BÌNH (VNĐ)</Text>
+        <Modal visible={showSupplierPicker} animationType="slide" transparent>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+              <View style={styles.modalHeader}>
+                <Text style={[styles.modalTitle, { color: colors.text }]}>{t('materials.supplierLabel')}</Text>
+                <Pressable onPress={() => setShowSupplierPicker(false)}>
+                  <Ionicons name="close" size={24} color={colors.text} />
+                </Pressable>
+              </View>
+              <ScrollView>
+                <Pressable 
+                  style={styles.supplierItem} 
+                  onPress={() => {
+                    setForm(f => ({ ...f, supplierId: '', supplierName: '' }));
+                    setShowSupplierPicker(false);
+                  }}
+                >
+                  <Text style={{ color: colors.text }}>-- Không chọn --</Text>
+                </Pressable>
+                {suppliers.map(s => (
+                  <Pressable 
+                    key={s.id} 
+                    style={styles.supplierItem} 
+                    onPress={() => {
+                      setForm(f => ({ ...f, supplierId: s.id, supplierName: s.name }));
+                      setShowSupplierPicker(false);
+                    }}
+                  >
+                    <Text style={{ color: colors.text, fontWeight: 'bold' }}>{s.name}</Text>
+                    {s.phone && <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{s.phone}</Text>}
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.costLabel')}</Text>
         <TextInput
           value={form.price}
           onChangeText={(v) => setForm(f => ({ ...f, price: v }))}
-          placeholder="50000"
+          placeholder={t('materials.placeholderCost')}
           keyboardType="numeric"
           placeholderTextColor={colors.textSecondary + '70'}
           style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
@@ -206,4 +251,9 @@ const styles = StyleSheet.create({
   unitPicker: { height: 55, borderRadius: 16, justifyContent: 'center', paddingHorizontal: 16 },
   saveBtn: { height: 60, borderRadius: 18, alignItems: 'center', justifyContent: 'center', marginTop: 40, ...SHADOWS.soft },
   saveText: { color: '#FFF', fontSize: 18, fontFamily: FONTS.bold },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { borderTopLeftRadius: 30, borderTopRightRadius: 30, padding: 25, maxHeight: '70%' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
+  modalTitle: { fontSize: 20, fontFamily: FONTS.bold },
+  supplierItem: { paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
 });

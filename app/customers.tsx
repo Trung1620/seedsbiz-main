@@ -156,8 +156,8 @@ export default function CustomersScreen() {
           </View>
           {!!item.phone && <Text style={[styles.cardMeta, { color: colors.textSecondary }]}>📞 {item.phone}</Text>}
           <View style={styles.debtRow}>
-             <Text style={[styles.debtText, { color: '#FF5252' }]}>Nợ: {(item.currentDebt || 0).toLocaleString()}đ</Text>
-             <Text style={[styles.debtText, { color: '#4CAF50' }]}> | Mua: {(item.totalSpent || 0).toLocaleString()}đ</Text>
+             <Text style={[styles.debtText, { color: '#FF5252' }]}>{t('customers.debtLabel')}: {(item.currentDebt || 0).toLocaleString()}{t('common.currencySymbol')}</Text>
+             <Text style={[styles.debtText, { color: '#4CAF50' }]}> | {t('customers.spentLabel')}: {(item.totalSpent || 0).toLocaleString()}{t('common.currencySymbol')}</Text>
           </View>
         </View>
         <MaterialIcons name="edit" size={20} color={colors.textSecondary} />
@@ -228,28 +228,28 @@ export default function CustomersScreen() {
               </View>
 
               <Text style={[styles.label, { color: colors.textSecondary }]}>
-                {form.type === 'individual' ? "TÊN KHÁCH HÀNG *" : "TÊN CÔNG TY *"}
+                {form.type === 'individual' ? t('customers.labelNameInd') : t('customers.labelNameBus')}
               </Text>
               <TextInput 
                 value={form.name} 
                 onChangeText={(v) => setForm((s) => ({ ...s, name: v }))} 
                 style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} 
-                placeholder={form.type === 'individual' ? "Nhập họ tên khách hàng..." : "Nhập tên công ty..."}
+                placeholder={form.type === 'individual' ? t('customers.placeholderNameInd') : t('customers.placeholderNameBus')}
               />
               
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, { color: colors.textSecondary }]}>MÃ KHÁCH HÀNG</Text>
+                  <Text style={[styles.label, { color: colors.textSecondary }]}>{t('customers.labelCode')}</Text>
                   <TextInput value={form.code} onChangeText={(v) => setForm((s) => ({ ...s, code: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} placeholder="KH-001" />
                 </View>
               </View>
 
-              <Text style={[styles.label, { color: colors.textSecondary }]}>NHÓM KHÁCH</Text>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('customers.labelGroup')}</Text>
               <View style={styles.verticalPicker}>
                 {[
-                  { key: 'RETAIL', label: 'BÁN LẺ (RETAIL)' },
-                  { key: 'WHOLESALE', label: 'BÁN SỈ (WHOLESALE)' },
-                  { key: 'AGENCY', label: 'ĐẠI LÝ (AGENCY)' }
+                  { key: 'RETAIL', label: t('customers.groupRetail') },
+                  { key: 'WHOLESALE', label: t('customers.groupWholesale') },
+                  { key: 'AGENCY', label: t('customers.groupAgency') }
                 ].map(g => (
                   <Pressable 
                     key={g.key} 
@@ -299,7 +299,7 @@ export default function CustomersScreen() {
 
               <View style={styles.row}>
                 <View style={{ flex: 1 }}>
-                  <Text style={[styles.label, { color: colors.textSecondary }]}>NGÀY SINH</Text>
+                  <Text style={[styles.label, { color: colors.textSecondary }]}>{t('customers.labelBirthday')}</Text>
                   <TextInput 
                     value={form.birthday} 
                     onChangeText={(v) => setForm((s) => ({ ...s, birthday: v }))} 

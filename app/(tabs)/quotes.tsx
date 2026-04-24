@@ -65,7 +65,7 @@ export default function QuotesScreen() {
          <View style={{ flex: 1 }}>
             <Text style={[styles.quoteNumber, { color: colors.text }]}>{item.number || "QU-N/A"}</Text>
             <Text style={[styles.custName, { color: colors.textSecondary }]} numberOfLines={1}>
-              {item.contactName || "Khách lẻ"}
+              {item.contactName || t('common.retailCustomer')}
             </Text>
          </View>
          <View style={[styles.statusBadge, { backgroundColor: item.status === 'ACCEPTED' ? '#E8F5E9' : PALETTE.primary + '15' }]}>
@@ -83,7 +83,7 @@ export default function QuotesScreen() {
             </Text>
          </View>
          <Text style={[styles.amountText, { color: colors.text }]}>
-            {new Intl.NumberFormat('vi-VN').format(item.grandTotal || 0)} đ
+            {new Intl.NumberFormat('vi-VN').format(item.grandTotal || 0)} {t('common.currencySymbol')}
          </Text>
       </View>
     </Pressable>

@@ -7,7 +7,8 @@
     "orders": "Orders",
     "products": "Products",
     "modules": "Explore",
-    "settings": "Settings"
+    "settings": "Settings",
+    "create_quote": "Create Quote"
   },
   "home": {
     "header": {
@@ -26,6 +27,18 @@
     "viewProfile": "View personal profile",
     "guest": "User",
     "latestNews": "Latest News",
+    "sidebar": {
+      "title": "CATEGORIES",
+      "profile": "Personal Profile",
+      "products": "Products",
+      "materials": "Materials",
+      "artisans": "Artisans",
+      "jobSheets": "Job Sheets",
+      "progress": "Work Progress",
+      "debts": "Debts",
+      "expenses": "Expenses",
+      "settings": "Settings"
+    },
     "sections": {
       "quickActions": {
         "title": "Quick actions",
@@ -145,25 +158,39 @@
         "products": "Products List",
         "variants": "SKU Management",
         "bom": "Bill of Materials (BOM)",
-        "barcode": "QR/Barcode Scan"
+        "barcode": "QR/Barcode Scan",
+        "suppliersDesc": "Bamboo material partners"
+      },
+      "finance": {
+        "title": "2. FINANCIAL MANAGEMENT",
+        "debts": "Debt Management",
+        "debtsDesc": "Track Customer/Worker/Supplier debts",
+        "expenses": "Expense Vouchers",
+        "expensesDesc": "Manage operational costs"
       },
       "production": {
-        "title": "2. PRODUCTION & ARTISANS",
+        "title": "3. PRODUCTION & ARTISANS",
         "artisans": "Artisan Profiles",
         "processing": "Job Sheet Management",
         "progress": "Progress Tracking",
         "labor_cost": "Labor Costing"
       },
       "sales": {
-        "title": "3. SALES & CRM",
+        "title": "4. SALES & CRM",
         "pos": "Quick Sale (POS)",
         "custom_order": "Custom Orders",
         "customers": "Customer Database"
       },
       "shipping": {
-        "title": "4. SHIPPING & SERVICES",
+        "title": "5. SHIPPING & SERVICES",
         "tracking": "Delivery Tracking",
-        "repair": "Warranty & Repairs"
+        "repair": "Warranty & Repairs",
+        "repairDesc": "Care after sales"
+      },
+      "system": {
+        "title": "System",
+        "settingsDesc": "App configuration & Regions",
+        "profileDesc": "Personal information"
       }
     },
     "finance": {
@@ -240,7 +267,17 @@
     "selectOrgBtn": "Select Org",
     "noImage": "No Image",
     "error": "Error",
-    "loadFailed": "Load products failed"
+    "loadFailed": "Load products failed",
+    "barcodeLabel": "BARCODE",
+    "weightLabel": "WEIGHT (KG)",
+    "locationLabel": "WAREHOUSE LOCATION",
+    "minStockLabel": "MIN STOCK",
+    "comingSoon": "Coming Soon",
+    "editDeveloping": "Edit feature is under development.",
+    "notFound": "Product not found",
+    "detailTitle": "Product Details",
+    "description": "Description",
+    "noDescription": "No description available for this product."
   },
   "quotes": {
     "new_title": "Create Quote",
@@ -411,6 +448,7 @@
     "loadInventoryFailed": "Load inventory failed",
     "loadBalanceFailed": "Load balance failed",
     "refreshFailed": "Refresh failed",
+    "stockLimit": "Min",
     "outTitle": "Stock Out",
     "outDesc": "Create a stock-out record directly",
     "inCardDesc": "Quickly create a stock-in record",
@@ -441,7 +479,8 @@
     "outQtyErrorMsg": "Quantity must be > 0",
     "outError": "Error",
     "stockTitle": "STOCK",
-    "stockIn": "Stock In"
+    "stockIn": "Stock In",
+    "import": "Stock In"
   },
   "customers": {
     "title": "Customers",
@@ -466,19 +505,25 @@
     "missingInfoMsg": "You need to login and select an organization.",
     "missingName": "Missing name",
     "missingNameMsg": "Please enter customer name.",
-    "error": "Error",
-    "loadFailed": "Could not load customers.",
-    "refreshFailed": "Could not refresh data.",
-    "createFailed": "Could not create customer.",
-    "updateFailed": "Could not update customer.",
-    "typeBusiness": "BUSINESS",
-    "typeIndividual": "INDIVIDUAL",
+    "typeIndividual": "Individual",
+    "typeBusiness": "Business",
     "labelType": "CUSTOMER TYPE",
-    "labelName": "FULL NAME / COMPANY *",
     "labelPhone": "PHONE NUMBER",
-    "labelAddress": "SHIPPING ADDRESS",
+    "labelAddress": "ADDRESS",
+    "debtLabel": "Debt",
+    "spentLabel": "Spent",
+    "labelNameInd": "CUSTOMER NAME *",
+    "labelNameBus": "COMPANY NAME *",
+    "placeholderNameInd": "Enter customer name...",
+    "placeholderNameBus": "Enter company name...",
+    "labelCode": "CUSTOMER CODE",
+    "labelGroup": "CUSTOMER GROUP",
+    "groupRetail": "RETAIL",
+    "groupWholesale": "WHOLESALE",
+    "groupAgency": "AGENCY",
+    "labelBirthday": "BIRTHDAY",
     "modal": {
-      "createTitle": "Create Customer",
+      "createTitle": "Add New Customer",
       "editTitle": "Edit Customer",
       "close": "Close",
       "nameLabel": "Customer Name *",
@@ -569,13 +614,44 @@
     "vehicleTruck": "Truck / Van",
     "vehicleOther": "Ship / Other",
     "carrierInternal": "Self-delivery",
-    "statusPending": "Awaiting pickup",
-    "statusPickedUp": "Picked up",
+    "statusPending": "Waiting for pickup",
+    "statusPickedUp": "In transit",
     "statusDelivered": "Delivered",
     "statusCancelled": "Cancelled",
+    "statusLabel": "SHIPPING STATUS",
+    "trackingLabel": "TRACKING NUMBER",
+    "vehiclePlateLabel": "VEHICLE PLATE",
+    "carrierGhtk": "Giao Hang Tiet Kiem",
     "filterAll": "All",
     "filterPending": "Pending",
     "filterDelivered": "Delivered"
+  },
+  "jobSheet": {
+    "title": "Job Sheet Management",
+    "addNew": "Create Job Sheet",
+    "artisan": "Artisan *",
+    "product": "Product *",
+    "quantity": "Assigned Quantity *",
+    "unitPrice": "Processing Unit Price",
+    "startDate": "Assign Date",
+    "endDate": "Expected End Date",
+    "noData": "No job sheets yet",
+    "noDataSubtitle": "Start assigning work to artisans by creating a new job sheet.",
+    "statusOpen": "Assigned",
+    "statusInProgress": "In Progress",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled"
+  },
+  "productionProgress": {
+    "title": "Progress Tracking",
+    "reportWork": "Report Work",
+    "jobSheet": "Job Sheet *",
+    "quantityDone": "Completed Quantity *",
+    "note": "Progress Note",
+    "noData": "No progress reports yet",
+    "history": "Production History",
+    "done": "Done",
+    "remaining": "Remaining"
   },
   "production": {
     "title": "Production Tracking",
@@ -584,6 +660,9 @@
     "unassigned": "Unassigned",
     "totalLaborCost": "TOTAL LABOR COST",
     "noData": "No production orders found",
+    "noDataSubtitle": "Create your workshop's first production order",
+    "ordersCount": "{{count}} production orders",
+    "createNew": "Create new order",
     "desc": "Track production orders and processing.",
     "workersCount": "{{count}} workers",
     "durationDays": "{{count}} days",
@@ -613,12 +692,14 @@
     "modalSelectWorker": "Select Worker",
     "modalSelectMaterial": "Select Material",
     "errMissingProductWorker": "Please select product and workers.",
-    "successCreated": "New production order created."
+    "successCreated": "Production order created successfully!"
   },
   "materials": {
     "title": "Material Management",
     "searchPlaceholder": "Search materials, raw items...",
     "noData": "No materials found",
+    "noDataSub": "Add your first raw material to start managing inventory",
+    "countSuffix": "materials",
     "desc": "Manage raw materials and inventory.",
     "newTitle": "Add New Material",
     "addBtn": "Add Material",
@@ -635,7 +716,14 @@
     "supplierLabel": "Supplier",
     "saveBtn": "Save Material",
     "errMissingInfo": "Please enter material name and unit.",
-    "errCreate": "Could not create material."
+    "errCreate": "Could not create material.",
+    "placeholderLocation": "Shelf B2",
+    "placeholderSupplier": "Supplier or individual name...",
+    "placeholderSku": "VT-001",
+    "placeholderCost": "50000",
+    "placeholderMinStock": "10",
+    "suggestList": ["Rattan", "Bamboo", "Reed", "Sedge", "Wicker", "Blinds", "Rattan Core"],
+    "unitList": ["kg", "meter", "pcs", "bundle", "sheet"]
   },
   "expenses": {
     "title": "Operational Costs",
@@ -651,6 +739,15 @@
     "breakdownLabor": "Artisan labor wages",
     "breakdownMaterial": "Material procurement",
     "breakdownShipping": "Shipping costs",
+    "newTitle": "Create New Expense",
+    "labelTitle": "EXPENSE TITLE",
+    "labelAmount": "AMOUNT",
+    "labelCategory": "CATEGORY",
+    "labelMethod": "PAYMENT METHOD",
+    "labelDate": "EXPENSE DATE",
+    "labelReceipt": "RECEIPT IMAGE (URL)",
+    "saveBtn": "SAVE EXPENSE",
+    "placeholderTitle": "Ex: Electricity bill Oct",
     "breakdownOtherProd": "Other production costs",
     "breakdownManual": "Other management costs",
     "cat_marketing": "Marketing",
@@ -725,10 +822,20 @@
       "afternoon": "Afternoon",
       "evening": "Night"
     },
-    "profitAccuracy": "This report is calculated based on actual Cost of Goods Sold from stock out records."
+    "profitAccuracy": "This report is calculated based on actual Cost of Goods Sold from stock out records.",
+    "inventory": {
+      "searchPlaceholder": "Search by name or SKU...",
+      "totalStock": "TOTAL STOCK",
+      "lowStock": "LOW STOCK",
+      "productSku": "PRODUCT / SKU",
+      "stock": "STOCK",
+      "noResults": "No products found"
+    }
   },
   "common": {
-    "comingSoon": "This feature is under development",
+    "comingSoon": "Coming Soon",
+    "comingSoonMsg": "This feature will be available soon.",
+    "missingInfo": "Please enter all required information",
     "confirm": "Confirm",
     "cancel": "Cancel",
     "close": "Close",
@@ -764,6 +871,7 @@
     "thisMonth": "This Month",
     "thisYear": "This Year",
     "tryAgain": "Please try again.",
+    "back": "Back",
     "select": "Select...",
     "later": "Later",
     "user": "User",
@@ -771,7 +879,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "actions": "Actions",
-    "unit": "Unit"
+    "unit": "Unit",
+    "image": "Image"
   },
   "search": {
     "placeholder": "SKU, customer name, order #...",
@@ -783,6 +892,10 @@
     "addFirst": "Press the (+) button to add the first one.",
     "working": "Working",
     "off": "Off",
+    "statusWorking": "WORKING",
+    "statusOff": "OFF",
+    "defaultSkill": "Weaver",
+    "dailyWageSmall": "DAILY WAGE",
     "addNew": "Add New Artisan",
     "nameLabel": "Full Name",
     "codeLabel": "Artisan Code",
@@ -800,11 +913,15 @@
     "confirmDelete": "Are you sure you want to delete this artisan?",
     "addSuccess": "Worker added successfully",
     "missingInfo": "Please enter Name and Phone number.",
-    "roleWorker": "Worker",
     "daysWorked": "DAYS WORKED",
+    "errAttendance": "Could not submit attendance.",
+    "attendanceDo": "ATTEND",
+    "attendanceDone": "DONE",
+    "skillsPlaceholder": "Ex: Rattan weaving, Iron frames...",
+    "wagePlaceholder": "150,000",
+    "targetPlaceholder": "10",
+    "roleWorker": "Worker",
     "debtLabel": "DEBT / ADVANCE",
-    "attendanceDone": "Done for today",
-    "attendanceDo": "Mark Attendance",
     "advanceTitle": "Record Salary Advance",
     "advanceAmount": "Advance Amount",
     "note": "Note",
@@ -827,6 +944,8 @@
     "loginNow": "Login Now",
     "createWorkspace": "Create Workspace (Trial)",
     "backHome": "← Back Home",
+    "brandPart1": "ECO",
+    "brandPart2": "DECOR",
     "error": "Error",
     "success": "Success",
     "missingFields": "Please fill in all fields.",
@@ -844,7 +963,22 @@
     "registerBtn": "REGISTER",
     "hasAccount": "Already have an account?",
     "needLogin": "You need to login first.",
-    "createWorkspaceTitle": "Create New Workspace"
+    "createWorkspaceTitle": "Create New Workspace",
+    "fieldAccount": "ACCOUNT",
+    "placeholderEmail": "Enter your email",
+    "fieldPassword": "PASSWORD",
+    "forgotPassword": {
+      "title1": "RESET",
+      "title2": "PASSWORD",
+      "desc": "Enter your email to receive an account recovery code.",
+      "btn": "SEND REQUEST",
+      "back": "← Back to login",
+      "alertEnterEmail": "Please enter your email."
+    },
+    "forgotPasswordBtn": "Forgot password?",
+    "createAccount": "Create account",
+    "tagline": "WORKSHOP MANAGEMENT",
+    "versionLabel": "VERSION"
   },
   "profile": {
     "title": "Profile",
@@ -862,7 +996,23 @@
     "avatarUpdated": "Avatar updated successfully!",
     "avatarUpdateError": "Could not update avatar.",
     "idCopied": "User ID copied to clipboard.",
-    "nameRequired": "Please enter your display name."
+    "nameRequired": "Please enter your display name.",
+    "lastLogin": "LAST LOGIN",
+    "justNow": "Just now",
+    "workshopSettings": "WORKSHOP SETTINGS",
+    "workshopSettingsTitle": "Workshop Settings",
+    "workshopName": "WORKSHOP NAME",
+    "directorName": "DIRECTOR NAME",
+    "businessLicense": "BUSINESS LICENSE",
+    "taxId": "TAX ID",
+    "address": "ADDRESS",
+    "bankName": "BANK NAME",
+    "bankAccount": "BANK ACCOUNT",
+    "bankOwner": "ACCOUNT OWNER",
+    "saveWorkshop": "SAVE SETTINGS",
+    "orgUpdated": "Workshop information updated",
+    "orgUpdateError": "Could not update information",
+    "update_error": "Error updating profile"
   },
   "settings": {
     "title": "Settings",
@@ -915,6 +1065,52 @@
     "taxIdLabel": "Tax ID",
     "saveBtn": "Save Supplier",
     "errMissingName": "Please enter supplier name",
-    "errCreate": "Could not create supplier"
+    "errCreate": "Could not create supplier",
+    "placeholderPhoneExample": "0901 234 567",
+    "placeholderEmailExample": "contact@abc.com",
+    "placeholderAddressExample": "123 ABC Street",
+    "placeholderTaxIdExample": "0123456789"
+  },
+  "extra": {
+    "openDebtsCount": "{{count}} open debts",
+    "paidAmountLabel": "✓ Paid: {{amount}}",
+    "remainingAmountLabel": "Remaining: {{amount}}",
+    "typeCustomer": "CUSTOMER",
+    "typeArtisan": "ARTISAN",
+    "typeSupplier": "SUPPLIER",
+    "sourceOrders": "Orders",
+    "sourceLabor": "Labor Cost",
+    "sourceMaterials": "Materials",
+    "sourceShipping": "Shipping",
+    "linkedSource": "Linked source: {{type}}",
+    "selectFromSystem": "Select from system",
+    "noMatchingData": "No matching data found.",
+    "refNoteQuote": "Debt from order {{number}}",
+    "refNoteLabor": "Labor cost from order {{number}}",
+    "refNoteMaterial": "Material cost from order {{number}}",
+    "refNoteShipping": "Shipping fee from order {{number}}",
+    "laborPrefix": "Labor",
+    "matPrefix": "Materials",
+    "shipPrefix": "Shipping fee",
+    "artisanPrefix": "Artisan",
+    "supplierPrefix": "Supplier",
+    "financialAnalysisTitle": "FINANCIAL STRUCTURE ANALYSIS",
+    "errorTimeout": "Network weak or server busy, please try again",
+    "errorLoad": "Could not load report",
+    "inventoryReport": "Inventory Report"
+  },
+  "contracts": {
+    "title": "Contract Management",
+    "sub": "Contract List",
+    "createBtn": "Create from quote",
+    "searchPlaceholder": "Search by contract #, customer...",
+    "searchText": "Search",
+    "loading": "Loading contracts...",
+    "emptyTitle": "No contracts yet",
+    "emptyDesc": "Contracts are automatically created from confirmed quotes.",
+    "goToQuote": "Go to quotes →",
+    "draftName": "Draft Contract",
+    "customerLabel": "Customer",
+    "quoteLabel": "Quote"
   }
 }

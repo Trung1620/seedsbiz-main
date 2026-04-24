@@ -93,9 +93,9 @@ export default function ProductionScreen() {
          <View style={styles.detailItem}>
             <Ionicons name="calendar-outline" size={14} color={colors.textSecondary} />
             <Text style={[styles.detailText, { color: colors.textSecondary }]}>
-               {item.startDate ? new Date(item.startDate).toLocaleDateString("vi-VN") : "—"} 
+               {item.startDate ? new Date(item.startDate).toLocaleDateString(i18n.language.startsWith('vi') ? "vi-VN" : "en-US") : "—"} 
                {" - "} 
-               {item.expectedEndDate ? new Date(item.expectedEndDate).toLocaleDateString("vi-VN") : (item.duration ? `${item.duration} ngày` : "—")}
+               {item.expectedEndDate ? new Date(item.expectedEndDate).toLocaleDateString(i18n.language.startsWith('vi') ? "vi-VN" : "en-US") : (item.duration ? t('production.durationDays', { count: item.duration }) : "—")}
             </Text>
          </View>
          <View style={styles.detailItem}>
@@ -138,7 +138,7 @@ export default function ProductionScreen() {
     <ScreenBackground style={{ paddingTop: insets.top }}>
       <AppHeader
         title={t('production.title')}
-        subtitle={`${items.length} lệnh sản xuất`}
+        subtitle={t('production.ordersCount', { count: items.length })}
         onBack={() => router.back()}
         rightAction={
           <Pressable
@@ -162,8 +162,8 @@ export default function ProductionScreen() {
           <EmptyState
             icon="construct-outline"
             title={t('production.noData')}
-            subtitle="Tạo lệnh sản xuất đầu tiên của xưởng bạn"
-            action={{ label: 'Tạo lệnh mới', onPress: () => router.push('/production-new') }}
+            subtitle={t('production.noDataSubtitle')}
+            action={{ label: t('production.createNew'), onPress: () => router.push('/production-new') }}
           />
         )}
       />

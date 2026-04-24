@@ -33,7 +33,7 @@ export default function WarrantyScreen() {
   const [warranties, setWarranties] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingWarranty, setEditingWarranty] = useState<any>(null);
   const [formData, setFormData] = useState({
@@ -54,7 +54,7 @@ export default function WarrantyScreen() {
       setWarranties(data.warranties || []);
     } catch (e) {
       console.error(e);
-      setWarranties([]); 
+      setWarranties([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -68,7 +68,7 @@ export default function WarrantyScreen() {
       Alert.alert(t('common.info'), t('warranty.issuePlaceholder'));
       return;
     }
-    
+
     try {
       if (editingWarranty) {
         await api.updateWarranty(editingWarranty.id, formData);
@@ -105,9 +105,9 @@ export default function WarrantyScreen() {
       t('common.confirmDelete'),
       [
         { text: t('common.cancel'), style: 'cancel' },
-        { 
-          text: t('common.delete'), 
-          style: 'destructive', 
+        {
+          text: t('common.delete'),
+          style: 'destructive',
           onPress: async () => {
             try {
               await api.deleteWarranty(id);
@@ -131,7 +131,7 @@ export default function WarrantyScreen() {
   };
 
   const WarrantyCard = ({ item }: { item: any }) => (
-    <Pressable 
+    <Pressable
       style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]}
       onPress={() => {
         setEditingWarranty(item);
@@ -147,31 +147,31 @@ export default function WarrantyScreen() {
         setIsModalVisible(true);
       }}
     >
-       <View style={styles.cardHeader}>
-          <View style={[styles.statusTag, { backgroundColor: getStatusColor(item.status) + '15' }]}>
-             <Text style={[styles.statusTagText, { color: getStatusColor(item.status) }]}>
-               {t(`warranty.status${item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}`)}
-             </Text>
-          </View>
-          <Pressable onPress={() => handleDeleteWarranty(item.id)} style={{ padding: 4 }}>
-            <MaterialIcons name="delete-outline" size={18} color="#FF5252" />
-          </Pressable>
-       </View>
-       
-       <View style={styles.mainInfo}>
-          <View style={[styles.iconBox, { backgroundColor: colors.background }]}>
-             <MaterialIcons name="build" size={28} color={PALETTE.primary} />
-          </View>
-          <View style={styles.infoContent}>
-             <Text style={[styles.issueText, { color: colors.text }]} numberOfLines={2}>{item.issue}</Text>
-              <Text style={[styles.subInfo, { color: colors.textSecondary }]}>
-                 {item.customer?.name || t('common.guest')} • {item.product?.nameVi || t('warranty.product')}
-              </Text>
-              <Text style={[styles.dateInfo, { color: colors.textSecondary }]}>
-                 <Ionicons name="calendar-outline" size={12} /> {t('warranty.receivedDate')}: {item.receivedDate ? item.receivedDate.split('T')[0] : "---"}
-              </Text>
-           </View>
+      <View style={styles.cardHeader}>
+        <View style={[styles.statusTag, { backgroundColor: getStatusColor(item.status) + '15' }]}>
+          <Text style={[styles.statusTagText, { color: getStatusColor(item.status) }]}>
+            {t(`warranty.status${item.status.charAt(0).toUpperCase() + item.status.slice(1).toLowerCase()}`)}
+          </Text>
         </View>
+        <Pressable onPress={() => handleDeleteWarranty(item.id)} style={{ padding: 4 }}>
+          <MaterialIcons name="delete-outline" size={18} color="#FF5252" />
+        </Pressable>
+      </View>
+
+      <View style={styles.mainInfo}>
+        <View style={[styles.iconBox, { backgroundColor: colors.background }]}>
+          <MaterialIcons name="build" size={28} color={PALETTE.primary} />
+        </View>
+        <View style={styles.infoContent}>
+          <Text style={[styles.issueText, { color: colors.text }]} numberOfLines={2}>{item.issue}</Text>
+          <Text style={[styles.subInfo, { color: colors.textSecondary }]}>
+            {item.customer?.name || t('common.guest')} • {item.product?.nameVi || t('warranty.product')}
+          </Text>
+          <Text style={[styles.dateInfo, { color: colors.textSecondary }]}>
+            <Ionicons name="calendar-outline" size={12} /> {t('warranty.receivedDate')}: {item.receivedDate ? item.receivedDate.split('T')[0] : "---"}
+          </Text>
+        </View>
+      </View>
     </Pressable>
   );
 
@@ -183,8 +183,8 @@ export default function WarrantyScreen() {
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('warranty.title')}</Text>
-          <Pressable 
-            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
+          <Pressable
+            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]}
             onPress={() => { resetForm(); setIsModalVisible(true); }}
           >
             <Ionicons name="add" size={24} color="#FFF" />
@@ -212,68 +212,68 @@ export default function WarrantyScreen() {
       </View>
 
       <Modal visible={isModalVisible} animationType="slide" transparent>
-         <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
-               <View style={styles.modalHeader}>
-                  <Text style={[styles.modalTitle, { color: colors.text }]}>
-                    {editingWarranty ? t('common.edit') : t('warranty.createTitle')}
-                  </Text>
-                  <Pressable onPress={() => setIsModalVisible(false)}>
-                     <MaterialIcons name="close" size={24} color={colors.text} />
-                  </Pressable>
-               </View>
-
-               <ScrollView showsVerticalScrollIndicator={false}>
-                  <Text style={[styles.label, { color: colors.textSecondary }]}>{t('warranty.status')}</Text>
-                  <View style={styles.chipRow}>
-                     {['PENDING', 'PROCESSING', 'COMPLETED', 'CANCELLED'].map(s => (
-                       <Pressable 
-                         key={s} 
-                         onPress={() => setFormData({...formData, status: s})}
-                         style={[styles.chip, formData.status === s && { backgroundColor: getStatusColor(s), borderColor: getStatusColor(s) }]}
-                       >
-                          <Text style={[styles.chipText, formData.status === s && { color: '#FFFFFF' }]}>
-                            {t(`warranty.status${s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()}`)}
-                          </Text>
-                       </Pressable>
-                     ))}
-                  </View>
-
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('warranty.issue')}</Text>
-                   <TextInput 
-                     style={[styles.input, styles.textArea, { backgroundColor: colors.surface, color: colors.text }]} 
-                     placeholder={t('warranty.issuePlaceholder')} 
-                     multiline
-                     value={formData.issue} 
-                     onChangeText={t => setFormData({...formData, issue: t})} 
-                   />
-                   
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.note')}</Text>
-                   <TextInput 
-                     style={[styles.input, styles.textArea, { backgroundColor: colors.surface, color: colors.text }]} 
-                     placeholder={t('warranty.notePlaceholder')} 
-                     multiline
-                     value={formData.note} 
-                     onChangeText={t => setFormData({...formData, note: t})} 
-                   />
-
-                   <View style={styles.row}>
-                      <View style={{ flex: 1, marginRight: 10 }}>
-                         <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.receivedDate')}</Text>
-                         <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="YYYY-MM-DD" value={formData.receivedDate} onChangeText={t => setFormData({...formData, receivedDate: t})} />
-                      </View>
-                      <View style={{ flex: 1 }}>
-                         <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.returnDate')}</Text>
-                         <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="YYYY-MM-DD" value={formData.returnDate} onChangeText={t => setFormData({...formData, returnDate: t})} />
-                      </View>
-                   </View>
-
-                  <Pressable style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 35 }]} onPress={handleSaveWarranty}>
-                     <Text style={styles.submitBtnText}>{editingWarranty ? t('common.complete') : t('common.add')}</Text>
-                  </Pressable>
-               </ScrollView>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                {editingWarranty ? t('common.edit') : t('warranty.createTitle')}
+              </Text>
+              <Pressable onPress={() => setIsModalVisible(false)}>
+                <MaterialIcons name="close" size={24} color={colors.text} />
+              </Pressable>
             </View>
-         </View>
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('warranty.status')}</Text>
+              <View style={styles.chipRow}>
+                {['PENDING', 'PROCESSING', 'COMPLETED', 'CANCELLED'].map(s => (
+                  <Pressable
+                    key={s}
+                    onPress={() => setFormData({ ...formData, status: s })}
+                    style={[styles.chip, formData.status === s && { backgroundColor: getStatusColor(s), borderColor: getStatusColor(s) }]}
+                  >
+                    <Text style={[styles.chipText, formData.status === s && { color: '#FFFFFF' }]}>
+                      {t(`warranty.status${s.charAt(0).toUpperCase() + s.slice(1).toLowerCase()}`)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('warranty.issue')}</Text>
+              <TextInput
+                style={[styles.input, styles.textArea, { backgroundColor: colors.surface, color: colors.text }]}
+                placeholder={t('warranty.issuePlaceholder')}
+                multiline
+                value={formData.issue}
+                onChangeText={t => setFormData({ ...formData, issue: t })}
+              />
+
+              <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.note')}</Text>
+              <TextInput
+                style={[styles.input, styles.textArea, { backgroundColor: colors.surface, color: colors.text }]}
+                placeholder={t('warranty.notePlaceholder')}
+                multiline
+                value={formData.note}
+                onChangeText={t => setFormData({ ...formData, note: t })}
+              />
+
+              <View style={styles.row}>
+                <View style={{ flex: 1, marginRight: 10 }}>
+                  <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.receivedDate')}</Text>
+                  <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="YYYY-MM-DD" value={formData.receivedDate} onChangeText={t => setFormData({ ...formData, receivedDate: t })} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('warranty.returnDate')}</Text>
+                  <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="YYYY-MM-DD" value={formData.returnDate} onChangeText={t => setFormData({ ...formData, returnDate: t })} />
+                </View>
+              </View>
+
+              <Pressable style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 35 }]} onPress={handleSaveWarranty}>
+                <Text style={styles.submitBtnText}>{editingWarranty ? t('common.complete') : t('common.add')}</Text>
+              </Pressable>
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
     </ScreenBackground>
   );
@@ -284,13 +284,13 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 24, paddingVertical: 15 },
   headerTitle: { fontSize: 24, fontFamily: FONTS.bold },
   backBtn: { padding: 8 },
-  addSquareBtn: { 
-    width: 44, 
-    height: 44, 
-    borderRadius: 14, 
-    alignItems: 'center', 
+  addSquareBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    alignItems: 'center',
     justifyContent: 'center',
-    ...SHADOWS.soft 
+    ...SHADOWS.soft
   },
   listContent: { padding: 24, paddingBottom: 100 },
   card: { padding: 20, marginBottom: 20, borderRadius: 25 },

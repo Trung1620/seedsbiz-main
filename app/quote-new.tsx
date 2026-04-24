@@ -124,8 +124,8 @@ export default function NewQuoteScreen() {
     if (!searchQuery) return products;
     const q = searchQuery.toLowerCase();
     return products.filter(p => 
-      (p.nameVi?.toLowerCase().includes(q)) || 
-      (p.sku?.toLowerCase().includes(q))
+      (p.nameVi?.toLowerCase() || "").includes(q) || 
+      (p.sku?.toLowerCase() || "").includes(q)
     );
   }, [products, searchQuery]);
 
@@ -145,9 +145,9 @@ export default function NewQuoteScreen() {
       setItems([...items, {
         productId: p.id,
         sku: p.sku || "",
-        nameVi: p.nameVi,
-        image: p.images?.[0] || "",
-        unitPrice: p.priceVnd || p.costPriceVnd || 0,
+        nameVi: p.nameVi || "Sản phẩm không tên",
+        image: p.images?.[0] || p.image || "",
+        unitPrice: p.priceVnd ?? p.costPriceVnd ?? 0,
         quantity: 1,
       }]);
     }
@@ -619,7 +619,7 @@ const styles = StyleSheet.create({
   mainButtonText: { color: '#FFF', fontSize: 16, fontFamily: FONTS.bold, letterSpacing: 1 },
   dateDisplay: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: 12, backgroundColor: 'rgba(0,0,0,0.03)', borderRadius: 12 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  datePickerContent: { width: '100%', borderRadius: 24, padding: 25, ...SHADOWS.deep },
+  datePickerContent: { width: '100%', borderRadius: 24, padding: 25, ...SHADOWS.floating },
   datePickerGrid: { flexDirection: 'row', marginBottom: 25 },
   pickerLabel: { fontSize: 12, fontFamily: FONTS.bold, opacity: 0.5, marginBottom: 5 },
   datePartInput: { height: 50, backgroundColor: 'rgba(0,0,0,0.05)', borderRadius: 12, textAlign: 'center', fontSize: 18, fontFamily: FONTS.bold },

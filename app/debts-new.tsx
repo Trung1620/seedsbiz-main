@@ -77,7 +77,7 @@ export default function NewDebtScreen() {
           amount: q.grandTotal - (q.depositAmount || 0),
           partnerId: q.customerId,
           partnerName: q.customerName || q.contactName,
-          refNote: `Nợ từ đơn ${q.number}`
+          refNote: t('extra.refNoteQuote', { number: q.number })
         })).filter(i => i.amount > 0);
         setSources(items);
       } else {
@@ -90,22 +90,22 @@ export default function NewDebtScreen() {
                  items.push({
                    id: p.id,
                    type: 'production_labor',
-                   title: `Tiền công: ${p.orderNumber}`,
+                   title: `${t('extra.laborPrefix')}: ${p.orderNumber}`,
                    subtitle: p.product?.nameVi || 'SP',
                    amount: p.totalLaborCost,
-                   partnerName: `Thợ (${p.orderNumber})`,
-                   refNote: `Tiền công thợ từ lệnh ${p.orderNumber}`
+                   partnerName: `${t('extra.artisanPrefix')} (${p.orderNumber})`,
+                   refNote: t('extra.refNoteLabor', { number: p.orderNumber })
                  });
                }
                if ((category === 'materials' || category === 'all') && (p.totalMaterialCost || 0) > 0) {
                 items.push({
                   id: p.id,
                   type: 'production_material',
-                  title: `Vật tư: ${p.orderNumber}`,
+                  title: `${t('extra.matPrefix')}: ${p.orderNumber}`,
                   subtitle: p.product?.nameVi || 'SP',
                   amount: p.totalMaterialCost,
-                  partnerName: `NCC Vật tư (${p.orderNumber})`,
-                  refNote: `Tiền vật tư lệnh ${p.orderNumber}`
+                  partnerName: `${t('extra.supplierPrefix')} (${p.orderNumber})`,
+                  refNote: t('extra.refNoteMaterial', { number: p.orderNumber })
                 });
               }
             });
@@ -122,11 +122,11 @@ export default function NewDebtScreen() {
             const shipItems = deliveryRows.filter((d: any) => (d.shippingCost || 0) > 0).map((d: any) => ({
                 id: d.id,
                 type: 'shipping',
-                title: `Phí ship: ${d.number}`,
+                title: `${t('extra.shipPrefix')}: ${d.number}`,
                 subtitle: d.carrier || t('common.shipping'),
                 amount: d.shippingCost,
-                partnerName: d.carrier || `ĐV Vận chuyển`,
-                refNote: `Phí ship đơn ${d.number}`
+                partnerName: d.carrier || t('common.shippingCarrier', 'ĐV Vận chuyển'),
+                refNote: t('extra.refNoteShipping', { number: d.number })
             }));
             
             if (category === 'all') {
@@ -194,14 +194,14 @@ export default function NewDebtScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={[styles.typeSwitcher, NEUMORPHISM.cardInner]}>
-          {(["CUSTOMER", "ARTISAN", "SUPPLIER"] as const).map((t) => (
+          {(["CUSTOMER", "ARTISAN", "SUPPLIER"] as const).map((typeValue) => (
             <TouchableOpacity
-              key={t}
-              style={[styles.typeBtn, debtType === t && [styles.typeBtnActive, NEUMORPHISM.button]]}
-              onPress={() => setDebtType(t)}
+              key={typeValue}
+              style={[styles.typeBtn, debtType === typeValue && [styles.typeBtnActive, NEUMORPHISM.button]]}
+              onPress={() => setDebtType(typeValue)}
             >
-              <Text style={[styles.typeText, debtType === t && styles.typeTextActive]}>
-                {t === "CUSTOMER" ? "KHÁCH" : t === "ARTISAN" ? "THỢ" : "NCC"}
+              <Text style={[styles.typeText, debtType === typeValue && styles.typeTextActive]}>
+                {typeValue === "CUSTOMER" ? t('extra.typeCustomer') : typeValue === "ARTISAN" ? t('extra.typeArtisan') : t('extra.typeSupplier')}
               </Text>
             </TouchableOpacity>
           ))}
@@ -217,7 +217,7 @@ export default function NewDebtScreen() {
              }}
            >
              <Ionicons name="receipt-outline" size={24} color={COLORS.primary} />
-             <Text style={styles.quickPickLabel}>Đơn hàng</Text>
+             <Text style={styles.quickPickLabel}>{t('extra.sourceOrders')}</Text>
            </TouchableOpacity>
           ) : (
             <>
@@ -229,7 +229,7 @@ export default function NewDebtScreen() {
                 }}
               >
                 <Ionicons name="people-outline" size={24} color={COLORS.success} />
-                <Text style={styles.quickPickLabel}>Tiền thợ</Text>
+                <Text style={styles.quickPickLabel}>{t('extra.sourceLabor')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
@@ -240,7 +240,7 @@ export default function NewDebtScreen() {
                 }}
               >
                 <Ionicons name="cube-outline" size={24} color={COLORS.warning} />
-                <Text style={styles.quickPickLabel}>Vật tư</Text>
+                <Text style={styles.quickPickLabel}>{t('extra.sourceMaterials')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
@@ -251,7 +251,7 @@ export default function NewDebtScreen() {
                 }}
               >
                 <Ionicons name="bus-outline" size={24} color={COLORS.primary} />
-                <Text style={styles.quickPickLabel}>Giao hàng</Text>
+                <Text style={styles.quickPickLabel}>{t('extra.sourceShipping')}</Text>
               </TouchableOpacity>
             </>
           )}
@@ -261,7 +261,7 @@ export default function NewDebtScreen() {
            {sourceId && (
               <View style={styles.linkedBadge}>
                  <Ionicons name="link" size={12} color={COLORS.success} />
-                 <Text style={styles.linkedText}>Đã liên kết nguồn: {sourceType}</Text>
+                 <Text style={styles.linkedText}>{t('extra.linkedSource', { type: sourceType })}</Text>
                  <TouchableOpacity onPress={() => { setSourceId(null); setSourceType(null); }}>
                     <Ionicons name="close-circle" size={16} color={COLORS.error} />
                  </TouchableOpacity>
@@ -332,7 +332,7 @@ export default function NewDebtScreen() {
         <View style={styles.modalBg}>
           <View style={[styles.modalContent, NEUMORPHISM.card]}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}> Chọn từ hệ thống </Text>
+              <Text style={styles.modalTitle}> {t('extra.selectFromSystem')} </Text>
               <TouchableOpacity onPress={() => setShowSourceModal(false)}>
                 <Ionicons name="close" size={24} color={COLORS.text} />
               </TouchableOpacity>
@@ -356,7 +356,7 @@ export default function NewDebtScreen() {
                   </TouchableOpacity>
                 )}
                 ListEmptyComponent={
-                  <Text style={styles.emptyText}>Không tìm thấy dữ liệu phù hợp.</Text>
+                  <Text style={styles.emptyText}>{t('extra.noMatchingData')}</Text>
                 }
               />
             )}

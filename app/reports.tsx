@@ -111,7 +111,7 @@ export default function ReportsScreen() {
       });
     } catch (e: any) {
       console.error("[REPORTS_LOAD_ERROR]", e);
-      setError(e.message === "Timeout" ? "Mạng yếu hoặc máy chủ bận, vui lòng thử lại" : "Không thể tải báo cáo");
+      setError(e.message === "Timeout" ? t('extra.errorTimeout') : t('extra.errorLoad'));
     } finally {
       setLoading(false);
     }
@@ -142,17 +142,17 @@ export default function ReportsScreen() {
       if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
       if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
       
-      return new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+      return new Intl.NumberFormat('vi-VN').format(num) + ' ' + t('common.currencySymbol');
     } catch (e) {
-      return '0 đ';
+      return '0 ' + t('common.currencySymbol');
     }
   };
 
   const metrics = [
     { key: 'revenue', title: String(t('reports.metrics.revenue')), value: data ? formatCurrency(data.revenue) : '0', icon: 'payments', color: PALETTE.accent },
-    { key: 'receivable', title: 'Khách nợ (Phải thu)', value: data ? formatCurrency(data.receivable) : '0', icon: 'account-balance-wallet', color: PALETTE.primary },
-    { key: 'payable', title: 'Nợ thợ & Thuế', value: data ? formatCurrency(data.payable) : '0', icon: 'receipt-long', color: '#FF6B6B' },
-    { key: 'profit', title: 'Lợi nhuận ròng', value: data ? formatCurrency(data.profit) : '0', icon: 'trending-up', color: '#4CAF50' },
+    { key: 'receivable', title: t('reports.metrics.receivable'), value: data ? formatCurrency(data.receivable) : '0', icon: 'account-balance-wallet', color: PALETTE.primary },
+    { key: 'payable', title: t('reports.metrics.payable'), value: data ? formatCurrency(data.payable) : '0', icon: 'receipt-long', color: '#FF6B6B' },
+    { key: 'profit', title: t('reports.metrics.netProfit'), value: data ? formatCurrency(data.profit) : '0', icon: 'trending-up', color: '#4CAF50' },
   ];
 
   if (!authReady || !activeOrg?.id) {
@@ -182,7 +182,7 @@ export default function ReportsScreen() {
             <MaterialIcons name="error-outline" size={20} color="#FF6B6B" />
             <Text style={styles.errorText}>{error}</Text>
             <Pressable style={styles.retryBtn} onPress={loadData}>
-              <Text style={styles.retryText}>Thử lại</Text>
+              <Text style={styles.retryText}>{t('debts.retry')}</Text>
             </Pressable>
           </View>
         )}
@@ -202,7 +202,7 @@ export default function ReportsScreen() {
 
         <View style={[styles.chartCard, { backgroundColor: colors.surface, borderRadius: 24, ...SHADOWS.soft }]}>
             <Text style={[styles.chartTitle, { color: colors.textSecondary }]}>
-              {period === 'week' ? String(t('reports.chart.weeklyTrend')) : String(t('reports.chart.saleChart'))}
+              {period === 'week' ? String(t('extra.chart.weeklyTrend')) : String(t('extra.chart.saleChart'))}
             </Text>
             <View style={styles.chartBarRow}>
                {(data?.chartData || []).map((item: any, i: number) => (
@@ -233,7 +233,7 @@ export default function ReportsScreen() {
            {[
              { name: String(t('home.dashboard.reports.sales')), icon: 'trending-up', route: '/report-sales' },
              { name: String(t('home.dashboard.reports.debts')), icon: 'account-balance', route: '/debts' },
-             { name: String(t('home.dashboard.reports.inventory', 'Báo cáo Kiểm kê')), icon: 'inventory', route: '/inventory-report' },
+             { name: String(t('extra.inventoryReport')), icon: 'inventory', route: '/inventory-report' },
            ].map((r, i) => (
              <Pressable key={i} style={[styles.reportRow, { borderBottomWidth: i === 2 ? 0 : 1, borderBottomColor: colors.outline + '40' }]} onPress={() => { console.log("NAV TO:", r.route); router.push(r.route as any); }}>
                <View style={[styles.reportIconBox, { backgroundColor: PALETTE.primary + '10' }]}>
@@ -247,7 +247,7 @@ export default function ReportsScreen() {
 
         {/* PHÂN TÍCH CHI TIẾT - BIỂU ĐỒ TRÒN */}
         <Text style={[styles.sectionTitle, { color: colors.textSecondary, marginTop: 35, marginBottom: 20 }]}>
-          PHÂN TÍCH CƠ CẤU TÀI CHÍNH
+          {t('extra.financialAnalysisTitle')}
         </Text>
         
         <View style={[styles.pieChartContainer, { backgroundColor: colors.surface, ...SHADOWS.soft }]}>

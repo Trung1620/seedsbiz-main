@@ -91,25 +91,25 @@ export default function AuthWelcomeScreen() {
                 style={styles.logo}
                 resizeMode="contain"
               />
-              <Text style={styles.brandTitle}>MÂY</Text>
+              <Text style={styles.brandTitle}>{t('auth.brandPart1')}</Text>
             </View>
-            <Text style={[styles.brandTitle, { marginTop: -5 }]}>TRE</Text>
+            <Text style={[styles.brandTitle, { marginTop: -5 }]}>{t('auth.brandPart2')}</Text>
             
-            <Text style={styles.tagline}>WORKSHOP MANAGEMENT</Text>
+            <Text style={styles.tagline}>{t('auth.tagline')}</Text>
           </View>
 
           {/* Form Section */}
           <View style={[styles.formContainer, { marginTop: -10 }]}>
             <View style={[styles.inputGroup, NEUMORPHISM.cardInner]}>
               <View style={styles.field}>
-                <Text style={styles.fieldLabel}>TÀI KHOẢN</Text>
+                <Text style={styles.fieldLabel}>{t('auth.fieldAccount')}</Text>
                 <TextInput
                   style={styles.textInput}
                   value={email}
                   onChangeText={setEmail}
                   keyboardType="email-address"
                   autoCapitalize="none"
-                  placeholder="Nhập email của bạn"
+                  placeholder={t('auth.placeholderEmail')}
                   placeholderTextColor="rgba(26, 26, 26, 0.3)"
                 />
               </View>
@@ -117,7 +117,7 @@ export default function AuthWelcomeScreen() {
               <View style={styles.divider} />
 
               <View style={styles.field}>
-                <Text style={styles.fieldLabel}>MẬT KHẨU</Text>
+                <Text style={styles.fieldLabel}>{t('auth.fieldPassword')}</Text>
                 <TextInput
                   style={styles.textInput}
                   value={password}
@@ -137,7 +137,7 @@ export default function AuthWelcomeScreen() {
               {loading ? (
                 <ActivityIndicator color={PALETTE.white} />
               ) : (
-                <Text style={styles.loginBtnText}>{t("home.header.login")}</Text>
+                <Text style={styles.loginBtnText}>{t("auth.loginBtn")}</Text>
               )}
             </Pressable>
 
@@ -145,7 +145,7 @@ export default function AuthWelcomeScreen() {
               style={styles.forgotBtn}
               onPress={() => router.push("/auth-forgot-password")}
             >
-              <Text style={styles.forgotText}>Quên mật khẩu ?</Text>
+              <Text style={styles.forgotText}>{t('auth.forgotPasswordBtn')}</Text>
             </Pressable>
           </View>
 
@@ -155,13 +155,13 @@ export default function AuthWelcomeScreen() {
               style={styles.registerBtn}
               onPress={() => router.push("/auth-register")}
             >
-              <Text style={styles.registerBtnText}>Tạo tài khoản</Text>
+              <Text style={styles.registerBtnText}>{t('auth.createAccount')}</Text>
             </Pressable>
           </View>
 
           {/* Footer Info */}
           <View style={styles.footer}>
-            <Text style={styles.footerText}>VERSION {version}</Text>
+            <Text style={styles.footerText}>{t('auth.versionLabel')} {version}</Text>
           </View>
         </View>
       </KeyboardAvoidingView>

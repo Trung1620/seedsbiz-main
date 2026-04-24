@@ -393,6 +393,11 @@ export async function createOrg(data: any) {
   return await readJson(res);
 }
 
+export async function updateOrg(id: string, data: any) {
+  const res = await authedFetch(`/api/orgs/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
 // Products
 export async function listProducts(params?: any) {
   const query = new URLSearchParams(params).toString();
@@ -581,6 +586,21 @@ export async function listExpenses(params?: any) {
 
 export async function createExpense(data: any) {
   const res = await authedFetch("/api/expenses", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+// Notifications
+export async function listNotifications(orgId: string) {
+  const res = await authedFetch(`/api/notifications?orgId=${orgId}`);
+  const data = await readJson(res);
+  return data?.notifications || data || [];
+}
+
+export async function markAllNotificationsAsRead(orgId: string) {
+  const res = await authedFetch(`/api/notifications`, {
+    method: "PATCH",
+    body: JSON.stringify({ id: "all" })
+  });
   return await readJson(res);
 }
 

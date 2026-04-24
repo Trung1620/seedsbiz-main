@@ -10,6 +10,7 @@ import {
   RefreshControl,
   TextInput,
   Alert,
+  ScrollView,
 } from "react-native";
 import { useRouter, useLocalSearchParams, useFocusEffect } from "expo-router";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";

@@ -21,16 +21,16 @@ const getModuleGroups = (t: any) => [
       { key: "variants", label: t('modulesScreen.groups.inventory.variants'), desc: t('home.modules.products.desc') || "SKU Management", route: "/product-new", icon: "layers" },
       { key: "bom", label: t('modulesScreen.groups.inventory.bom'), desc: t('home.modules.materials.desc') || "BOM Management", route: "/materials", icon: "reorder" },
       { key: "barcode", label: t('modulesScreen.groups.inventory.barcode'), desc: t('quotes.scanner.hint') || "QR Scan", route: "/scan", icon: "qr-code-scanner" },
-      { key: "suppliers", label: "Nhà cung cấp", desc: "Đối tác vật tư mây tre", route: "/suppliers", icon: "local-shipping" },
+      { key: "suppliers", label: t('suppliers.title'), desc: t('modulesScreen.groups.inventory.suppliersDesc'), route: "/suppliers", icon: "local-shipping" },
     ]
   },
   {
-    title: "QUẢN LÝ TÀI CHÍNH",
+    title: t('modulesScreen.groups.finance.title'),
     icon: "account-balance-wallet",
     color: COLORS.error,
     items: [
-      { key: "debts", label: "Quản lý Công nợ", desc: "Theo dõi nợ Khách/Thợ/NCC", route: "/debts", icon: "money-off" },
-      { key: "expenses", label: "Phiếu chi tiền", desc: "Quản lý chi phí vận hành", route: "/expenses", icon: "payments" },
+      { key: "debts", label: t('modulesScreen.groups.finance.debts'), desc: t('modulesScreen.groups.finance.debtsDesc'), route: "/debts", icon: "money-off" },
+      { key: "expenses", label: t('modulesScreen.groups.finance.expenses'), desc: t('modulesScreen.groups.finance.expensesDesc'), route: "/expenses", icon: "payments" },
       { key: "reports", label: t('home.modules.reports.title') || "Báo cáo", desc: t('home.modules.reports.desc') || "Phân tích doanh thu/lợi nhuận", route: "/reports", icon: "insert-chart" },
     ]
   },
@@ -61,16 +61,16 @@ const getModuleGroups = (t: any) => [
     color: "#007AFF",
     items: [
       { key: "shipping", label: t('modulesScreen.groups.shipping.tracking'), desc: t('home.modules.shipping.desc') || "Shipping tracking", route: "/shipping", icon: "local-shipping" },
-      { key: "repair", label: t('modulesScreen.groups.shipping.repair'), desc: "Care after sales", route: "/warranty", icon: "verified-user" },
+      { key: "repair", label: t('modulesScreen.groups.shipping.repair'), desc: t('modulesScreen.groups.shipping.repairDesc'), route: "/warranty", icon: "verified-user" },
     ]
   },
   {
-    title: "Hệ thống",
+    title: t('modulesScreen.groups.system.title'),
     icon: "settings",
     color: "#8E8E93",
     items: [
-      { key: "settings", label: t('nav.settings') || "Cài đặt", desc: "Cấu hình ứng dụng & Vùng miền", route: "/settings", icon: "settings" },
-      { key: "profile", label: t('home.viewProfile') || "Hồ sơ", desc: "Thông tin cá nhân", route: "/profile", icon: "person" },
+      { key: "settings", label: t('nav.settings') || "Cài đặt", desc: t('modulesScreen.groups.system.settingsDesc'), route: "/settings", icon: "settings" },
+      { key: "profile", label: t('home.viewProfile') || "Hồ sơ", desc: t('modulesScreen.groups.system.profileDesc'), route: "/profile", icon: "person" },
     ]
   }
 ];

@@ -131,10 +131,10 @@ export default function SuppliersScreen() {
             <ScrollView contentContainerStyle={styles.sheetContent} showsVerticalScrollIndicator={false}>
               <InputField label={t('suppliers.codeLabel')} placeholder={t('suppliers.codePlaceholder')} value={form.code} onChangeText={v => setForm({ ...form, code: v })} />
               <InputField label={t('suppliers.nameLabel')} placeholder={t('suppliers.namePlaceholder')} value={form.name} onChangeText={v => setForm({ ...form, name: v })} />
-              <InputField label={t('suppliers.phoneLabel')} placeholder="0901 234 567" value={form.phone} onChangeText={v => setForm({ ...form, phone: v })} keyboardType="phone-pad" />
-              <InputField label={t('suppliers.emailLabel')} placeholder="contact@abc.com" value={form.email} onChangeText={v => setForm({ ...form, email: v })} keyboardType="email-address" autoCapitalize="none" />
-              <InputField label={t('suppliers.addressLabel')} placeholder="123 Đường ABC" value={form.address} onChangeText={v => setForm({ ...form, address: v })} />
-              <InputField label={t('suppliers.taxIdLabel')} placeholder="0123456789" value={form.taxId} onChangeText={v => setForm({ ...form, taxId: v })} />
+              <InputField label={t('suppliers.phoneLabel')} placeholder={t('suppliers.placeholderPhoneExample')} value={form.phone} onChangeText={v => setForm({ ...form, phone: v })} keyboardType="phone-pad" />
+              <InputField label={t('suppliers.emailLabel')} placeholder={t('suppliers.placeholderEmailExample')} value={form.email} onChangeText={v => setForm({ ...form, email: v })} keyboardType="email-address" autoCapitalize="none" />
+              <InputField label={t('suppliers.addressLabel')} placeholder={t('suppliers.placeholderAddressExample')} value={form.address} onChangeText={v => setForm({ ...form, address: v })} />
+              <InputField label={t('suppliers.taxIdLabel')} placeholder={t('suppliers.placeholderTaxIdExample')} value={form.taxId} onChangeText={v => setForm({ ...form, taxId: v })} />
               <PrimaryButton label={t('suppliers.saveBtn')} onPress={handleCreate} loading={saving} style={{ marginTop: 8 }} />
             </ScrollView>
           </View>

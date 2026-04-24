@@ -12,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { H } from "@/utils/href";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { COLORS, FONTS, SIZES, NEUMORPHISM } from "@/utils/theme";
@@ -26,14 +27,15 @@ type ContractRow = {
   createdAt?: string;
 };
 
-function formatMoney(v?: number) {
+function formatMoney(v?: number, t?: any) {
   if (typeof v !== "number") return "";
-  return `${v.toLocaleString("vi-VN")} đ`;
+  return `${v.toLocaleString("vi-VN")} ${t ? t('common.currencySymbol') : 'đ'}`;
 }
 
 export default function ContractsScreen() {
   const router = useRouter();
   const { authReady, activeOrg } = useAuth();
+  const { t } = useTranslation();
 
   const [q, setQ] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -45,7 +47,7 @@ export default function ContractsScreen() {
       // TODO: replace with actual api.listContracts
       setItems([]);
     } catch (e: any) {
-      Alert.alert("Lỗi", e?.message || "Không tải được hợp đồng.");
+      Alert.alert(t('common.error'), e?.message || t('contracts.loadingFailed', { defaultValue: 'Could not load contracts.' }));
     } finally {
       setLoading(false);
     }
@@ -64,9 +66,9 @@ export default function ContractsScreen() {
         </Pressable>
 
         <View style={{ flex: 1 }}>
-          <Text style={styles.title}>Quản lý Hợp đồng</Text>
+          <Text style={styles.title}>{t('contracts.title')}</Text>
           <Text style={styles.sub}>
-            {activeOrg?.name || "Danh sách hợp đồng"}
+            {activeOrg?.name || t('contracts.sub')}
           </Text>
         </View>
 
@@ -74,7 +76,7 @@ export default function ContractsScreen() {
           style={[styles.primaryBtn, NEUMORPHISM.button]}
           onPress={() => router.push(H("/quotes"))}
         >
-          <Text style={styles.primaryBtnText}>Tạo từ báo giá</Text>
+          <Text style={styles.primaryBtnText}>{t('contracts.createBtn')}</Text>
         </Pressable>
       </View>
 
@@ -82,32 +84,32 @@ export default function ContractsScreen() {
         <TextInput
           value={q}
           onChangeText={setQ}
-          placeholder="Tìm theo số hợp đồng, khách hàng..."
+          placeholder={t('contracts.searchPlaceholder')}
           placeholderTextColor={COLORS.textSecondary}
           style={[styles.searchInput, NEUMORPHISM.cardInner]}
         />
         <Pressable style={[styles.searchBtn, NEUMORPHISM.button]} onPress={loadData}>
-          <Text style={styles.searchBtnText}>Tìm</Text>
+          <Text style={styles.searchBtnText}>{t('contracts.searchText')}</Text>
         </Pressable>
       </View>
 
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator color={COLORS.primary} size="large" />
-          <Text style={styles.centerText}>Đang tải hợp đồng...</Text>
+          <Text style={styles.centerText}>{t('contracts.loading')}</Text>
         </View>
       ) : items.length === 0 ? (
         <View style={[styles.emptyWrap, NEUMORPHISM.cardInner]}>
-          <Text style={styles.emptyTitle}>Chưa có hợp đồng</Text>
+          <Text style={styles.emptyTitle}>{t('contracts.emptyTitle')}</Text>
           <Text style={styles.emptyText}>
-            Hợp đồng sẽ được tự động tạo từ các báo giá đã chốt với khách hàng.
+            {t('contracts.emptyDesc')}
           </Text>
 
           <Pressable
             style={[styles.emptyBtn, NEUMORPHISM.button]}
             onPress={() => router.push(H("/quotes"))}
           >
-            <Text style={styles.emptyBtnText}>Đi đến báo giá →</Text>
+            <Text style={styles.emptyBtnText}>{t('contracts.goToQuote')}</Text>
           </Pressable>
         </View>
       ) : (
@@ -124,25 +126,25 @@ export default function ContractsScreen() {
               }
             >
               <View style={styles.cardHeader}>
-                  <Text style={styles.cardTitle}>
-                    {item.number || "Hợp đồng nháp"}
-                  </Text>
-                  <View style={styles.statusBadge}>
-                     <Text style={styles.statusText}>{item.status || "DRAFT"}</Text>
-                  </View>
+                <Text style={styles.cardTitle}>
+                  {item.number || t('contracts.draftName')}
+                </Text>
+                <View style={styles.statusBadge}>
+                  <Text style={styles.statusText}>{item.status || "DRAFT"}</Text>
+                </View>
               </View>
 
               <Text style={styles.cardSub}>
-                Khách hàng: <Text style={styles.highlightText}>{item.buyerName || "—"}</Text>
+                {t('contracts.customerLabel')}: <Text style={styles.highlightText}>{item.buyerName || "—"}</Text>
               </Text>
 
               <Text style={styles.cardSub}>
-                Báo giá: <Text style={styles.highlightText}>{item.quoteNumber || "—"}</Text>
+                {t('contracts.quoteLabel')}: <Text style={styles.highlightText}>{item.quoteNumber || "—"}</Text>
               </Text>
 
               <View style={styles.cardFooter}>
                 <Text style={styles.cardSub}>Tổng giá trị</Text>
-                <Text style={styles.totalText}>{formatMoney(item.grandTotal)}</Text>
+                <Text style={styles.totalText}>{formatMoney(item.grandTotal, t)}</Text>
               </View>
             </Pressable>
           )}

@@ -32,19 +32,19 @@ const drawerWidth = width * 0.7;
 
 const getModuleGroups = (t: any) => [
   {
-    title: "DANH MỤC",
+    title: t('home.sidebar.title'),
     icon: "grid-view",
     color: PALETTE.primary,
     items: [
-      { key: "profile", label: "Hồ sơ cá nhân", route: "/profile", icon: "account-circle" },
-      { key: "products", label: "Sản phẩm", route: "/products", icon: "category" },
-      { key: "materials", label: "Vật tư", route: "/materials", icon: "reorder" },
-      { key: "artisans", label: "Thợ thủ công", route: "/artisans", icon: "person" },
-      { key: "jobSheets", label: "Phiếu gia công", route: "/job-sheets", icon: "assignment" },
-      { key: "progress", label: "Tiến độ thợ", route: "/production-progress", icon: "hourglass-top" },
-      { key: "debts", label: "Công nợ", route: "/debts", icon: "money-off" },
-      { key: "expenses", label: "Phiếu chi", route: "/expenses", icon: "payments" },
-      { key: "settings", label: "Cài đặt", route: "/settings", icon: "settings" },
+      { key: "profile", label: t('home.sidebar.profile'), route: "/profile", icon: "account-circle" },
+      { key: "products", label: t('home.sidebar.products'), route: "/products", icon: "category" },
+      { key: "materials", label: t('home.sidebar.materials'), route: "/materials", icon: "reorder" },
+      { key: "artisans", label: t('home.sidebar.artisans'), route: "/artisans", icon: "person" },
+      { key: "jobSheets", label: t('home.sidebar.jobSheets'), route: "/job-sheets", icon: "assignment" },
+      { key: "progress", label: t('home.sidebar.progress'), route: "/production-progress", icon: "hourglass-top" },
+      { key: "debts", label: t('home.sidebar.debts'), route: "/debts", icon: "money-off" },
+      { key: "expenses", label: t('home.sidebar.expenses'), route: "/expenses", icon: "payments" },
+      { key: "settings", label: t('home.sidebar.settings'), route: "/settings", icon: "settings" },
     ]
   }
 ];
@@ -302,7 +302,7 @@ export default function HomeScreen() {
               <MaterialIcons name="insights" size={24} color={PALETTE.primary} />
             </View>
             <View>
-              <Text style={[styles.todayTitle, { color: colors.textSecondary }]}>{t('common.today', 'Hôm nay')}</Text>
+              <Text style={[styles.todayTitle, { color: colors.textSecondary }]}>{t('common.today')}</Text>
               <Text style={[styles.todayMainValue, { color: colors.text }]}>
                 {Number(stats?.revenue || 0).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')} {t('common.currencySymbol')}
               </Text>
@@ -327,7 +327,7 @@ export default function HomeScreen() {
           
           <View style={styles.todayActionHint}>
              <Text style={[styles.todayActionText, { color: PALETTE.primary }]}>
-                {t('home.actions.openModule', 'Xem báo cáo chi tiết')} →
+                {t('home.actions.openModule')} →
              </Text>
           </View>
         </Pressable>
@@ -409,7 +409,7 @@ export default function HomeScreen() {
       {/* SIDE DRAWER (DANH MỤC) */}
       <Animated.View style={[styles.drawer, { left: slideAnim, backgroundColor: colors.surface, paddingTop: insets.top + 60 }]}>
          <View style={styles.drawerHeader}>
-            <Text style={[styles.drawerTitle, { color: colors.text }]}>DANH MỤC</Text>
+            <Text style={[styles.drawerTitle, { color: colors.text }]}>{t('home.sidebar.title')}</Text>
          </View>
          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
             {groups[0].items.map((item) => (

@@ -13,17 +13,19 @@ import {
   Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { COLORS, FONTS, SIZES, NEUMORPHISM, TYPOGRAPHY, PALETTE } from "@/utils/theme";
 import * as api from "@/utils/api";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleResetRequest = async () => {
     if (!email) {
-      Alert.alert("Lỗi", "Vui lòng nhập email của bạn.");
+      Alert.alert(t('common.error'), t('auth.forgotPassword.alertEnterEmail'));
       return;
     }
 
@@ -37,14 +39,14 @@ export default function ForgotPasswordScreen() {
       const data = await res.json();
       
       if (res.ok) {
-        Alert.alert("Thành công", data.message, [
+        Alert.alert(t('common.success'), data.message, [
           { text: "OK", onPress: () => router.push("/auth-welcome") }
         ]);
       } else {
-        Alert.alert("Lỗi", data.error || "Có lỗi xảy ra.");
+        Alert.alert(t('common.error'), data.error || t('common.tryAgain'));
       }
     } catch (error) {
-      Alert.alert("Lỗi", "Không thể kết nối tới máy chủ.");
+      Alert.alert(t('common.error'), t('common.tryAgain'));
     } finally {
       setLoading(false);
     }
@@ -59,15 +61,15 @@ export default function ForgotPasswordScreen() {
       >
         <View style={styles.container}>
           <Pressable onPress={() => router.push("/auth-welcome")} style={styles.backBtn}>
-            <Text style={styles.backText}>← Quay lại đăng nhập</Text>
+            <Text style={styles.backText}>{t('auth.forgotPassword.back')}</Text>
           </Pressable>
 
           <View style={styles.header}>
-            <Text style={styles.title}>KHÔI PHỤC</Text>
-            <Text style={styles.subtitle}>MẬT KHẨU</Text>
+            <Text style={styles.title}>{t('auth.forgotPassword.title1')}</Text>
+            <Text style={styles.subtitle}>{t('auth.forgotPassword.title2')}</Text>
             <View style={styles.accentLine} />
             <Text style={styles.desc}>
-              Nhập email của bạn để nhận mã khôi phục tài khoản.
+              {t('auth.forgotPassword.desc')}
             </Text>
           </View>
 
@@ -92,7 +94,7 @@ export default function ForgotPasswordScreen() {
               {loading ? (
                 <ActivityIndicator color={PALETTE.white} />
               ) : (
-                <Text style={styles.btnText}>GỬI YÊU CẦU</Text>
+                <Text style={styles.btnText}>{t('auth.forgotPassword.btn')}</Text>
               )}
             </Pressable>
           </View>

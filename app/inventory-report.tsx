@@ -73,14 +73,14 @@ export default function InventoryReportScreen() {
         <Pressable style={[styles.backBtn, { backgroundColor: colors.surface }]} onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.inventory', 'Báo cáo Kiểm kê')}</Text>
+        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.inventory')}</Text>
       </View>
 
       <View style={styles.searchContainer}>
         <View style={[styles.searchBar, { backgroundColor: colors.surface, ...SHADOWS.soft }]}>
           <MaterialIcons name="search" size={20} color={colors.textSecondary} />
           <TextInput
-            placeholder="Tìm theo tên hoặc SKU..."
+            placeholder={t('reports.inventory.searchPlaceholder')}
             placeholderTextColor={colors.textSecondary}
             style={[styles.searchInput, { color: colors.text }]}
             value={search}
@@ -91,11 +91,11 @@ export default function InventoryReportScreen() {
 
       <View style={styles.summaryRow}>
          <View style={[styles.summaryBox, { backgroundColor: PALETTE.primary + '10' }]}>
-            <Text style={styles.summaryLabel}>TỔNG TỒN KHO</Text>
+            <Text style={styles.summaryLabel}>{t('reports.inventory.totalStock')}</Text>
             <Text style={[styles.summaryValue, { color: PALETTE.primary }]}>{totalStock}</Text>
          </View>
          <View style={[styles.summaryBox, { backgroundColor: '#FF6B6B10' }]}>
-            <Text style={[styles.summaryLabel, { color: '#FF6B6B' }]}>SẮP HẾT HÀNG</Text>
+            <Text style={[styles.summaryLabel, { color: '#FF6B6B' }]}>{t('reports.inventory.lowStock')}</Text>
             <Text style={[styles.summaryValue, { color: '#FF6B6B' }]}>{lowStockCount}</Text>
          </View>
       </View>
@@ -103,8 +103,8 @@ export default function InventoryReportScreen() {
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
         <View style={[styles.listCard, { backgroundColor: colors.surface, ...SHADOWS.soft }]}>
           <View style={styles.listHeader}>
-             <Text style={[styles.colHead, { flex: 2, color: colors.textSecondary }]}>SẢN PHẨM / SKU</Text>
-             <Text style={[styles.colHead, { flex: 1, textAlign: 'right', color: colors.textSecondary }]}>TỒN KHO</Text>
+             <Text style={[styles.colHead, { flex: 2, color: colors.textSecondary }]}>{t('reports.inventory.productSku')}</Text>
+             <Text style={[styles.colHead, { flex: 1, textAlign: 'right', color: colors.textSecondary }]}>{t('reports.inventory.stock')}</Text>
           </View>
           
           {filteredProducts.map((p: any, i: number) => (
@@ -130,7 +130,7 @@ export default function InventoryReportScreen() {
           ))}
           
           {filteredProducts.length === 0 && (
-            <Text style={styles.emptyText}>Không tìm thấy sản phẩm nào</Text>
+            <Text style={styles.emptyText}>{t('reports.inventory.noResults')}</Text>
           )}
         </View>
         <View style={{ height: 100 }} />

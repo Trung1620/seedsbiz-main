@@ -98,7 +98,7 @@ export default function ProductDetailsScreen() {
               <Text style={[styles.price, { color: PALETTE.primary }]}>
                 {isEn 
                   ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format((product.priceVnd || 0) / rate)
-                  : (product.priceVnd || 0).toLocaleString("vi-VN") + " đ"
+                  : (product.priceVnd || 0).toLocaleString("vi-VN") + " " + t('common.currencySymbol')
                 }
               </Text>
               <View style={[styles.stockBadge, { backgroundColor: product.inStock ? COLORS.success + '20' : COLORS.error + '20' }]}>
@@ -124,19 +124,19 @@ export default function ProductDetailsScreen() {
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.size || "—"}</Text>
               </View>
               <View style={styles.infoItem}>
-                 <Text style={styles.infoLabel}>MÃ VẠCH (BARCODE)</Text>
+                 <Text style={styles.infoLabel}>{t('products.barcodeLabel')}</Text>
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.barcode || "—"}</Text>
               </View>
               <View style={styles.infoItem}>
-                 <Text style={styles.infoLabel}>KHỐI LƯỢNG (KG)</Text>
+                 <Text style={styles.infoLabel}>{t('products.weightLabel')}</Text>
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.weight || "—"}</Text>
               </View>
               <View style={styles.infoItem}>
-                 <Text style={styles.infoLabel}>VỊ TRÍ KHO</Text>
+                 <Text style={styles.infoLabel}>{t('products.locationLabel')}</Text>
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.location || "—"}</Text>
               </View>
               <View style={styles.infoItem}>
-                 <Text style={styles.infoLabel}>TỒN TỐI THIỂU</Text>
+                 <Text style={styles.infoLabel}>{t('products.minStockLabel')}</Text>
                  <Text style={[styles.infoValue, { color: colors.text }]}>{product.minStock || "0"}</Text>
               </View>
            </View>
@@ -151,7 +151,7 @@ export default function ProductDetailsScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: colors.surface }]}>
-          <Pressable style={[styles.editBtn, NEUMORPHISM.button]} onPress={() => Alert.alert("Sắp ra mắt", "Tính năng chỉnh sửa đang phát triển.")}>
+          <Pressable style={[styles.editBtn, NEUMORPHISM.button]} onPress={() => Alert.alert(t('products.comingSoon'), t('products.editDeveloping'))}>
              <Text style={[styles.editBtnText, { color: colors.text }]}>{t("common.edit")}</Text>
           </Pressable>
           <Pressable style={[styles.actionBtn, { backgroundColor: PALETTE.primary }]} onPress={() => router.push(H("/inventory-stock-in"))}>
