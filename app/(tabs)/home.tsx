@@ -30,24 +30,36 @@ import { openUrl } from "@/utils/api";
 const { width, height } = Dimensions.get("window");
 const drawerWidth = width * 0.7;
 
-const getModuleGroups = (t: any) => [
-  {
-    title: t('home.sidebar.title'),
-    icon: "grid-view",
-    color: PALETTE.primary,
-    items: [
-      { key: "profile", label: t('home.sidebar.profile'), route: "/profile", icon: "account-circle" },
-      { key: "products", label: t('home.sidebar.products'), route: "/products", icon: "category" },
-      { key: "materials", label: t('home.sidebar.materials'), route: "/materials", icon: "reorder" },
-      { key: "artisans", label: t('home.sidebar.artisans'), route: "/artisans", icon: "person" },
-      { key: "jobSheets", label: t('home.sidebar.jobSheets'), route: "/job-sheets", icon: "assignment" },
-      { key: "progress", label: t('home.sidebar.progress'), route: "/production-progress", icon: "hourglass-top" },
+const getModuleGroups = (t: any, role?: string) => {
+  const isAdmin = role === "ADMIN" || role === "OWNER";
+  
+  const allItems = [
+    { key: "profile", label: t('home.sidebar.profile'), route: "/profile", icon: "account-circle" },
+    { key: "products", label: t('home.sidebar.products'), route: "/products", icon: "category" },
+    { key: "materials", label: t('home.sidebar.materials'), route: "/materials", icon: "reorder" },
+    { key: "artisans", label: t('home.sidebar.artisans'), route: "/artisans", icon: "person" },
+    { key: "jobSheets", label: t('home.sidebar.jobSheets'), route: "/job-sheets", icon: "assignment" },
+    { key: "progress", label: t('home.sidebar.progress'), route: "/production-progress", icon: "hourglass-top" },
+  ];
+
+  if (isAdmin) {
+    allItems.push(
       { key: "debts", label: t('home.sidebar.debts'), route: "/debts", icon: "money-off" },
       { key: "expenses", label: t('home.sidebar.expenses'), route: "/expenses", icon: "payments" },
       { key: "settings", label: t('home.sidebar.settings'), route: "/settings", icon: "settings" },
-    ]
+    );
   }
-];
+
+  return [
+    {
+      title: t('home.sidebar.title'),
+      icon: "grid-view",
+      color: PALETTE.primary,
+      items: allItems
+    }
+  ];
+};
+
 
 const HorizontalProductCard = ({ item, onPress, colors }: any) => {
   const { t, i18n } = useTranslation();
@@ -163,7 +175,9 @@ export default function HomeScreen() {
   const { t, i18n } = useTranslation();
   const { user, activeOrg } = useAuth();
   const { colors, notificationsEnabled } = useTheme();
-  const groups = getModuleGroups(t);
+  const isAdmin = (user?.role as any) === "ADMIN" || (user?.role as any) === "OWNER";
+  const groups = getModuleGroups(t, user?.role as any);
+
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const slideAnim = useRef(new Animated.Value(-drawerWidth)).current;
@@ -190,9 +204,14 @@ export default function HomeScreen() {
     { key: "materials", label: t('home.modules.materials.title'), route: "/materials", icon: "inventory-2", color: "#FBC02D" },
     { key: "customers", label: t('home.modules.customers.title'), route: "/customers", icon: "groups", color: "#4CAF50" },
     { key: "shipping", label: t('home.modules.shipping.title'), route: "/shipping", icon: "local-shipping", color: "#2196F3" },
-    { key: "expenses", label: t('home.modules.expenses.title'), route: "/expenses", icon: "receipt-long", color: "#F44336" },
-    { key: "debts", label: t('home.modules.debts.title'), route: "/debts", icon: "account-balance-wallet", color: "#9C27B0" },
   ];
+
+  if (isAdmin) {
+    MAIN_MODULES.push(
+      { key: "expenses", label: t('home.modules.expenses.title'), route: "/expenses", icon: "receipt-long", color: "#F44336" },
+      { key: "debts", label: t('home.modules.debts.title'), route: "/debts", icon: "account-balance-wallet", color: "#9C27B0" },
+    );
+  }
 
   const loadData = async (isRefreshing = false) => {
     const orgId = activeOrg?.id;
@@ -216,7 +235,7 @@ export default function HomeScreen() {
       const todayStr = `${year}-${month}-${day}`;
 
       const [statData, prodData] = await Promise.all([
-        api.getDashboardStats(orgId, todayStr, todayStr),
+        isAdmin ? api.getDashboardStats(orgId, todayStr, todayStr) : Promise.resolve(null),
         api.listProducts({ orgId: orgId })
       ]);
 
@@ -288,49 +307,65 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* STATS ROW */}
-        <Pressable 
-          onPress={() => router.push("/reports" as any)}
-          style={({ pressed }) => [
-            styles.todayCard, 
-            NEUMORPHISM.card, 
-            { backgroundColor: colors.surface, opacity: pressed ? 0.95 : 1 }
-          ]}
-        >
-          <View style={styles.todayHeader}>
-            <View style={[styles.todayIconBox, { backgroundColor: PALETTE.primary + '15' }]}>
-              <MaterialIcons name="insights" size={24} color={PALETTE.primary} />
+        {/* WELCOME SECTION FOR STAFF / ORG CODE FOR OWNER */}
+        <View style={{ paddingHorizontal: 24, marginTop: 20 }}>
+           <Text style={{ fontSize: 24, fontFamily: FONTS.bold, color: colors.text }}>{t("home.greeting")} {user?.name}!</Text>
+           {isAdmin && activeOrg?.code && (
+             <View style={{ marginTop: 10, padding: 12, backgroundColor: PALETTE.primary + '10', borderRadius: 12, borderWidth: 1, borderColor: PALETTE.primary + '30' }}>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>{t("profile.orgCode")}:</Text>
+                <Text style={{ fontSize: 16, fontFamily: FONTS.bold, color: PALETTE.primary, marginTop: 4 }}>{activeOrg.code}</Text>
+             </View>
+           )}
+        </View>
+
+
+        {/* STATS ROW (ADMIN ONLY) */}
+        {isAdmin && (
+          <Pressable 
+            onPress={() => router.push("/reports" as any)}
+            style={({ pressed }) => [
+              styles.todayCard, 
+              NEUMORPHISM.card, 
+              { backgroundColor: colors.surface, opacity: pressed ? 0.95 : 1 }
+            ]}
+          >
+            <View style={styles.todayHeader}>
+              <View style={[styles.todayIconBox, { backgroundColor: PALETTE.primary + '15' }]}>
+                <MaterialIcons name="insights" size={24} color={PALETTE.primary} />
+              </View>
+              <View>
+                <Text style={[styles.todayTitle, { color: colors.textSecondary }]}>{t('common.today')}</Text>
+                <Text style={[styles.todayMainValue, { color: colors.text }]}>
+                  {Number(stats?.revenue || 0).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')} {t('common.currencySymbol')}
+                </Text>
+              </View>
             </View>
-            <View>
-              <Text style={[styles.todayTitle, { color: colors.textSecondary }]}>{t('common.today')}</Text>
-              <Text style={[styles.todayMainValue, { color: colors.text }]}>
-                {Number(stats?.revenue || 0).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')} {t('common.currencySymbol')}
-              </Text>
+            
+            <View style={[styles.todayDivider, { backgroundColor: colors.outline }]} />
+            
+            <View style={styles.todaySubRow}>
+              <View style={styles.todaySubItem}>
+                <Text style={[styles.todaySubTitle, { color: colors.textSecondary }]}>{t('home.dashboard.orders')}</Text>
+                <Text style={[styles.todaySubValue, { color: colors.text }]}>{stats?.orders || 0}</Text>
+              </View>
+              <View style={[styles.todaySubDivider, { backgroundColor: colors.outline }]} />
+              <View style={styles.todaySubItem}>
+                <Text style={[styles.todaySubTitle, { color: colors.textSecondary }]}>{t('home.dashboard.debts')}</Text>
+                <Text style={[styles.todaySubValue, { color: PALETTE.accent }]}>
+                  {Number(stats?.debtTotal || 0).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')}
+                </Text>
+              </View>
             </View>
-          </View>
-          
-          <View style={[styles.todayDivider, { backgroundColor: colors.outline }]} />
-          
-          <View style={styles.todaySubRow}>
-            <View style={styles.todaySubItem}>
-              <Text style={[styles.todaySubTitle, { color: colors.textSecondary }]}>{t('home.dashboard.orders')}</Text>
-              <Text style={[styles.todaySubValue, { color: colors.text }]}>{stats?.orders || 0}</Text>
+            
+            <View style={styles.todayActionHint}>
+               <Text style={[styles.todayActionText, { color: PALETTE.primary }]}>
+                  {t('home.actions.openModule')} →
+               </Text>
             </View>
-            <View style={[styles.todaySubDivider, { backgroundColor: colors.outline }]} />
-            <View style={styles.todaySubItem}>
-              <Text style={[styles.todaySubTitle, { color: colors.textSecondary }]}>{t('home.dashboard.debts')}</Text>
-              <Text style={[styles.todaySubValue, { color: PALETTE.accent }]}>
-                {Number(stats?.debtTotal || 0).toLocaleString(i18n.language === 'vi' ? 'vi-VN' : 'en-US')}
-              </Text>
-            </View>
-          </View>
-          
-          <View style={styles.todayActionHint}>
-             <Text style={[styles.todayActionText, { color: PALETTE.primary }]}>
-                {t('home.actions.openModule')} →
-             </Text>
-          </View>
-        </Pressable>
+          </Pressable>
+        )}
+
+        <View style={{ height: isAdmin ? 0 : 40 }} />
 
         {/* PRODUCTS CAROUSEL */}
         <View style={styles.section}>
@@ -373,6 +408,7 @@ export default function HomeScreen() {
               ))}
            </View>
         </View>
+
 
         {/* LATEST NEWS SECTION */}
         <View style={styles.section}>

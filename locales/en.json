@@ -997,6 +997,33 @@
     "registerSub": "Start managing your bamboo business",
     "registerBtn": "REGISTER",
     "hasAccount": "Already have an account?",
+    "registerPending": "Your staff account has been created and is waiting for Owner approval.",
+    "roleOwner": "Owner",
+    "roleStaff": "Staff",
+    "orgName": "Workshop Name",
+    "orgCode": "Join Code",
+    "placeholderOrgName": "e.g. Bamboo Workshop X",
+    "placeholderOrgCode": "e.g. org_123..."
+  },
+  "orgMembers": {
+    "title": "Staff Management",
+    "loadFailed": "Could not load member list",
+    "approve": "Approve",
+    "block": "Block",
+    "unblock": "Unblock",
+    "remove": "Remove",
+    "removeConfirm": "Are you sure you want to remove {{name}} from the workshop?",
+    "approveConfirm": "Are you sure you want to approve {{name}}?",
+    "blockConfirm": "Are you sure you want to block {{name}}?",
+    "empty": "No staff members have joined your workshop yet.",
+    "role": "Role",
+    "status": "Status",
+    "success": "Success",
+    "error": "Error",
+    "admin": "Owner / Admin",
+    "member": "Staff"
+  },
+
     "needLogin": "You need to login first.",
     "createWorkspaceTitle": "Create New Workspace",
     "fieldAccount": "ACCOUNT",
@@ -1047,8 +1074,12 @@
     "saveWorkshop": "SAVE SETTINGS",
     "orgUpdated": "Workshop information updated",
     "orgUpdateError": "Could not update information",
-    "update_error": "Error updating profile"
+    "update_error": "Error updating profile",
+    "activeOrg": "Active Workshop",
+    "orgCode": "Join Code (For Staff)",
+    "manageStaff": "Staff Management (Approval)"
   },
+
   "settings": {
     "title": "Settings",
     "region": "REGION & WORKSHOP",

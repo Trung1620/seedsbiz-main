@@ -27,20 +27,30 @@ export default function AuthRegisterScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [role, setRole] = useState<"OWNER" | "STAFF">("OWNER");
+  const [orgValue, setOrgValue] = useState(""); // Tên xưởng hoặc Mã xưởng
   const [loading, setLoading] = useState(false);
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !orgValue) {
       Alert.alert(t("auth.error"), t("auth.missingFields"));
       return;
     }
 
     setLoading(true);
     try {
-      await register(name.trim(), email.trim(), password);
-      Alert.alert(t("auth.success"), t("auth.registerSuccess"), [
-        { text: "OK", onPress: () => router.replace(H("/auth-login")) }
-      ]);
+      const data = await register(name.trim(), email.trim(), password, role, orgValue.trim());
+      if (data.status === "PENDING") {
+        Alert.alert(
+          t("auth.registerSuccess"), 
+          t("auth.registerPending"),
+          [{ text: "OK", onPress: () => router.replace(H("/auth-login")) }]
+        );
+      } else {
+        Alert.alert(t("auth.success"), t("auth.registerSuccess"), [
+          { text: "OK", onPress: () => router.replace(H("/auth-login")) }
+        ]);
+      }
     } catch (e: any) {
       Alert.alert(t("auth.error"), e?.message || t("auth.registerFailed"));
     } finally {
@@ -59,6 +69,22 @@ export default function AuthRegisterScreen() {
           <Text style={styles.sub}>{t("auth.registerSub")}</Text>
 
           <View style={styles.form}>
+            {/* ROLE SELECTION */}
+            <View style={styles.roleContainer}>
+               <Pressable 
+                 style={[styles.roleBtn, role === "OWNER" && styles.roleBtnActive]} 
+                 onPress={() => setRole("OWNER")}
+               >
+                  <Text style={[styles.roleBtnText, role === "OWNER" && styles.roleBtnTextActive]}>{t("auth.roleOwner")}</Text>
+               </Pressable>
+               <Pressable 
+                 style={[styles.roleBtn, role === "STAFF" && styles.roleBtnActive]} 
+                 onPress={() => setRole("STAFF")}
+               >
+                  <Text style={[styles.roleBtnText, role === "STAFF" && styles.roleBtnTextActive]}>{t("auth.roleStaff")}</Text>
+               </Pressable>
+            </View>
+
             <Text style={styles.label}>{t("profile.fullName")}</Text>
             <TextInput
               style={[styles.input, NEUMORPHISM.cardInner]}
@@ -78,6 +104,17 @@ export default function AuthRegisterScreen() {
               placeholder="name@email.com"
               placeholderTextColor={COLORS.textSecondary}
             />
+
+            <Text style={styles.label}>{role === "OWNER" ? t("auth.orgName") : t("auth.orgCode")}</Text>
+            <TextInput
+              style={[styles.input, NEUMORPHISM.cardInner]}
+              value={orgValue}
+              onChangeText={setOrgValue}
+              placeholder={role === "OWNER" ? t("auth.placeholderOrgName") : t("auth.placeholderOrgCode")}
+              autoCapitalize={role === "STAFF" ? "none" : "sentences"}
+              placeholderTextColor={COLORS.textSecondary}
+            />
+
 
             <Text style={styles.label}>{t("auth.password")}</Text>
             <TextInput
@@ -100,6 +137,7 @@ export default function AuthRegisterScreen() {
                 <Text style={styles.primaryText}>{t("auth.registerBtn")}</Text>
               )}
             </Pressable>
+
 
             <View style={styles.footer}>
               <Text style={styles.footerText}>{t("auth.hasAccount")}</Text>
@@ -125,7 +163,13 @@ const styles = StyleSheet.create({
   title: { fontSize: 36, fontFamily: FONTS.bold, color: COLORS.text, marginBottom: 8 },
   sub: { fontSize: SIZES.font, color: COLORS.textSecondary, fontFamily: FONTS.medium, marginBottom: 40 },
   form: { width: "100%" },
+  roleContainer: { flexDirection: 'row', gap: 10, marginBottom: 25 },
+  roleBtn: { flex: 1, height: 50, borderRadius: 12, backgroundColor: '#F0F0F0', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#EEE' },
+  roleBtnActive: { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  roleBtnText: { fontSize: 14, fontFamily: FONTS.bold, color: COLORS.textSecondary },
+  roleBtnTextActive: { color: COLORS.white },
   label: { fontSize: SIZES.small, fontFamily: FONTS.bold, color: COLORS.text, marginBottom: 8, marginLeft: 4 },
+
   input: {
     borderRadius: 16,
     paddingHorizontal: 16,

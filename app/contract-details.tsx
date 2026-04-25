@@ -12,8 +12,10 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as api from "@/utils/api";
+import { useTranslation } from "react-i18next";
 import { COLORS, FONTS, SIZES, NEUMORPHISM, SHADOWS, PALETTE } from "@/utils/theme";
 import { useTheme } from "@/lib/theme/ThemeProvider";
+
 
 export default function ContractDetailsScreen() {
   const router = useRouter();

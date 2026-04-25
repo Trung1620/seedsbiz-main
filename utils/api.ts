@@ -47,6 +47,8 @@ export type Variant = {
   size?: string;
   priceVnd?: number;
   inStock?: number;
+  productNameVi?: string;
+  productNameEn?: string;
 };
 
 export type Product = {
@@ -360,7 +362,19 @@ export async function authedFetch(path: string, init: RequestInit = {}) {
 // ==================== FUNCTIONS ====================
 
 // Auth
+export async function registerOrg(orgName: string, email: string, pass: string, name?: string, role: string = "OWNER", orgCode?: string) {
+  const res = await fetch(`${BASE_URL}/api/auth-register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ orgName, email, password: pass, name, role, orgCode }),
+  });
+  const data = await readJson(res);
+  if (data?.token) await setToken(data.token);
+  return data;
+}
+
 export async function login(email: string, pass: string) {
+
   const res = await fetch(`${BASE_URL}/api/auth-login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -382,7 +396,8 @@ export async function updateProfile(data: any) {
 }
 
 // Orgs
-export async function listMyOrgs(): Promise<Org[]> {
+export async function listMyOrgs(options?: { noMockFallback?: boolean }): Promise<Org[]> {
+
   const res = await authedFetch("/api/orgs/me");
   const data = await readJson(res);
   return Array.isArray(data) ? data : (data?.orgs || []);
@@ -397,6 +412,24 @@ export async function updateOrg(id: string, data: any) {
   const res = await authedFetch(`/api/orgs/${id}`, { method: "PATCH", body: JSON.stringify(data) });
   return await readJson(res);
 }
+
+// Org Members
+export async function listOrgMembers() {
+  const res = await authedFetch("/api/orgs/members");
+  return await readJson(res);
+}
+
+export async function updateOrgMember(id: string, data: { status?: string; role?: string }) {
+  const res = await authedFetch(`/api/orgs/members/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
+export async function removeOrgMember(id: string) {
+  const res = await authedFetch(`/api/orgs/members/${id}`, { method: "DELETE" });
+  if (res.status === 204) return true;
+  return await readJson(res);
+}
+
 
 // Products
 export async function listProducts(params?: any) {
@@ -420,6 +453,10 @@ export const getProductById = getProduct;
 
 export async function updateProduct(id: string, data: any) {
   const res = await authedFetch(`/api/products/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+export async function deleteProduct(id: string) {
+  const res = await authedFetch(`/api/products/${id}`, { method: "DELETE" });
   return await readJson(res);
 }
 

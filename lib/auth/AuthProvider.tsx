@@ -10,7 +10,7 @@ type User = {
   email?: string;
   name?: string;
   phone?: string;
-  role?: 'ADMIN' | 'USER';
+  role?: 'ADMIN' | 'USER' | 'OWNER' | 'STAFF';
 };
 
 type AuthContextValue = {
@@ -21,7 +21,7 @@ type AuthContextValue = {
   refreshSession: () => Promise<void>;
   login: (email: string, password: string) => Promise<void>;
   loginWithEmail: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, pass: string) => Promise<void>;
+  register: (name: string, email: string, pass: string, role?: string, orgValue?: string) => Promise<any>;
   logout: () => Promise<void>;
   setActiveOrg: (org: api.Org | null) => Promise<void>;
 };
@@ -89,7 +89,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const orgs = await api.listMyOrgs({ noMockFallback: true });
+      const orgs = await api.listMyOrgs();
+
       if (orgs.length > 0) {
         await setOrg(orgs[0].id, orgs[0].name);
         setActiveOrgState(orgs[0]);
@@ -103,14 +104,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = loginWithEmail; // alias for compatibility
 
-  const register = React.useCallback(async (name: string, email: string, pass: string) => {
-    // Note: register function in api.ts is named registerOrg but it's used for user registration
-    const data = await api.registerOrg("Default Org", email, pass, name);
+  const register = React.useCallback(async (name: string, email: string, pass: string, role: string = "OWNER", orgNameOrCode: string = "Default Org") => {
+    // Nếu là Chủ xưởng thì orgNameOrCode là tên xưởng, nếu là Nhân viên thì là mã xưởng
+    const isStaff = role === "STAFF";
+    const data = await api.registerOrg(
+      isStaff ? "" : orgNameOrCode, 
+      email, 
+      pass, 
+      name, 
+      role, 
+      isStaff ? orgNameOrCode : undefined
+    );
     const t = String(data.token || "");
     setTokenState(t);
-    setUser(data.user || { id: "user", email, name });
+    setUser(data.user || { id: "user", email, name, role });
     setAuthReady(true);
+    return data;
   }, []);
+
 
   const setActiveOrg = React.useCallback(async (org: api.Org | null) => {
     if (!org) return;

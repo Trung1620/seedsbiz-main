@@ -32,7 +32,8 @@ export default function OrgSelectScreen() {
 
     (async () => {
       try {
-        const data = await api.listOrgs();
+        const data = await api.listMyOrgs();
+
         setOrgs(data);
         if (data.length === 0) {
            router.replace(H("/org-create"));

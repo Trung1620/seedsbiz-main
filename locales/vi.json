@@ -1027,6 +1027,33 @@
     "registerSub": "Bắt đầu quản lý doanh nghiệp mây tre của bạn",
     "registerBtn": "ĐĂNG KÝ",
     "hasAccount": "Đã có tài khoản?",
+    "registerPending": "Tài khoản nhân viên của bạn đã được tạo và đang chờ Chủ xưởng phê duyệt.",
+    "roleOwner": "Chủ xưởng",
+    "roleStaff": "Nhân viên",
+    "orgName": "Tên xưởng sản xuất",
+    "orgCode": "Mã xưởng tham gia",
+    "placeholderOrgName": "VD: Kho Mây Tre X",
+    "placeholderOrgCode": "VD: org_123..."
+  },
+  "orgMembers": {
+    "title": "Quản lý nhân viên",
+    "loadFailed": "Không thể tải danh sách thành viên",
+    "approve": "Duyệt",
+    "block": "Khóa",
+    "unblock": "Bỏ khóa",
+    "remove": "Xóa",
+    "removeConfirm": "Bạn có chắc chắn muốn xóa {{name}} khỏi xưởng?",
+    "approveConfirm": "Bạn có chắc chắn muốn duyệt {{name}}?",
+    "blockConfirm": "Bạn có chắc chắn muốn khóa {{name}}?",
+    "empty": "Chưa có nhân viên nào tham gia xưởng của bạn.",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "success": "Thành công",
+    "error": "Lỗi",
+    "admin": "Chủ xưởng / Admin",
+    "member": "Nhân viên"
+  },
+
     "needLogin": "Bạn cần đăng nhập trước.",
     "createWorkspaceTitle": "Tạo Workspace mới",
     "fieldAccount": "TÀI KHOẢN",
@@ -1077,8 +1104,12 @@
     "saveWorkshop": "LƯU THIẾT LẬP",
     "orgUpdated": "Đã cập nhật thông tin xưởng",
     "orgUpdateError": "Không thể cập nhật thông tin",
-    "update_error": "Lỗi khi cập nhật hồ sơ"
+    "update_error": "Lỗi khi cập nhật hồ sơ",
+    "activeOrg": "Xưởng đang chọn",
+    "orgCode": "Mã xưởng (Gửi cho NV)",
+    "manageStaff": "Quản lý nhân viên (Phê duyệt)"
   },
+
   "settings": {
     "title": "Cài đặt",
     "region": "KHU VỰC & CƠ SỞ",

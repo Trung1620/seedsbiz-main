@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Pressable, ScrollView, ActivityIndicator, Image, Alert, Modal, TextInput, Clipboard } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { COLORS, FONTS, SIZES } from "@/utils/theme";
+import { COLORS, FONTS, SHADOWS, PALETTE, SIZES } from "@/utils/theme";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as api from "@/utils/api";
@@ -221,33 +221,50 @@ export default function ProfileScreen() {
               />
               <InfoItem
                 label={t('profile.role')}
-                value={me?.role === "ADMIN" ? t('profile.admin') : t('profile.member')}
+                value={me?.role === "ADMIN" || me?.role === "OWNER" ? t("orgMembers.admin") : t("orgMembers.member")}
                 icon="shield-checkmark-outline"
-                onPress={() => Alert.alert(t('profile.role'), t('profile.admin'))}
+                onPress={() => Alert.alert(t('profile.role'), me?.role)}
               />
+              {activeOrg && (
+                <InfoItem
+                  label={t("profile.activeOrg")}
+                  value={activeOrg.name}
+                  icon="business-outline"
+                />
+              )}
+              {activeOrg?.code && (me?.role === "OWNER" || me?.role === "ADMIN") && (
+                <InfoItem
+                  label={t("profile.orgCode")}
+                  value={activeOrg.code}
+                  icon="share-social-outline"
+                  onPress={() => copyToClipboard(activeOrg.code ?? "")}
+                />
+              )}
               <InfoItem
                 label={t('profile.joinedAt')}
                 value={new Date(me?.createdAt || Date.now()).toLocaleDateString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US')}
                 icon="calendar-outline"
-                onPress={() => Alert.alert(t('common.info'), t('profile.joinedAt') + ": " + new Date(me?.createdAt || Date.now()).toLocaleDateString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US'))}
               />
               <InfoItem
                 label={t('profile.lastLogin')}
                 value={me?.lastLoginAt ? new Date(me.lastLoginAt).toLocaleString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US') : t('profile.justNow')}
                 icon="time-outline"
-                isLast
-                onPress={() => Alert.alert(t('common.info'), t('profile.lastLogin') + ": " + (me?.lastLoginAt ? new Date(me.lastLoginAt).toLocaleString(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US') : t('profile.justNow')))}
-              />
-              <InfoItem
-                label={t('profile.workshopSettings')}
-                value={activeOrg?.name || "—"}
-                icon="business-outline"
-                isLast
-                onPress={() => setIsOrgModalVisible(true)}
               />
             </View>
 
             <View style={styles.actionSection}>
+              {(me?.role === "OWNER" || me?.role === "ADMIN") && (
+                <Pressable 
+                  style={[styles.actionBtn, { backgroundColor: PALETTE.primary + '10' }]}
+                  onPress={() => router.push("/org-members" as any)}
+                >
+                  <Ionicons name="people-outline" size={22} color={PALETTE.primary} />
+                  <Text style={[styles.actionText, { color: PALETTE.primary }]}>{t("profile.manageStaff")}</Text>
+                  <MaterialIcons name="chevron-right" size={20} color={PALETTE.primary} />
+                </Pressable>
+              )}
+
+
               <Pressable style={styles.secondaryBtn} onPress={() => setIsEditModalVisible(true)}>
                 <Ionicons name="create-outline" size={20} color={COLORS.primary} />
                 <Text style={styles.secondaryBtnText}>{t('profile.editInfo')}</Text>
@@ -413,6 +430,9 @@ const styles = StyleSheet.create({
   secondaryBtnText: { fontFamily: FONTS.bold, color: COLORS.primary, fontSize: 16 },
   logoutBtn: { width: '100%', flexDirection: 'row', paddingVertical: 16, borderRadius: 20, backgroundColor: 'rgba(231, 76, 60, 0.05)', alignItems: 'center', justifyContent: 'center', gap: 10 },
   logoutBtnText: { fontFamily: FONTS.bold, color: COLORS.error, fontSize: 16 },
+
+  actionBtn: { width: '100%', flexDirection: 'row', paddingVertical: 16, borderRadius: 20, alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 20 },
+  actionText: { fontFamily: FONTS.bold, fontSize: 16, flex: 1 },
 
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
   modalContent: { backgroundColor: COLORS.white, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 40, maxHeight: '80%' },
