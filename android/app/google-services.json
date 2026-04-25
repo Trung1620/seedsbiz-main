@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "996270433977",
+    "project_id": "seedsbiz-6ad11",
+    "storage_bucket": "seedsbiz-6ad11.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996270433977:android:527482eab41b2cbd74dd68",
+        "android_client_info": {
+          "package_name": "com.seedsbiz.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9NISC1cW_Nya-7hZc0aACuIAOVuKBBtI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

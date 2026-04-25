@@ -21,6 +21,11 @@ import { useTranslation } from "react-i18next";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { FONTS, NEUMORPHISM, SHADOWS, PALETTE } from "@/utils/theme";
 import { useTheme } from "@/lib/theme/ThemeProvider";
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
+import { Image } from "react-native";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 export default function ExpensesScreen() {
   const router = useRouter();
@@ -47,6 +52,94 @@ export default function ExpensesScreen() {
   const [newDate, setNewDate] = useState(new Date().toISOString().split('T')[0]);
   const [newReceiptImage, setNewReceiptImage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setNewReceiptImage(result.assets[0].uri);
+    }
+  };
+
+  const handleSaveExpense = async () => {
+    if (!newTitle || !newAmount) return Alert.alert(t('common.error'), t('common.missingInfo'));
+    setSaving(true);
+    try {
+      let finalImageUrl = newReceiptImage;
+      
+      // Upload to Cloudinary if it's a local file
+      if (newReceiptImage && newReceiptImage.startsWith('file://')) {
+        setIsUploading(true);
+        finalImageUrl = await uploadImageUriToCloudinary(newReceiptImage);
+        setIsUploading(false);
+      }
+
+      const payload = {
+        title: newTitle,
+        amount: Number(newAmount),
+        category: newCategory,
+        paymentMethod: newMethod,
+        expenseDate: newDate,
+        receiptImage: finalImageUrl || undefined,
+        orgId: activeOrg?.id
+      };
+
+      if (editingExpense) {
+        await api.updateExpense(editingExpense.id, payload);
+        Alert.alert(t('common.success'), t('common.updateSuccess'));
+      } else {
+        activeOrg?.id && await api.createExpense(payload);
+        Alert.alert(t('common.success'), t('common.addSuccess'));
+      }
+      
+      setShowNewModal(false);
+      setEditingExpense(null);
+      setNewTitle("");
+      setNewAmount("");
+      setNewReceiptImage("");
+      load();
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
+    } finally {
+      setSaving(false);
+      setIsUploading(false);
+    }
+  };
+
+  const exportToExcel = async () => {
+    if (items.length === 0) return Alert.alert(t('common.info'), t('expenses.noData'));
+    
+    try {
+      // Tiêu đề cột
+      const header = ["Ngày (Date)", "Nội dung (Title)", "Số tiền (Amount)", "Phân loại (Category)", "Phương thức (Method)"];
+      
+      // Chuyển dữ liệu sang dạng dòng
+      const rows = items.map(item => [
+        new Date(item.date || item.createdAt).toLocaleDateString('vi-VN'),
+        item.title?.replace(/,/g, ' '), // Loại bỏ dấu phẩy để không lỗi CSV
+        item.amount,
+        t(`expenses.cat_${item.category?.toLowerCase()}`, { defaultValue: item.category }),
+        t(`expenses.method_${item.paymentMethod?.toLowerCase()}`, { defaultValue: item.paymentMethod })
+      ]);
+
+      // Tạo nội dung CSV (Dùng dấu phẩy ngăn cách)
+      // Thêm \uFEFF ở đầu để Excel nhận diện được Encoding UTF-8 (hiển thị tiếng Việt)
+      const csvString = "\uFEFF" + [header, ...rows].map(e => e.join(",")).join("\n");
+      
+      const fileName = `Bao_cao_chi_phi_${period}_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+
+      await FileSystem.writeAsStringAsync(fileUri, csvString, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri, { mimeType: 'text/csv', dialogTitle: 'Xuất báo cáo chi phí', UTI: 'public.comma-separated-values-text' });
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
+    }
+  };
 
   const load = async (selectedPeriod = period) => {
     if (!authReady || !token || !activeOrg?.id) return;
@@ -205,6 +298,12 @@ export default function ExpensesScreen() {
           onPress={() => setShowNewModal(true)}
         >
            <Ionicons name="add" size={24} color="#FFFFFF" />
+        </Pressable>
+        <Pressable 
+          style={[styles.addBtn, { backgroundColor: '#2E7D32', marginLeft: 10 }]} 
+          onPress={exportToExcel}
+        >
+           <MaterialIcons name="file-download" size={24} color="#FFFFFF" />
         </Pressable>
         <Pressable 
           style={[styles.addBtn, { backgroundColor: '#FFB300', marginLeft: 10 }]} 
@@ -395,7 +494,9 @@ export default function ExpensesScreen() {
                     onPress={() => setNewCategory(cat)}
                     style={[styles.pickerBtn, newCategory === cat && { backgroundColor: PALETTE.primary }]}
                   >
-                    <Text style={[styles.pickerText, { color: newCategory === cat ? '#FFF' : colors.textSecondary }]}>{cat}</Text>
+                    <Text style={[styles.pickerText, { color: newCategory === cat ? '#FFF' : colors.textSecondary }]}>
+                       {t(`expenses.cat_${cat.toLowerCase()}`, { defaultValue: cat })}
+                    </Text>
                   </Pressable>
                 ))}
               </View>
@@ -408,7 +509,9 @@ export default function ExpensesScreen() {
                     onPress={() => setNewMethod(m)}
                     style={[styles.pickerBtn, newMethod === m && { backgroundColor: PALETTE.primary }]}
                   >
-                    <Text style={[styles.pickerText, { color: newMethod === m ? '#FFF' : colors.textSecondary }]}>{m}</Text>
+                    <Text style={[styles.pickerText, { color: newMethod === m ? '#FFF' : colors.textSecondary }]}>
+                       {t(`expenses.method_${m.toLowerCase()}`, { defaultValue: m })}
+                    </Text>
                   </Pressable>
                 ))}
               </View>
@@ -422,52 +525,26 @@ export default function ExpensesScreen() {
               />
 
               <Text style={styles.label}>{t('expenses.labelReceipt')}</Text>
-              <TextInput 
-                style={[styles.input, { backgroundColor: colors.background, color: colors.text }]}
-                placeholder="images/receipt_001.jpg"
-                value={newReceiptImage}
-                onChangeText={setNewReceiptImage}
-              />
+              <Pressable 
+                style={[styles.imagePickerBtn, { backgroundColor: colors.background, borderColor: colors.outline + '40' }]} 
+                onPress={pickImage}
+              >
+                {newReceiptImage ? (
+                  <Image source={{ uri: newReceiptImage }} style={styles.imagePreview} />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons name="camera-outline" size={28} color={colors.textSecondary} />
+                    <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 4 }}>{t('common.selectImage')}</Text>
+                  </View>
+                )}
+              </Pressable>
 
               <Pressable 
-                style={[styles.primaryBtn, { backgroundColor: PALETTE.primary, marginTop: 20, opacity: saving ? 0.7 : 1 }]}
-                disabled={saving}
-                onPress={async () => {
-                  if (!newTitle || !newAmount) return Alert.alert(t('common.error'), t('common.missingInfo'));
-                  setSaving(true);
-                  try {
-                    const payload = {
-                      title: newTitle,
-                      amount: Number(newAmount),
-                      category: newCategory,
-                      paymentMethod: newMethod,
-                      expenseDate: newDate,
-                      receiptImage: newReceiptImage || undefined,
-                      orgId: activeOrg?.id
-                    };
-
-                    if (editingExpense) {
-                      await api.updateExpense(editingExpense.id, payload);
-                      Alert.alert(t('common.success'), t('common.updateSuccess'));
-                    } else {
-                      activeOrg?.id && await api.createExpense(payload);
-                      Alert.alert(t('common.success'), t('common.addSuccess'));
-                    }
-                    
-                    setShowNewModal(false);
-                    setEditingExpense(null);
-                    setNewTitle("");
-                    setNewAmount("");
-                    setNewReceiptImage("");
-                    load();
-                  } catch (e: any) {
-                    Alert.alert(t('common.error'), e.message);
-                  } finally {
-                    setSaving(false);
-                  }
-                }}
+                style={[styles.primaryBtn, { backgroundColor: PALETTE.primary, marginTop: 30, opacity: (saving || isUploading) ? 0.7 : 1 }]}
+                disabled={saving || isUploading}
+                onPress={handleSaveExpense}
               >
-                {saving ? <ActivityIndicator color="#FFF" /> : <Text style={styles.primaryBtnText}>{t('expenses.saveBtn')}</Text>}
+                {(saving || isUploading) ? <ActivityIndicator color="#FFF" /> : <Text style={styles.primaryBtnText}>{t('expenses.saveBtn')}</Text>}
               </Pressable>
             </ScrollView>
           </View>
@@ -502,7 +579,7 @@ const styles = StyleSheet.create({
   emptyBox: { alignItems: 'center', marginTop: 100 },
   emptyText: { fontFamily: FONTS.medium, fontSize: 16 },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', padding: 20 },
-  modalContent: { borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 30, maxHeight: '85%', ...SHADOWS.soft },
+  modalContent: { borderRadius: 32, padding: 30, maxHeight: '85%', width: '100%', ...SHADOWS.soft },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
   modalTitle: { fontSize: 20, fontFamily: FONTS.bold },
   breakdownList: { marginBottom: 25 },
@@ -521,4 +598,23 @@ const styles = StyleSheet.create({
   pickerText: { fontSize: 12, fontFamily: FONTS.bold },
   primaryBtn: { height: 54, borderRadius: 15, alignItems: 'center', justifyContent: 'center', ...SHADOWS.soft },
   primaryBtnText: { color: '#FFF', fontFamily: FONTS.bold, fontSize: 15 },
+  imagePickerBtn: {
+    height: 120,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginTop: 5,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

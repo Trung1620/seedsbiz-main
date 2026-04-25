@@ -27,6 +27,9 @@ import ScreenBackground from "@/components/ScreenBackground";
 import { AppHeader, InputField } from "@/components/UI";
 import * as api from "@/utils/api";
 
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
+
 export default function ArtisansScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -39,6 +42,7 @@ export default function ArtisansScreen() {
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   
   const [isAdvanceModalVisible, setIsAdvanceModalVisible] = useState(false);
   const [selectedArtisan, setSelectedArtisan] = useState<any>(null);
@@ -105,29 +109,50 @@ export default function ArtisansScreen() {
     loadWorkers();
   }, [activeOrg?.id]);
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setFormData({ ...formData, image: result.assets[0].uri });
+    }
+  };
+
   const handleSaveWorker = async () => {
     if (!formData.name || !formData.phone) {
       Alert.alert(t('common.error'), t('artisans.missingInfo'));
       return;
     }
+
+    setIsUploading(true);
     try {
+      let finalImageUrl = formData.image;
+      
+      // Nếu ảnh là đường dẫn nội bộ file:// thì upload lên Cloudinary
+      if (formData.image && formData.image.startsWith('file://')) {
+        finalImageUrl = await uploadImageUriToCloudinary(formData.image);
+      }
+
+      const payload = {
+        ...formData,
+        image: finalImageUrl,
+        dailyWage: Number(formData.dailyWage) || 0,
+        initialDebt: Number(formData.initialDebt) || 0,
+        dailyTarget: Number(formData.dailyTarget) || 0,
+        age: formData.age ? Number(formData.age) : undefined
+      };
+
       if (editingWorker) {
-        await api.updateArtisan(editingWorker.id, {
-          ...formData,
-          dailyWage: Number(formData.dailyWage) || 0,
-          initialDebt: Number(formData.initialDebt) || 0,
-          dailyTarget: Number(formData.dailyTarget) || 0,
-          age: formData.age ? Number(formData.age) : undefined
-        });
-        Alert.alert(t('common.success'), t('common.updateSuccess', { defaultValue: 'Cập nhật thành công' }));
+        await api.updateArtisan(editingWorker.id, payload);
+        Alert.alert(t('common.success'), t('common.updateSuccess'));
       } else {
         await api.createArtisan({ 
-          ...formData, 
-          orgId: activeOrg?.id,
-          dailyWage: Number(formData.dailyWage) || 0,
-          initialDebt: Number(formData.initialDebt) || 0,
-          dailyTarget: Number(formData.dailyTarget) || 0,
-          age: formData.age ? Number(formData.age) : undefined
+          ...payload, 
+          orgId: activeOrg?.id
         });
         Alert.alert(t('common.success'), t('artisans.addSuccess'));
       }
@@ -136,6 +161,8 @@ export default function ArtisansScreen() {
       loadWorkers(false);
     } catch (error: any) {
       Alert.alert(t('common.error'), (error.message || t('auth.loginFailed')));
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -366,9 +393,15 @@ export default function ArtisansScreen() {
                   <View style={{ flexDirection: 'row', gap: 15, marginTop: 10 }}>
                      <View style={{ flex: 1 }}>
                         <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('artisans.ageLabel')}</Text>
-                        <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} keyboardType="numeric" value={formData.age} onChangeText={t => setFormData({...formData, age: t})} />
+                        <TextInput 
+                          style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} 
+                          keyboardType="numeric" 
+                          value={formData.age} 
+                          onChangeText={t => setFormData({...formData, age: t})} 
+                          placeholder="25"
+                        />
                      </View>
-                     <View style={{ flex: 1 }}>
+                     <View style={{ flex: 2 }}>
                         <InputField label={t('artisans.dailyWageLabel')} value={formData.dailyWage} onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} placeholder={t('artisans.wagePlaceholder')} keyboardType="numeric" />
                      </View>
                   </View>
@@ -377,16 +410,31 @@ export default function ArtisansScreen() {
 
                   <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} value={formData.skills} onChangeText={t => setFormData({...formData, skills: t})} placeholder={t('artisans.skillsPlaceholder')} />
 
-                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('common.image', { defaultValue: 'Ảnh (URL hoặc Assets)' })}</Text>
-                  <TextInput 
-                    style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} 
-                    value={formData.image} 
-                    onChangeText={t => setFormData({...formData, image: t})} 
-                    placeholder="images/artisan1.jpg..."
-                  />
+                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('common.image')}</Text>
+                  <Pressable 
+                    style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline + '40' }]} 
+                    onPress={pickImage}
+                  >
+                    {formData.image ? (
+                      <Image source={{ uri: formData.image }} style={styles.imagePreview} />
+                    ) : (
+                      <View style={styles.imagePlaceholder}>
+                        <Ionicons name="camera-outline" size={28} color={colors.textSecondary} />
+                        <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 4 }}>{t('common.selectImage')}</Text>
+                      </View>
+                    )}
+                  </Pressable>
 
-                  <Pressable style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 20 }]} onPress={handleSaveWorker}>
-                     <Text style={styles.submitBtnText}>{editingWorker ? t('common.complete') : t('common.confirm')}</Text>
+                  <Pressable 
+                    style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 30, opacity: isUploading ? 0.7 : 1 }]} 
+                    onPress={handleSaveWorker}
+                    disabled={isUploading}
+                  >
+                    {isUploading ? (
+                      <ActivityIndicator color="#FFF" />
+                    ) : (
+                      <Text style={styles.submitBtnText}>{editingWorker ? t('common.complete') : t('common.confirm')}</Text>
+                    )}
                   </Pressable>
                </ScrollView>
             </View>
@@ -480,4 +528,23 @@ const styles = StyleSheet.create({
   submitBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: FONTS.bold },
   attendanceBtn: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10, minWidth: 80, alignItems: 'center' },
   attendanceBtnText: { fontSize: 11, fontFamily: FONTS.bold },
+  imagePickerBtn: {
+    height: 120,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginTop: 5,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

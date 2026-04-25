@@ -301,7 +301,7 @@ const LOCAL_ASSET_MAP: Record<string, any> = {
 export function getPublicFileUrl(path?: any) {
   if (!path) return null;
   if (typeof path !== 'string') return path;
-  if (path.startsWith('http')) return { uri: path };
+  if (path.startsWith('http') || path.startsWith('file://') || path.startsWith('content://')) return { uri: path };
   
   // Kiểm tra trong bản đồ ảnh nội bộ trước
   if (LOCAL_ASSET_MAP[path]) {
@@ -652,6 +652,11 @@ export async function updateQuote(id: string, data: any) {
 
 export async function deleteQuote(id: string) {
   const res = await authedFetch(`/api/quotes/${id}`, { method: "DELETE" });
+  return await readJson(res);
+}
+
+export async function getContractById(id: string) {
+  const res = await authedFetch(`/api/contracts/${id}`);
   return await readJson(res);
 }
 

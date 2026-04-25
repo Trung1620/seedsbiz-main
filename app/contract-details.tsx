@@ -32,7 +32,7 @@ export default function ContractDetailsScreen() {
     (async () => {
       try {
         setLoading(true);
-        const res = await api.getQuoteById(id);
+        const res = await api.getContractById(id);
         setData(res);
       } catch (e: any) {
         Alert.alert(t('common.error'), e.message);

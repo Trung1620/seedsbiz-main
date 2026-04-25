@@ -24,6 +24,9 @@ import { useTranslation } from "react-i18next";
 import ScreenBackground from "@/components/ScreenBackground";
 import * as api from "@/utils/api";
 
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
+
 const getVehicleOptions = (t: any) => [
   { label: t('shipping.vehicleMotorcycle'), value: "motorcycle", icon: "motorcycle" },
   { label: t('shipping.vehicleTruck'), value: "truck", icon: "local-shipping" },
@@ -54,6 +57,8 @@ export default function ShippingScreen() {
   
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingDelivery, setEditingDelivery] = useState<any>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     number: "VN-" + Math.floor(10000 + Math.random() * 90000),
     carrier: t('shipping.carrierGhtk'),
@@ -70,6 +75,18 @@ export default function ShippingScreen() {
     status: "PENDING",
     image: ""
   });
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setFormData({ ...formData, image: result.assets[0].uri });
+    }
+  };
 
   const loadDeliveries = async (showLoading = true) => {
     if (!activeOrg?.id) return;
@@ -95,12 +112,24 @@ export default function ShippingScreen() {
       return;
     }
     
+    setSaving(true);
     try {
+      let finalImageUrl = formData.image;
+
+      // Upload to Cloudinary if it's a local file
+      if (formData.image && formData.image.startsWith('file://')) {
+        setIsUploading(true);
+        finalImageUrl = await uploadImageUriToCloudinary(formData.image);
+        setIsUploading(false);
+      }
+
+      const payload = { ...formData, image: finalImageUrl };
+
       if (editingDelivery) {
-        await api.updateDelivery(editingDelivery.id, formData);
+        await api.updateDelivery(editingDelivery.id, payload);
         Alert.alert(t('common.success'), t('common.updateSuccess'));
       } else {
-        await api.createDelivery(formData);
+        await api.createDelivery(payload);
         Alert.alert(t('common.success'), `${t('shipping.alertSuccess')} #${formData.number}`);
       }
       setIsModalVisible(false);
@@ -109,6 +138,9 @@ export default function ShippingScreen() {
     } catch (error) {
       console.error(error);
       Alert.alert(t('common.error'), t('shipping.alertError'));
+    } finally {
+      setSaving(false);
+      setIsUploading(false);
     }
   };
 
@@ -348,17 +380,35 @@ export default function ShippingScreen() {
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.shippingCostLabel')} ({t('common.currencySymbol').toUpperCase()})</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="e.g. 35000" keyboardType="numeric" value={formData.shippingCost} onChangeText={t => setFormData({...formData, shippingCost: t})} />
                   
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('common.image', { defaultValue: 'Ảnh minh chứng (URL hoặc Assets)' })}</Text>
-                   <TextInput 
-                     style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} 
-                     placeholder="images/delivery_proof.jpg..." 
-                     value={formData.image} 
-                     onChangeText={t => setFormData({...formData, image: t})} 
-                   />
-
-                  <Pressable style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 35 }]} onPress={handleSaveDelivery}>
-                     <Text style={styles.submitBtnText}>{editingDelivery ? t('common.complete') : t('shipping.confirmBtn')}</Text>
-                  </Pressable>
+                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.receiptImageLabel')}</Text>
+                   <Pressable 
+                     style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline + '40' }]} 
+                     onPress={pickImage}
+                   >
+                     {formData.image ? (
+                       <Image 
+                         source={formData.image.startsWith('http') || formData.image.startsWith('file') ? { uri: formData.image } : api.getPublicFileUrl(formData.image)} 
+                         style={styles.imagePreview} 
+                       />
+                     ) : (
+                       <View style={styles.imagePlaceholder}>
+                         <Ionicons name="camera-outline" size={32} color={colors.textSecondary} />
+                         <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 5 }}>{t('common.selectImage')}</Text>
+                       </View>
+                     )}
+                   </Pressable>
+ 
+                   <Pressable 
+                     style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 35, opacity: (saving || isUploading) ? 0.7 : 1 }]} 
+                     onPress={handleSaveDelivery}
+                     disabled={saving || isUploading}
+                   >
+                      {(saving || isUploading) ? (
+                        <ActivityIndicator color="#FFFFFF" />
+                      ) : (
+                        <Text style={styles.submitBtnText}>{editingDelivery ? t('common.complete') : t('shipping.confirmBtn')}</Text>
+                      )}
+                   </Pressable>
                </ScrollView>
             </View>
          </View>
@@ -412,4 +462,23 @@ const styles = StyleSheet.create({
   submitBtnText: { color: '#FFFFFF', fontSize: 18, fontFamily: FONTS.bold },
   priceInfo: { alignItems: 'flex-end' },
   costText: { fontSize: 16, fontFamily: FONTS.bold },
+  imagePickerBtn: {
+    height: 140,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginTop: 5,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

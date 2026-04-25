@@ -11,6 +11,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import * as ImagePicker from 'expo-image-picker';
 import ScreenBackground from "@/components/ScreenBackground";
 
+import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
+
 // ✅ FIX 1: Thêm 'role' và 'createdAt' vào interface
 interface UserProfile {
   id: string;
@@ -22,6 +24,9 @@ interface UserProfile {
   role?: string;
   createdAt?: string;
   lastLoginAt?: string;
+  settings?: {
+    name?: string;
+  };
 }
 
 export default function ProfileScreen() {
@@ -56,7 +61,7 @@ export default function ProfileScreen() {
       const res = await getMe();
       if (res?.user) {
         setMe(res.user);
-        setEditName(res.user.name || "");
+        setEditName(res.user.settings?.name || res.user.name || "");
         setEditPhone(res.user.phone || "");
         if (res.user.image) setImage(res.user.image);
       }
@@ -97,11 +102,15 @@ export default function ProfileScreen() {
 
       try {
         setSaving(true);
-        // ✅ FIX 3: Dùng optional chaining để tránh lỗi 'me' possibly null
-        await updateProfile({ name: me?.name ?? "", image: selectedUri });
+        // ✅ Tải lên Cloudinary trước khi lưu vào DB
+        const cloudinaryUrl = await uploadImageUriToCloudinary(selectedUri);
+        
+        // ✅ Cập nhật Profile với link Cloudinary
+        await updateProfile({ name: me?.name ?? "", image: cloudinaryUrl });
         Alert.alert(t('common.success'), t('profile.avatarUpdated'));
-      } catch (e) {
-        Alert.alert(t('common.error'), t('profile.avatarUpdateError'));
+      } catch (e: any) {
+        console.error("[AVATAR_UPLOAD_ERROR]", e);
+        Alert.alert(t('common.error'), e.message || t('profile.avatarUpdateError'));
       } finally {
         setSaving(false);
       }
@@ -132,7 +141,7 @@ export default function ProfileScreen() {
     try {
       setSaving(true);
       const res = await updateProfile({
-        name: editName,
+        settings: { name: editName },
         image: image || undefined,
         phone: editPhone
       });
@@ -196,14 +205,14 @@ export default function ProfileScreen() {
                   <Image source={{ uri: image }} style={styles.avatar} />
                 ) : (
                   <View style={styles.avatarPlaceholder}>
-                    <Text style={styles.avatarText}>{me?.name?.charAt(0) || "U"}</Text>
+                    <Text style={styles.avatarText}>{(me?.settings?.name || me?.name)?.charAt(0) || "U"}</Text>
                   </View>
                 )}
                 <Pressable style={styles.editAvatarBtn} onPress={pickImage} disabled={saving}>
                   {saving ? <ActivityIndicator size="small" color={COLORS.white} /> : <MaterialIcons name="camera-alt" size={18} color={COLORS.white} />}
                 </Pressable>
               </View>
-              <Text style={styles.name}>{me?.name || t("common.user")}</Text>
+              <Text style={styles.name}>{me?.settings?.name || me?.name || t("common.user")}</Text>
               <Text style={styles.email}>{me?.email}</Text>
             </View>
 

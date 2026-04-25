@@ -197,7 +197,7 @@ export default function NewQuoteScreen() {
         items,
         subTotal,
         grandTotal,
-        notesVi: notes,
+        notes: notes,
         status: "DRAFT",
       };
       const res = await api.createQuote(payload);

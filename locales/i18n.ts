@@ -4,18 +4,10 @@ import * as Localization from "expo-localization";
 
 import en from "./en.json";
 import vi from "./vi.json";
-import ja from "./ja.json";
-import ko from "./ko.json";
-import zh from "./zh.json";
-import es from "./es.json";
 
 const resources = {
   en: { translation: en },
   vi: { translation: vi },
-  ja: { translation: ja },
-  ko: { translation: ko },
-  zh: { translation: zh },
-  es: { translation: es },
 };
 
 function getDeviceLanguage() {

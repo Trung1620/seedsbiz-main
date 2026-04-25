@@ -17,6 +17,8 @@ import * as api from "@/utils/api";
 import { COLORS, FONTS, SIZES, NEUMORPHISM, SHADOWS, PALETTE } from "@/utils/theme";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { H } from "@/utils/href";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 export default function QuoteDetailsScreen() {
   const router = useRouter();
@@ -41,6 +43,42 @@ export default function QuoteDetailsScreen() {
       }
     })();
   }, [id]);
+
+  const exportQuoteToExcel = async () => {
+    if (!quote) return;
+    try {
+      const header = ["Mục (Item)", "Số lượng (Qty)", "Đơn giá (Price)", "Thành tiền (Total)"];
+      const rows = quote.items.map((item: any) => [
+        (item.productName || item.nameVi || "N/A").replace(/,/g, ' '),
+        item.quantity,
+        item.unitPrice,
+        item.quantity * item.unitPrice
+      ]);
+
+      const info = [
+        [`BÁO GIÁ: ${quote.number || "DRAFT"}`],
+        [`Khách hàng: ${quote.contactName || quote.customer?.name || "Khách lẻ"}`],
+        [`Địa chỉ: ${quote.contactAddress || quote.customer?.address || "—"}`],
+        [`Ngày: ${new Date(quote.createdAt).toLocaleDateString("vi-VN")}`],
+        [],
+        header
+      ];
+
+      const footer = [
+        [],
+        ["TỔNG CỘNG:", "", "", quote.grandTotal]
+      ];
+
+      const csvString = "\uFEFF" + [...info, ...rows, ...footer].map(e => e.join(",")).join("\n");
+      const fileName = `Bao_gia_${quote.number || "draft"}_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+
+      await FileSystem.writeAsStringAsync(fileUri, csvString, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri, { mimeType: 'text/csv', dialogTitle: 'Xuất báo giá', UTI: 'public.comma-separated-values-text' });
+    } catch (e: any) {
+      Alert.alert(t("common.error"), e.message);
+    }
+  };
 
   const handleDelete = () => {
     Alert.alert(
@@ -88,6 +126,9 @@ export default function QuoteDetailsScreen() {
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{quote.number || t("quotes.detail_title")}</Text>
         <View style={{ flexDirection: 'row', gap: 5 }}>
+           <Pressable style={styles.editBtn} onPress={exportQuoteToExcel}>
+              <MaterialIcons name="file-download" size={24} color="#2E7D32" />
+           </Pressable>
            <Pressable style={styles.editBtn} onPress={() => router.push({ pathname: "/quote-new", params: { id: quote.id } } as any)}>
               <MaterialIcons name="edit" size={24} color={PALETTE.primary} />
            </Pressable>
@@ -150,8 +191,11 @@ export default function QuoteDetailsScreen() {
       </ScrollView>
 
       <View style={styles.actionRow}>
-          <Pressable style={[styles.secondaryBtn, NEUMORPHISM.button]} onPress={() => Alert.alert("Sắp ra mắt", t("quotes.share_link"))}>
-             <Text style={[styles.secondaryBtnText, { color: colors.text }]}>{t("quotes.share_link")}</Text>
+          <Pressable style={[styles.secondaryBtn, NEUMORPHISM.button]} onPress={exportQuoteToExcel}>
+             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <MaterialIcons name="file-download" size={20} color={colors.text} />
+                <Text style={[styles.secondaryBtnText, { color: colors.text }]}>{"Xuất Excel"}</Text>
+             </View>
           </Pressable>
           <Pressable style={[styles.primaryBtn, { backgroundColor: PALETTE.primary }]} onPress={() => router.push(H({ pathname: "/contract-details", params: { quote_id: id } } as any))}>
              <Text style={styles.primaryBtnText}>{t("quotes.create_contract")}</Text>

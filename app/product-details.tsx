@@ -151,7 +151,10 @@ export default function ProductDetailsScreen() {
       </ScrollView>
 
       <View style={[styles.footer, { backgroundColor: colors.surface }]}>
-          <Pressable style={[styles.editBtn, NEUMORPHISM.button]} onPress={() => Alert.alert(t('products.comingSoon'), t('products.editDeveloping'))}>
+          <Pressable 
+            style={[styles.editBtn, NEUMORPHISM.button]} 
+            onPress={() => router.push({ pathname: "/product-new", params: { id: product.id } } as any)}
+          >
              <Text style={[styles.editBtnText, { color: colors.text }]}>{t("common.edit")}</Text>
           </Pressable>
           <Pressable style={[styles.actionBtn, { backgroundColor: PALETTE.primary }]} onPress={() => router.push(H("/inventory-stock-in"))}>

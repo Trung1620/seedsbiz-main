@@ -11,6 +11,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  Modal,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
 } from "react-native";
 import { useRouter, useFocusEffect } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -84,6 +88,47 @@ export default function MaterialsScreen() {
     );
   };
 
+  const [isStockInVisible, setIsStockInVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [stockInQty, setStockInQty] = useState("");
+  const [stockInNote, setStockInNote] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleStockIn = async () => {
+    if (!selectedItem || !stockInQty) return;
+    const qty = parseFloat(stockInQty);
+    if (isNaN(qty) || qty <= 0) {
+      Alert.alert(t('common.error'), t('inventory.inQtyErrorMsg'));
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      // ✅ Gửi lệnh nhập kho lên backend
+      await api.createStockMove({
+        warehouseId: selectedItem.warehouseId || undefined, // Nếu vật tư có kho mặc định
+        type: "IN",
+        note: stockInNote || `Nhập kho vật tư: ${selectedItem.name}`,
+        items: [
+          {
+            materialId: selectedItem.id, // Backend dùng materialId cho vật tư
+            qty: qty,
+          }
+        ]
+      });
+
+      Alert.alert(t('common.success'), t('inventory.inSuccessMsg'));
+      setIsStockInVisible(false);
+      setStockInQty("");
+      setStockInNote("");
+      load(); // Tải lại danh sách để cập nhật số tồn kho mới
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message || t('common.tryAgain'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const renderItem = ({ item }: { item: any }) => (
     <View style={[styles.card, NEUMORPHISM.card, { backgroundColor: colors.surface }]}>
       <View style={styles.cardHeader}>
@@ -136,7 +181,10 @@ export default function MaterialsScreen() {
         </View>
         <Pressable 
           style={[styles.actionBtn, { backgroundColor: colors.background }]}
-          onPress={() => Alert.alert(t('common.info'), t('common.comingSoon'))}
+          onPress={() => {
+            setSelectedItem(item);
+            setIsStockInVisible(true);
+          }}
         >
            <MaterialIcons name="add-circle-outline" size={20} color={colors.textSecondary} />
            <Text style={[styles.actionText, { color: colors.textSecondary }]}>{t('inventory.stockIn')}</Text>
@@ -185,6 +233,50 @@ export default function MaterialsScreen() {
           />
         )}
       />
+
+      {/* MODAL NHẬP KHO VẬT TƯ */}
+      <Modal visible={isStockInVisible} animationType="slide" transparent>
+         <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+               <View style={styles.modalHeader}>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>{t('inventory.stockIn')}</Text>
+                  <Pressable onPress={() => setIsStockInVisible(false)} style={styles.closeBtn}>
+                     <MaterialIcons name="close" size={24} color={colors.text} />
+                  </Pressable>
+               </View>
+
+               <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
+                  <Text style={{ color: colors.textSecondary, marginBottom: 20 }}>{t('common.material')}: <Text style={{ color: colors.text, fontWeight: 'bold' }}>{selectedItem?.name}</Text></Text>
+                  
+                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('inventory.inQtyLabel')} ({selectedItem?.unit})</Text>
+                  <TextInput 
+                    style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} 
+                    keyboardType="numeric" 
+                    value={stockInQty} 
+                    onChangeText={setStockInQty} 
+                    placeholder="0.0"
+                    autoFocus
+                  />
+                  
+                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('inventory.inNoteLabel')}</Text>
+                  <TextInput 
+                    style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} 
+                    value={stockInNote} 
+                    onChangeText={setStockInNote} 
+                    placeholder="..."
+                  />
+
+                  <Pressable 
+                    style={[styles.submitBtn, { backgroundColor: PALETTE.primary, marginTop: 30, opacity: submitting ? 0.7 : 1 }]} 
+                    onPress={handleStockIn}
+                    disabled={submitting}
+                  >
+                    {submitting ? <ActivityIndicator color="#FFF" /> : <Text style={styles.submitBtnText}>{t('common.confirm')}</Text>}
+                  </Pressable>
+               </ScrollView>
+            </View>
+         </KeyboardAvoidingView>
+      </Modal>
     </ScreenBackground>
   );
 }
@@ -218,6 +310,14 @@ const styles = StyleSheet.create({
   stockValue: { fontSize: 15, fontFamily: FONTS.bold },
   actionBtn: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 10 },
   actionText: { fontSize: 12, fontFamily: FONTS.bold, marginLeft: 6 },
-  emptyBox: { alignItems: 'center', marginTop: 100 },
   emptyText: { fontFamily: FONTS.medium, fontSize: 16 },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
+  modalContent: { borderTopLeftRadius: 40, borderTopRightRadius: 40, padding: 30, maxHeight: '85%' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 25 },
+  modalTitle: { fontSize: 22, fontFamily: FONTS.bold },
+  closeBtn: { padding: 8 },
+  inputLabel: { fontSize: 12, fontFamily: FONTS.bold, marginBottom: 8, marginTop: 15 },
+  modalInput: { height: 54, borderRadius: 15, paddingHorizontal: 20, fontFamily: FONTS.medium },
+  submitBtn: { height: 56, borderRadius: 15, alignItems: 'center', justifyContent: 'center', ...SHADOWS.soft },
+  submitBtnText: { color: '#FFFFFF', fontSize: 16, fontFamily: FONTS.bold },
 });

@@ -648,6 +648,27 @@
     "filterPending": "Pending",
     "filterDelivered": "Delivered"
   },
+  "warranty": {
+    "title": "Warranty & Repairs",
+    "noData": "No warranty requests found",
+    "addFirst": "Press (+) to create a new warranty request.",
+    "createTitle": "Create Warranty Slip",
+    "customer": "CUSTOMER *",
+    "product": "PRODUCT",
+    "issue": "ISSUE CONTENT *",
+    "issuePlaceholder": "Describe the issue or repair request...",
+    "note": "PROCESS NOTE",
+    "notePlaceholder": "Enter repair progress...",
+    "receivedDate": "RECEIVED DATE",
+    "returnDate": "EXPECTED RETURN DATE",
+    "status": "STATUS",
+    "statusPending": "Pending",
+    "statusProcessing": "Processing",
+    "statusCompleted": "Completed",
+    "statusCancelled": "Cancelled",
+    "alertSuccess": "Warranty slip created",
+    "alertError": "Failed to create warranty slip."
+  },
   "jobSheet": {
     "title": "Job Sheet Management",
     "addNew": "Create Job Sheet",
@@ -715,7 +736,10 @@
     "selectProduct": "Select Product",
     "selectWorker": "Select Artisan",
     "errMissingProductWorker": "Please select product and workers.",
-    "successCreated": "Production order created successfully!"
+    "successCreated": "Production order created successfully!",
+    "startDateLabel": "START DATE",
+    "endDateLabel": "EXPECTED END DATE",
+    "secWorker": "2. Responsible Artisan"
   },
   "materials": {
     "title": "Material Management",
@@ -746,7 +770,8 @@
     "placeholderCost": "50000",
     "placeholderMinStock": "10",
     "suggestList": ["Rattan", "Bamboo", "Reed", "Sedge", "Wicker", "Blinds", "Rattan Core"],
-    "unitList": ["kg", "meter", "pcs", "bundle", "sheet"]
+    "unitList": ["kg", "meter", "pcs", "bundle", "sheet"],
+    "locationList": ["Shelf A1", "Shelf B2", "Warehouse 1", "Warehouse 2", "Yard"]
   },
   "expenses": {
     "title": "Operational Costs",
@@ -768,16 +793,20 @@
     "labelCategory": "CATEGORY",
     "labelMethod": "PAYMENT METHOD",
     "labelDate": "EXPENSE DATE",
-    "labelReceipt": "RECEIPT IMAGE (URL)",
     "saveBtn": "SAVE EXPENSE",
     "placeholderTitle": "Ex: Electricity bill Oct",
     "breakdownOtherProd": "Other production costs",
     "breakdownManual": "Other management costs",
     "cat_marketing": "Marketing",
     "cat_utilities": "Utilities",
-    "cat_rent": "Office/Warehouse Rent",
+    "cat_rent": "Rent",
     "cat_salary": "Salary/Wages",
-    "cat_production": "Production Cost"
+    "cat_production": "Production Cost",
+    "cat_equipment": "Equipment/Machinery",
+    "cat_other": "Other Costs",
+    "method_cash": "Cash",
+    "method_bank": "Bank Transfer",
+    "labelReceipt": "RECEIPT IMAGE"
   },
   "reports": {
     "title": "Reports",
@@ -1080,6 +1109,7 @@
   },
 
   "settings": {
+    "name": "Full Name",
     "title": "Settings",
     "region": "REGION & WORKSHOP",
     "currentRegion": "Current Region",
@@ -1162,7 +1192,15 @@
     "financialAnalysisTitle": "FINANCIAL STRUCTURE ANALYSIS",
     "errorTimeout": "Network weak or server busy, please try again",
     "errorLoad": "Could not load report",
-    "inventoryReport": "Inventory Report"
+    "inventoryReport": "Inventory Report",
+    "selectCategory": "Select Category",
+    "barcodeLabel": "Barcode",
+    "locationLabel": "Warehouse Location",
+    "minStockLabel": "Min Stock",
+    "weightLabel": "Weight (kg)",
+    "productionTimeLabel": "Production Time (mins)",
+    "bomTitle": "Bill of Materials (BOM)",
+    "noBom": "No BOM entries yet."
   },
   "contracts": {
     "title": "Contract Management",

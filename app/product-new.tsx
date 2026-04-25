@@ -83,6 +83,16 @@ export default function ProductNewScreen() {
                     setWeight(String(res.weight || ""));
                     setProductionTime(String(res.productionTime || ""));
                     setUnit(res.unit || "cái");
+                    setCategoryName(res.category?.name || res.category || "");
+
+                    if (res.materialDetails && Array.isArray(res.materialDetails)) {
+                        setBoms(res.materialDetails.map((b: any) => ({
+                            materialId: b.materialId,
+                            name: b.material?.name || "Vật tư",
+                            unit: b.material?.unit || "",
+                            quantity: b.quantity
+                        })));
+                    }
                     
                     if (res.images && res.images.length > 0) {
                         const existingImages = res.images.map((img: any) => ({
@@ -210,7 +220,7 @@ export default function ProductNewScreen() {
                         <MaterialIcons name="arrow-back" size={24} color={colors.text} />
                     </Pressable>
                     <View>
-                        <Text style={[s.h1, { color: colors.text }]}>{t('products.addNew')}</Text>
+                        <Text style={[s.h1, { color: colors.text }]}>{productId ? t('products.editTitle') : t('products.addNew')}</Text>
                     </View>
                 </View>
 
@@ -332,7 +342,7 @@ export default function ProductNewScreen() {
                 {/* NÚT TẠO */}
                 <View style={{ paddingHorizontal: 24, marginTop: 30 }}>
                     <Pressable style={[s.primaryBtn, { backgroundColor: PALETTE.primary, opacity: saving ? 0.7 : 1 }]} onPress={onSave} disabled={saving}>
-                        {saving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.primaryBtnText}>{t('products.createBtn')}</Text>}
+                        {saving ? <ActivityIndicator color="#FFFFFF" /> : <Text style={s.primaryBtnText}>{productId ? t('common.saveChanges') : t('products.createBtn')}</Text>}
                     </Pressable>
                 </View>
 

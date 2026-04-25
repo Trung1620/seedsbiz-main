@@ -776,7 +776,8 @@
     "placeholderCost": "50000",
     "placeholderMinStock": "10",
     "suggestList": ["Mây", "Tre", "Nứa", "Cói", "Xong", "Mành", "Ruột mây"],
-    "unitList": ["kg", "mét", "cây", "bó", "tấm"]
+    "unitList": ["kg", "mét", "cây", "bó", "tấm"],
+    "locationList": ["Kệ A1", "Kệ B2", "Kho 1", "Kho 2", "Ngoài sân"]
   },
   "expenses": {
     "title": "Chi phí vận hành",
@@ -798,7 +799,6 @@
     "labelCategory": "PHÂN LOẠI",
     "labelMethod": "PHƯƠNG THỨC",
     "labelDate": "NGÀY CHI",
-    "labelReceipt": "ẢNH BIÊN LAI (URL)",
     "saveBtn": "LƯU PHIẾU CHI",
     "placeholderTitle": "Vd: Tiền điện tháng 10",
     "breakdownOtherProd": "Chi phí sản xuất khác",
@@ -806,8 +806,13 @@
     "cat_marketing": "Tiếp thị",
     "cat_utilities": "Điện nước/Tiện ích",
     "cat_rent": "Mặt bằng/Kho bãi",
-    "cat_salary": "Lương/Công thợ",
-    "cat_production": "Chi phí sản xuất"
+    "cat_salary": "Lương/Nhân công",
+    "cat_production": "Chi phí sản xuất",
+    "cat_equipment": "Thiết bị/Máy móc",
+    "cat_other": "Chi phí khác",
+    "method_cash": "Tiền mặt",
+    "method_bank": "Chuyển khoản",
+    "labelReceipt": "ẢNH BIÊN LAI"
   },
   "reports": {
     "title": "Báo cáo",
@@ -1109,6 +1114,7 @@
   },
 
   "settings": {
+    "name": "Họ và tên",
     "title": "Cài đặt",
     "region": "KHU VỰC & CƠ SỞ",
     "currentRegion": "Khu vực hiện tại",
@@ -1191,7 +1197,15 @@
     "financialAnalysisTitle": "PHÂN TÍCH CƠ CẤU TÀI CHÍNH",
     "errorTimeout": "Mạng yếu hoặc máy chủ bận, vui lòng thử lại",
     "errorLoad": "Không thể tải báo cáo",
-    "inventoryReport": "Báo cáo Kiểm kê"
+    "inventoryReport": "Báo cáo Kiểm kê",
+    "selectCategory": "Chọn danh mục",
+    "barcodeLabel": "Mã vạch (Barcode)",
+    "locationLabel": "Vị trí kho",
+    "minStockLabel": "Tồn tối thiểu",
+    "weightLabel": "Khối lượng (kg)",
+    "productionTimeLabel": "Thời gian sản xuất (phút)",
+    "bomTitle": "Định mức vật tư (BOM)",
+    "noBom": "Chưa có định mức vật tư nào."
   },
   "contracts": {
     "title": "Quản lý Hợp đồng",

@@ -25,6 +25,9 @@ import ScreenBackground from "@/components/ScreenBackground";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { AppHeader } from "@/components/UI";
 
+import * as ImagePicker from 'expo-image-picker';
+import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
+
 type CustomerItem = api.Customer & { type?: string };
 type CustomerFormState = { 
   name: string; 
@@ -68,6 +71,7 @@ export default function CustomersScreen() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<CustomerItem | null>(null);
   const [form, setForm] = useState<CustomerFormState>(EMPTY_FORM);
 
@@ -84,33 +88,60 @@ export default function CustomersScreen() {
 
   useEffect(() => { if (activeOrg?.id) loadCustomers(); }, [activeOrg?.id, loadCustomers, searchQuery]);
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled) {
+      setForm({ ...form, image: result.assets[0].uri });
+    }
+  };
+
   const submitForm = async () => {
     if (!token || !activeOrg?.id) return;
-    const payload = { 
-      ...form,
-      name: form.name.trim(), 
-      phone: form.phone.trim() || null, 
-      email: form.email.trim() || null,
-      type: form.type,
-      companyName: form.companyName.trim() || null,
-      taxId: form.taxId.trim() || null,
-      image: form.image.trim() || null
-    };
-    if (!payload.name) { Alert.alert(t('common.info'), t('customers.missingNameMsg')); return; }
-    
+
+    setSaving(true);
     try {
-      setSaving(true);
+      let finalImageUrl = form.image;
+      
+      // Upload to Cloudinary if it's a local file
+      if (form.image && form.image.startsWith('file://')) {
+        setIsUploading(true);
+        finalImageUrl = await uploadImageUriToCloudinary(form.image);
+        setIsUploading(false);
+      }
+
+      const payload = { 
+        ...form,
+        name: form.name.trim(), 
+        phone: form.phone.trim() || null, 
+        email: form.email.trim() || null,
+        type: form.type,
+        companyName: form.companyName.trim() || null,
+        taxId: form.taxId.trim() || null,
+        image: finalImageUrl || null
+      };
+
+      if (!payload.name) { Alert.alert(t('common.info'), t('customers.missingNameMsg')); return; }
+      
       if (editingCustomer?.id) { await api.updateCustomer(editingCustomer.id, payload); }
       else { await api.createCustomer(payload); }
       setModalVisible(false);
-      setKeyword(""); // Clear search to see new customer
+      setKeyword("");
       setSearchQuery("");
       loadCustomers();
     } catch (error: any) { 
       const msg = error?.payload?.issues?.[0]?.message || error?.message || t('common.error');
       Alert.alert(t('common.error'), msg); 
     }
-    finally { setSaving(false); }
+    finally { 
+      setSaving(false); 
+      setIsUploading(false);
+    }
   };
 
   const handleDelete = (id: string) => {
@@ -340,16 +371,34 @@ export default function CustomersScreen() {
               <Text style={[styles.label, { color: colors.textSecondary }]}>{t('customers.labelAddress')}</Text>
               <TextInput value={form.address} onChangeText={(v) => setForm((s) => ({ ...s, address: v }))} style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} multiline />
 
-              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image', 'Ảnh (URL hoặc Assets)')}</Text>
-              <TextInput 
-                value={form.image} 
-                onChangeText={(v) => setForm((s) => ({ ...s, image: v }))} 
-                style={[styles.input, { backgroundColor: colors.surface, color: colors.text, borderColor: colors.outline }]} 
-                placeholder="images/customer.jpg..."
-              />
+              <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image', 'Ảnh đại diện')}</Text>
+              <Pressable 
+                style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline }]} 
+                onPress={pickImage}
+              >
+                {form.image ? (
+                  <Image 
+                    source={form.image.startsWith('http') || form.image.startsWith('file') ? { uri: form.image } : api.getPublicFileUrl(form.image)} 
+                    style={styles.imagePreview} 
+                  />
+                ) : (
+                  <View style={styles.imagePlaceholder}>
+                    <Ionicons name="camera-outline" size={32} color={colors.textSecondary} />
+                    <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 5 }}>{t('common.selectImage', 'Chọn ảnh')}</Text>
+                  </View>
+                )}
+              </Pressable>
 
-              <Pressable style={[styles.saveBtn, { backgroundColor: PALETTE.primary, opacity: saving ? 0.7 : 1 }]} onPress={submitForm} disabled={saving}>
-                 <Text style={styles.saveBtnText}>{saving ? t('common.saving') : t('common.complete')}</Text>
+              <Pressable 
+                style={[styles.saveBtn, { backgroundColor: PALETTE.primary, opacity: (saving || isUploading) ? 0.7 : 1 }]} 
+                onPress={submitForm} 
+                disabled={saving || isUploading}
+              >
+                 {(saving || isUploading) ? (
+                   <ActivityIndicator color="#FFFFFF" />
+                 ) : (
+                   <Text style={styles.saveBtnText}>{t('common.complete')}</Text>
+                 )}
               </Pressable>
             </ScrollView>
           </View>
@@ -402,4 +451,23 @@ const styles = StyleSheet.create({
     gap: 10
   },
   groupOptionText: { fontSize: 11, fontFamily: FONTS.bold },
+  imagePickerBtn: {
+    height: 120,
+    borderRadius: 18,
+    borderWidth: 1.5,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+    marginTop: 5,
+  },
+  imagePreview: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  imagePlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

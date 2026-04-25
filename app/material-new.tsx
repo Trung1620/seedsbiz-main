@@ -10,13 +10,16 @@ import {
   Alert,
   ActivityIndicator,
   Modal,
+  Image,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FONTS, PALETTE, SHADOWS, COLORS, NEUMORPHISM } from '@/utils/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import * as api from '@/utils/api';
+import { uploadImageUriToCloudinary } from '@/utils/uploadCloudinaryRN';
 import ScreenBackground from '@/components/ScreenBackground';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
@@ -32,6 +35,7 @@ export default function NewMaterialScreen() {
   const SUGGESTIONS = t('materials.suggestList', { returnObjects: true }) as string[] || [];
     
   const UNITS = t('materials.unitList', { returnObjects: true }) as string[] || [];
+  const LOCATIONS = t('materials.locationList', { returnObjects: true }) as string[] || [];
 
   const [form, setForm] = useState({
     name: '',
@@ -48,6 +52,24 @@ export default function NewMaterialScreen() {
   const [suppliers, setSuppliers] = useState<api.Supplier[]>([]);
   const [showSupplierPicker, setShowSupplierPicker] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+
+  const pickImage = async () => {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      Alert.alert(t('common.error'), t('products.permissionDenied'));
+      return;
+    }
+    const rs = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.7,
+      allowsEditing: true,
+      aspect: [1, 1],
+    });
+    if (rs.canceled) return;
+    const uri = rs.assets?.[0]?.uri;
+    if (uri) setForm(f => ({ ...f, image: uri }));
+  };
 
   React.useEffect(() => {
     api.listSuppliers().then(res => {
@@ -85,8 +107,22 @@ export default function NewMaterialScreen() {
 
     try {
       setLoading(true);
+      
+      let imageUrl = form.image;
+      if (form.image && !form.image.startsWith('http')) {
+        setImageUploading(true);
+        try {
+          imageUrl = await uploadImageUriToCloudinary(form.image);
+        } catch (uploadErr) {
+          console.error("Image upload failed:", uploadErr);
+        } finally {
+          setImageUploading(false);
+        }
+      }
+
       const payload = {
         ...form,
+        image: imageUrl,
         price: parseFloat(form.price) || 0,
         stock: parseFloat(form.stock) || 0,
         minStock: parseFloat(form.minStock) || 0,
@@ -128,13 +164,11 @@ export default function NewMaterialScreen() {
           placeholderTextColor={colors.textSecondary + '70'}
           style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
         />
-
-        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.quickSuggestions')}</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionRow}>
           {SUGGESTIONS.map(s => (
             <Pressable 
               key={s} 
-              style={[styles.suggestBtn, { backgroundColor: colors.surface }]}
+              style={[styles.suggestBtn, { backgroundColor: colors.surface, borderColor: form.name === s ? PALETTE.primary : colors.outline }]}
               onPress={() => setForm(f => ({ ...f, name: s }))}
             >
               <Text style={[styles.suggestText, { color: colors.text }]}>{s}</Text>
@@ -152,30 +186,42 @@ export default function NewMaterialScreen() {
               style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
             />
           </View>
-          <View style={{ width: 120, marginLeft: 15 }}>
+          <View style={{ flex: 1, marginLeft: 15 }}>
             <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.unitLabel')}</Text>
-            <View style={[styles.unitPicker, { backgroundColor: colors.surface }]}>
-               {UNITS.includes(form.unit) ? (
-                 <Text style={{ color: colors.text }}>{form.unit}</Text>
-               ) : (
-                 <TextInput 
-                   value={form.unit} 
-                   onChangeText={v => setForm(f => ({ ...f, unit: v }))}
-                   style={{ color: colors.text, padding: 0 }}
-                 />
-               )}
-            </View>
+            <TextInput 
+              value={form.unit} 
+              onChangeText={v => setForm(f => ({ ...f, unit: v }))}
+              placeholder={t('common.unit')}
+              style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
+            />
           </View>
         </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionRow}>
+          {UNITS.map(u => (
+            <Pressable 
+              key={u} 
+              style={[styles.suggestBtn, { backgroundColor: colors.surface, borderColor: form.unit === u ? PALETTE.primary : colors.outline }]}
+              onPress={() => setForm(f => ({ ...f, unit: u }))}
+            >
+              <Text style={[styles.suggestText, { color: form.unit === u ? PALETTE.primary : colors.text }]}>{u}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
 
-        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image')}</Text>
-        <TextInput
-          value={form.image}
-          onChangeText={(v) => setForm(f => ({ ...f, image: v }))}
-          placeholder="images/material_sample.jpg..."
-          placeholderTextColor={colors.textSecondary + '70'}
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
-        />
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.costLabel')}</Text>
+        <View style={[styles.input, { backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center' }]}>
+          <TextInput
+            value={form.price}
+            onChangeText={(v) => setForm(f => ({ ...f, price: v }))}
+            placeholder={t('materials.placeholderCost')}
+            keyboardType="numeric"
+            placeholderTextColor={colors.textSecondary + '70'}
+            style={{ flex: 1, color: colors.text, fontSize: 16, fontFamily: FONTS.medium }}
+          />
+          <Text style={{ color: colors.textSecondary, fontFamily: FONTS.bold, marginRight: 10 }}>
+            {t('common.currencySymbol')}
+          </Text>
+        </View>
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
@@ -198,63 +244,54 @@ export default function NewMaterialScreen() {
             />
           </View>
         </View>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.suggestionRow}>
+          {LOCATIONS.map(l => (
+            <Pressable 
+              key={l} 
+              style={[styles.suggestBtn, { backgroundColor: colors.surface, borderColor: form.location === l ? PALETTE.primary : colors.outline }]}
+              onPress={() => setForm(f => ({ ...f, location: l }))}
+            >
+              <Text style={[styles.suggestText, { color: form.location === l ? PALETTE.primary : colors.text }]}>{l}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
 
         <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.supplierLabel')}</Text>
+        <View style={[styles.input, { backgroundColor: colors.surface, flexDirection: 'row', alignItems: 'center' }]}>
+          <TextInput
+            value={form.supplierName}
+            onChangeText={(v) => setForm(f => ({ ...f, supplierName: v, supplierId: '' }))}
+            placeholder={t('materials.placeholderSupplier', { defaultValue: 'Tên nhà cung cấp...' })}
+            placeholderTextColor={colors.textSecondary + '70'}
+            style={{ flex: 1, color: colors.text, fontSize: 16, fontFamily: FONTS.medium }}
+          />
+          <Pressable 
+            onPress={() => setShowSupplierPicker(true)}
+            style={{ padding: 10 }}
+          >
+            <MaterialIcons name="list" size={24} color={colors.primary} />
+          </Pressable>
+        </View>
+
+        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('common.image')}</Text>
         <Pressable 
-          style={[styles.input, { backgroundColor: colors.surface, justifyContent: 'center' }]} 
-          onPress={() => setShowSupplierPicker(true)}
+          onPress={pickImage} 
+          style={[styles.imagePicker, { backgroundColor: colors.surface, borderColor: colors.outline, marginBottom: 20 }]}
         >
-          <Text style={{ color: form.supplierName ? colors.text : colors.textSecondary + '70', fontSize: 16 }}>
-            {form.supplierName || t('materials.placeholderSupplier', { defaultValue: 'Chọn nhà cung cấp...' })}
-          </Text>
-        </Pressable>
-
-        <Modal visible={showSupplierPicker} animationType="slide" transparent>
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
-              <View style={styles.modalHeader}>
-                <Text style={[styles.modalTitle, { color: colors.text }]}>{t('materials.supplierLabel')}</Text>
-                <Pressable onPress={() => setShowSupplierPicker(false)}>
-                  <Ionicons name="close" size={24} color={colors.text} />
-                </Pressable>
-              </View>
-              <ScrollView>
-                <Pressable 
-                  style={styles.supplierItem} 
-                  onPress={() => {
-                    setForm(f => ({ ...f, supplierId: '', supplierName: '' }));
-                    setShowSupplierPicker(false);
-                  }}
-                >
-                  <Text style={{ color: colors.text }}>-- Không chọn --</Text>
-                </Pressable>
-                {suppliers.map(s => (
-                  <Pressable 
-                    key={s.id} 
-                    style={styles.supplierItem} 
-                    onPress={() => {
-                      setForm(f => ({ ...f, supplierId: s.id, supplierName: s.name }));
-                      setShowSupplierPicker(false);
-                    }}
-                  >
-                    <Text style={{ color: colors.text, fontWeight: 'bold' }}>{s.name}</Text>
-                    {s.phone && <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{s.phone}</Text>}
-                  </Pressable>
-                ))}
-              </ScrollView>
+          {form.image ? (
+            <Image source={api.getPublicFileUrl(form.image) as any} style={styles.imagePreview} />
+          ) : (
+            <View style={styles.imagePlaceholder}>
+              <Ionicons name="camera-outline" size={32} color={colors.textSecondary} />
+              <Text style={{ color: colors.textSecondary, marginTop: 8 }}>{t('products.imageLabel')}</Text>
             </View>
-          </View>
-        </Modal>
-
-        <Text style={[styles.label, { color: colors.textSecondary }]}>{t('materials.costLabel')}</Text>
-        <TextInput
-          value={form.price}
-          onChangeText={(v) => setForm(f => ({ ...f, price: v }))}
-          placeholder={t('materials.placeholderCost')}
-          keyboardType="numeric"
-          placeholderTextColor={colors.textSecondary + '70'}
-          style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]}
-        />
+          )}
+          {imageUploading && (
+            <View style={styles.uploadOverlay}>
+              <ActivityIndicator color="#FFF" />
+            </View>
+          )}
+        </Pressable>
 
         <Pressable 
           style={[styles.saveBtn, { backgroundColor: PALETTE.primary }, loading && { opacity: 0.7 }]} 
@@ -278,7 +315,7 @@ const styles = StyleSheet.create({
   label: { fontSize: 13, fontFamily: FONTS.bold, marginBottom: 8, marginTop: 20 },
   input: { height: 55, borderRadius: 16, paddingHorizontal: 16, fontSize: 16, fontFamily: FONTS.medium },
   suggestionRow: { flexDirection: 'row', marginTop: 5 },
-  suggestBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, marginRight: 10, ...SHADOWS.soft },
+  suggestBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 12, marginRight: 10, borderWidth: 1 },
   suggestText: { fontSize: 14, fontFamily: FONTS.medium },
   row: { flexDirection: 'row' },
   unitPicker: { height: 55, borderRadius: 16, justifyContent: 'center', paddingHorizontal: 16 },
@@ -289,4 +326,8 @@ const styles = StyleSheet.create({
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   modalTitle: { fontSize: 20, fontFamily: FONTS.bold },
   supplierItem: { paddingVertical: 15, borderBottomWidth: 1, borderBottomColor: '#eee' },
+  imagePicker: { height: 160, borderRadius: 20, overflow: 'hidden', borderWidth: 1, borderStyle: 'dashed' },
+  imagePreview: { width: '100%', height: '100%', resizeMode: 'cover' },
+  imagePlaceholder: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  uploadOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.4)', alignItems: 'center', justifyContent: 'center' },
 });
