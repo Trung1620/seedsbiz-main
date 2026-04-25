@@ -319,15 +319,31 @@ export function getPublicFileUrl(path?: any) {
 async function readJson(res: Response) {
   const text = await res.text();
   let json: any = {};
-  try { json = text ? JSON.parse(text) : {}; } catch { return { raw: text }; }
+  
+  try {
+    json = text ? JSON.parse(text) : {};
+  } catch (e) {
+    // Nếu không phải JSON (có thể là trang HTML lỗi 500)
+    if (!res.ok) {
+      const err: any = new Error(`Hệ thống gặp lỗi (${res.status}). Vui lòng thử lại sau.`);
+      err.status = res.status;
+      err.raw = text;
+      throw err;
+    }
+    return { raw: text };
+  }
+
   if (!res.ok) {
-    const err: any = new Error(json.error || `Request failed with status ${res.status}`);
+    // Nếu là lỗi nhưng có trả về JSON chứa message
+    const errorMsg = json.error || json.message || `Yêu cầu thất bại (${res.status})`;
+    const err: any = new Error(errorMsg);
     err.status = res.status;
     err.payload = json;
     throw err;
   }
   return json;
 }
+
 
 export async function authedFetch(path: string, init: RequestInit = {}) {
   const token = await getToken();

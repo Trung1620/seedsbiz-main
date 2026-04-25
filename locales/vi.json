@@ -1033,7 +1033,24 @@
     "orgName": "Tên xưởng sản xuất",
     "orgCode": "Mã xưởng tham gia",
     "placeholderOrgName": "VD: Kho Mây Tre X",
-    "placeholderOrgCode": "VD: org_123..."
+    "placeholderOrgCode": "VD: org_123...",
+    "needLogin": "Bạn cần đăng nhập trước.",
+    "createWorkspaceTitle": "Tạo Workspace mới",
+    "fieldAccount": "TÀI KHOẢN",
+    "placeholderEmail": "Nhập email của bạn",
+    "fieldPassword": "MẬT KHẨU",
+    "forgotPassword": {
+      "title1": "KHÔI PHỤC",
+      "title2": "MẬT KHẨU",
+      "desc": "Nhập email của bạn để nhận mã khôi phục tài khoản.",
+      "btn": "GỬI YÊU CẦU",
+      "back": "← Quay lại đăng nhập",
+      "alertEnterEmail": "Vui lòng nhập email của bạn."
+    },
+    "forgotPasswordBtn": "Quên mật khẩu ?",
+    "createAccount": "Tạo tài khoản",
+    "tagline": "QUẢN LÝ XƯỞNG SẢN XUẤT",
+    "versionLabel": "PHIÊN BẢN"
   },
   "orgMembers": {
     "title": "Quản lý nhân viên",
@@ -1052,25 +1069,6 @@
     "error": "Lỗi",
     "admin": "Chủ xưởng / Admin",
     "member": "Nhân viên"
-  },
-
-    "needLogin": "Bạn cần đăng nhập trước.",
-    "createWorkspaceTitle": "Tạo Workspace mới",
-    "fieldAccount": "TÀI KHOẢN",
-    "placeholderEmail": "Nhập email của bạn",
-    "fieldPassword": "MẬT KHẨU",
-    "forgotPassword": {
-      "title1": "KHÔI PHỤC",
-      "title2": "MẬT KHẨU",
-      "desc": "Nhập email của bạn để nhận mã khôi phục tài khoản.",
-      "btn": "GỬI YÊU CẦU",
-      "back": "← Quay lại đăng nhập",
-      "alertEnterEmail": "Vui lòng nhập email của bạn."
-    },
-    "forgotPasswordBtn": "Quên mật khẩu ?",
-    "createAccount": "Tạo tài khoản",
-    "tagline": "QUẢN LÝ XƯỞNG SẢN XUẤT",
-    "versionLabel": "PHIÊN BẢN"
   },
   "profile": {
     "title": "Hồ sơ",

@@ -1003,7 +1003,24 @@
     "orgName": "Workshop Name",
     "orgCode": "Join Code",
     "placeholderOrgName": "e.g. Bamboo Workshop X",
-    "placeholderOrgCode": "e.g. org_123..."
+    "placeholderOrgCode": "e.g. org_123...",
+    "needLogin": "You need to login first.",
+    "createWorkspaceTitle": "Create New Workspace",
+    "fieldAccount": "ACCOUNT",
+    "placeholderEmail": "Enter your email",
+    "fieldPassword": "PASSWORD",
+    "forgotPassword": {
+      "title1": "RESET",
+      "title2": "PASSWORD",
+      "desc": "Enter your email to receive an account recovery code.",
+      "btn": "SEND REQUEST",
+      "back": "← Back to login",
+      "alertEnterEmail": "Please enter your email."
+    },
+    "forgotPasswordBtn": "Forgot password?",
+    "createAccount": "Create account",
+    "tagline": "WORKSHOP MANAGEMENT",
+    "versionLabel": "VERSION"
   },
   "orgMembers": {
     "title": "Staff Management",
@@ -1024,24 +1041,6 @@
     "member": "Staff"
   },
 
-    "needLogin": "You need to login first.",
-    "createWorkspaceTitle": "Create New Workspace",
-    "fieldAccount": "ACCOUNT",
-    "placeholderEmail": "Enter your email",
-    "fieldPassword": "PASSWORD",
-    "forgotPassword": {
-      "title1": "RESET",
-      "title2": "PASSWORD",
-      "desc": "Enter your email to receive an account recovery code.",
-      "btn": "SEND REQUEST",
-      "back": "← Back to login",
-      "alertEnterEmail": "Please enter your email."
-    },
-    "forgotPasswordBtn": "Forgot password?",
-    "createAccount": "Create account",
-    "tagline": "WORKSHOP MANAGEMENT",
-    "versionLabel": "VERSION"
-  },
   "profile": {
     "title": "Profile",
     "userId": "User ID",
