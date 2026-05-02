@@ -288,6 +288,28 @@ export default function MaterialsScreen() {
                             <Pressable 
                                key={w.id} 
                                onPress={() => setSelectedItem({...selectedItem, warehouseId: w.id})}
+                               onLongPress={() => {
+                                  Alert.alert(
+                                     "Xóa kho hàng",
+                                     `Bạn có chắc chắn muốn xóa kho "${w.name}" không?`,
+                                     [
+                                        { text: "Hủy", style: "cancel" },
+                                        { 
+                                           text: "Xóa", 
+                                           style: "destructive", 
+                                           onPress: async () => {
+                                              try {
+                                                 await api.deleteWarehouse(w.id);
+                                                 await load();
+                                                 Alert.alert("Thành công", "Đã xóa kho hàng.");
+                                              } catch (e: any) {
+                                                 Alert.alert("Lỗi", e.message);
+                                              }
+                                           } 
+                                        }
+                                     ]
+                                  );
+                               }}
                                style={[
                                   { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 10, borderWidth: 1 },
                                   isSelected ? { backgroundColor: PALETTE.primary, borderColor: PALETTE.primary } : { backgroundColor: colors.surface, borderColor: colors.outline }
@@ -302,7 +324,8 @@ export default function MaterialsScreen() {
                                {t('inventory.noWarehouseMsg', { defaultValue: 'Hệ thống chưa có kho hàng.' })}
                             </Text>
                             <Pressable 
-                               style={{ backgroundColor: '#2E7D32', padding: 10, borderRadius: 10, alignItems: 'center' }}
+                               disabled={submitting}
+                               style={{ backgroundColor: '#2E7D32', padding: 10, borderRadius: 10, alignItems: 'center', opacity: submitting ? 0.6 : 1 }}
                                onPress={async () => {
                                   try {
                                      setSubmitting(true);

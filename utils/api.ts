@@ -748,6 +748,11 @@ export async function createWarehouse(data: any) {
   return await readJson(res);
 }
 
+export async function deleteWarehouse(id: string) {
+  const res = await authedFetch(`/api/warehouses?id=${id}`, { method: "DELETE" });
+  return await readJson(res);
+}
+
 // Deliveries (standalone — tạo thủ công, không gắn quote)
 export async function createDelivery(data: any) {
   const res = await authedFetch("/api/deliveries", { method: "POST", body: JSON.stringify(data) });

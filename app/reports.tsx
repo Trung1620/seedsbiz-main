@@ -150,7 +150,8 @@ export default function ReportsScreen() {
 
   const metrics = [
     { key: 'revenue', title: String(t('reports.metrics.revenue')), value: data ? formatCurrency(data.revenue) : '0', icon: 'payments', color: PALETTE.accent },
-    { key: 'receivable', title: t('reports.metrics.receivable'), value: data ? formatCurrency(data.receivable) : '0', icon: 'account-balance-wallet', color: PALETTE.primary },
+    { key: 'actualReceived', title: 'Thực thu (Phiếu thu)', value: data ? formatCurrency(data.actualReceived) : '0', icon: 'account-balance-wallet', color: PALETTE.primary },
+    { key: 'receivable', title: t('reports.metrics.receivable'), value: data ? formatCurrency(data.receivable) : '0', icon: 'money-off', color: '#FFB300' },
     { key: 'payable', title: t('reports.metrics.payable'), value: data ? formatCurrency(data.payable) : '0', icon: 'receipt-long', color: '#FF6B6B' },
     { key: 'profit', title: t('reports.metrics.netProfit'), value: data ? formatCurrency(data.profit) : '0', icon: 'trending-up', color: '#4CAF50' },
   ];

@@ -59,13 +59,12 @@ export default function ProductsScreen() {
       } else if (rows && Array.isArray(rows.rows) && rows.rows.length > 0) {
         setItems(rows.rows);
       } else {
-        // Nếu API trả về trống hoặc lỗi cấu trúc, hiện sản phẩm mẫu
-        setItems(LOCAL_PRODUCTS as any);
+        // Không tự động hiện mẫu nữa để người dùng nhấn nút Đồng bộ
+        setItems([]);
       }
     } catch (e: any) {
       console.error("[LOAD_PRODUCTS_ERROR]", e);
-      // Fallback on error too
-      setItems(LOCAL_PRODUCTS as any);
+      setItems([]);
     } finally {
       setLoading(false);
     }
@@ -82,6 +81,42 @@ export default function ProductsScreen() {
     } catch (e: any) {
       Alert.alert(t('common.error'), e.message);
     }
+  };
+  
+  const handleSeedProducts = async () => {
+    Alert.alert(
+      "Đồng bộ dữ liệu mẫu",
+      "Bạn có muốn biến toàn bộ sản phẩm mẫu này thành sản phẩm thật trong hệ thống không?",
+      [
+        { text: "Hủy", style: "cancel" },
+        { 
+          text: "Đồng bộ ngay", 
+          onPress: async () => {
+            setLoading(true);
+            try {
+              const suffix = activeOrg?.id?.slice(-4) || "NEW";
+              for (const p of LOCAL_PRODUCTS) {
+                const payload = {
+                  ...p,
+                  id: undefined, 
+                  sku: p.sku ? `${p.sku}-${suffix}` : undefined, // Thêm hậu tố để tránh trùng SKU
+                  orgId: activeOrg?.id,
+                  images: [api.getPublicFileUrl(p.image)],
+                  image: api.getPublicFileUrl(p.image),
+                };
+                await api.createProduct(payload);
+              }
+              Alert.alert("Thành công", "Đã đồng bộ toàn bộ sản phẩm mẫu thành sản phẩm thật!");
+              load();
+            } catch (e: any) {
+              Alert.alert("Lỗi", e.message);
+            } finally {
+              setLoading(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   useFocusEffect(
@@ -212,6 +247,12 @@ export default function ProductsScreen() {
         ) : (
           <View style={styles.emptyBox}>
              <Text style={[styles.emptyText, { color: colors.textSecondary }]}>{t('products.noProducts')}</Text>
+             <Pressable 
+                style={{ marginTop: 20, backgroundColor: PALETTE.primary + '20', padding: 15, borderRadius: 15, borderStyle: 'dashed', borderWidth: 1, borderColor: PALETTE.primary }}
+                onPress={handleSeedProducts}
+             >
+                <Text style={{ color: PALETTE.primary, fontFamily: FONTS.bold }}>ĐỒNG BỘ DỮ LIỆU MẪU LÊN HỆ THỐNG</Text>
+             </Pressable>
           </View>
         )}
       />

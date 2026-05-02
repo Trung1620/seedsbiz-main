@@ -22,7 +22,9 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import * as api from "@/utils/api";
+import { LOCAL_PRODUCTS } from "@/constants/localProducts";
 import ScreenBackground from "@/components/ScreenBackground";
+import { Image } from "react-native";
 
 export default function NewJobSheetScreen() {
   const router = useRouter();
@@ -60,7 +62,14 @@ export default function NewJobSheetScreen() {
           api.listProducts({ orgId: activeOrg.id }),
           api.listArtisans(activeOrg.id)
         ]);
-        setProducts(pData || []);
+        
+        // Logic đồng bộ: Nếu API trống thì dùng LOCAL_PRODUCTS làm mẫu
+        let finalProducts = [];
+        if (Array.isArray(pData?.items) && pData.items.length > 0) finalProducts = pData.items;
+        else if (Array.isArray(pData) && pData.length > 0) finalProducts = pData;
+        else finalProducts = LOCAL_PRODUCTS;
+
+        setProducts(finalProducts);
         setArtisans(aData || []);
 
         if (jobId) {
@@ -259,15 +268,33 @@ export default function NewJobSheetScreen() {
             <FlatList
               data={products}
               keyExtractor={item => item.id}
-              renderItem={({ item }) => (
-                <Pressable
-                  style={styles.listItem}
-                  onPress={() => { setSelectedProduct(item); setIsProductModal(false); }}
-                >
-                  <Text style={{ fontSize: 16, color: colors.text }}>{item.nameVi}</Text>
-                  <Text style={{ fontSize: 12, color: colors.textSecondary }}>{item.sku}</Text>
-                </Pressable>
+              ListEmptyComponent={() => (
+                <View style={{ padding: 40, alignItems: 'center' }}>
+                  <Text style={{ color: colors.textSecondary }}>{t('common.noData', { defaultValue: 'Không có sản phẩm nào' })}</Text>
+                  <Text style={{ color: colors.textSecondary, fontSize: 12, marginTop: 5 }}>Vui lòng thêm sản phẩm mới trong mục Sản phẩm trước.</Text>
+                </View>
               )}
+              renderItem={({ item }) => {
+                const imgSource = api.getPublicFileUrl(item.image || (item.images?.[0]?.url));
+                return (
+                  <Pressable
+                    style={[styles.listItem, { flexDirection: 'row', alignItems: 'center', gap: 15 }]}
+                    onPress={() => { setSelectedProduct(item); setIsProductModal(false); }}
+                  >
+                    {imgSource ? (
+                      <Image source={typeof imgSource === 'string' ? { uri: imgSource } : imgSource} style={{ width: 50, height: 50, borderRadius: 10 }} />
+                    ) : (
+                      <View style={{ width: 50, height: 50, borderRadius: 10, backgroundColor: '#EEE', alignItems: 'center', justifyContent: 'center' }}>
+                        <Ionicons name="image-outline" size={20} color="#999" />
+                      </View>
+                    )}
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 16, color: colors.text, fontFamily: FONTS.bold }}>{item.nameVi || item.name || 'Sản phẩm không tên'}</Text>
+                      <Text style={{ fontSize: 12, color: colors.textSecondary }}>SKU: {item.sku || 'N/A'}</Text>
+                    </View>
+                  </Pressable>
+                );
+              }}
             />
           </View>
         </Modal>

@@ -33,6 +33,8 @@ export default function InventoryStockInScreen() {
     const [qty, setQty] = useState("");
     const [unitCost, setUnitCost] = useState("");
     const [note, setNote] = useState("");
+    const [suppliers, setSuppliers] = useState<api.Supplier[]>([]);
+    const [supplierId, setSupplierId] = useState("");
     const [loading, setLoading] = useState(false);
 
     const canUse = authReady && !!token && !!activeOrg?.id;
@@ -48,6 +50,10 @@ export default function InventoryStockInScreen() {
 
                 const skus = await api.listVariants();
                 setAllSkus(skus);
+
+                const sups = await api.listSuppliers();
+                setSuppliers(sups);
+                if (sups.length > 0) setSupplierId(sups[0].id);
             } catch (e: any) {
                 Alert.alert(t("inventory.inError"), e?.message || t("inventory.loadDataFailed"));
             }
@@ -87,6 +93,7 @@ export default function InventoryStockInScreen() {
             await api.createStockMove({
                 warehouseId,
                 type: "IN",
+                supplierId: supplierId || undefined,
                 note: note.trim() || t('inventory.inPrefix'),
                 items: [
                     {
@@ -148,6 +155,30 @@ export default function InventoryStockInScreen() {
                         );
                     })}
                 </View>
+            </View>
+
+            <View style={styles.section}>
+                <Text style={styles.label}>{t("inventory.supplierLabel", { defaultValue: "Nhà cung cấp" })}</Text>
+                <View style={styles.pillsRow}>
+                    {suppliers.map((s) => {
+                        const active = s.id === supplierId;
+                        return (
+                            <Pressable
+                                key={s.id}
+                                onPress={() => setSupplierId(s.id)}
+                                style={[
+                                    styles.pill,
+                                    active ? [styles.pillActive, NEUMORPHISM.button] : NEUMORPHISM.cardInner
+                                ]}
+                            >
+                                <Text style={[styles.pillText, active && styles.pillTextActive]}>
+                                    {s.name}
+                                </Text>
+                            </Pressable>
+                        );
+                    })}
+                </View>
+                {suppliers.length === 0 && <Text style={{ color: COLORS.accent, fontSize: 12, marginTop: 4 }}>* Vui lòng thêm nhà cung cấp trước</Text>}
             </View>
 
             <View style={styles.section}>

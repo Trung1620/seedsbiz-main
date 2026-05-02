@@ -77,7 +77,7 @@ export default function ArtisansScreen() {
   const [editingWorker, setEditingWorker] = useState<api.Artisan | null>(null);
   const [formData, setFormData] = useState({
     code: "", name: "", phone: "", address: "", age: "", role: t('artisans.roleWorker'),
-    baseSalary: "0", dailyWage: "0", initialDebt: "0", skills: "", dailyTarget: "10", image: ""
+    baseSalary: "0", initialDebt: "0", skills: "", dailyTarget: "10", image: ""
   });
 
   const loadWorkers = async (showLoading = true) => {
@@ -142,7 +142,6 @@ export default function ArtisansScreen() {
       const payload = {
         ...formData,
         image: finalImageUrl,
-        dailyWage: Number(formData.dailyWage) || 0,
         initialDebt: Number(formData.initialDebt) || 0,
         dailyTarget: Number(formData.dailyTarget) || 0,
         age: formData.age ? Number(formData.age) : undefined
@@ -183,7 +182,7 @@ export default function ArtisansScreen() {
 
   const resetForm = () => {
     setEditingWorker(null);
-    setFormData({ code: "", name: "", phone: "", address: "", age: "", role: t('artisans.roleWorker'), baseSalary: "0", dailyWage: "0", initialDebt: "0", skills: "Weaving", dailyTarget: "10", image: "" });
+    setFormData({ code: "", name: "", phone: "", address: "", age: "", role: t('artisans.roleWorker'), baseSalary: "0", initialDebt: "0", skills: "Weaving", dailyTarget: "10", image: "" });
   };
 
   const filteredWorkers = workers.filter(w => 
@@ -237,7 +236,6 @@ export default function ArtisansScreen() {
                 age: String(item.age || ""),
                 role: item.role || t('artisans.roleWorker'),
                 baseSalary: String(item.baseSalary || 0),
-                dailyWage: String(item.dailyWage || 0),
                 dailyTarget: String(item.dailyTarget || 10),
                 initialDebt: String(item.debt || 0),
                 skills: item.skills || "",
@@ -275,7 +273,6 @@ export default function ArtisansScreen() {
                 age: String(item.age || ""),
                 role: item.role || t('artisans.roleWorker'),
                 baseSalary: String(item.baseSalary || 0),
-                dailyWage: String(item.dailyWage || 0),
                 dailyTarget: String(item.dailyTarget || 10),
                 initialDebt: String(item.debt || 0),
                 skills: item.skills || "",
@@ -298,8 +295,8 @@ export default function ArtisansScreen() {
 
       <View style={styles.financeRow}>
           <View style={styles.financeItem}>
-            <Text style={[styles.financeLabel, { color: colors.textSecondary }]}>{t('artisans.dailyWageSmall')}</Text>
-            <Text style={[styles.salaryValue, { color: PALETTE.primary }]}>{formatMoney(item.dailyWage)}</Text>
+            <Text style={[styles.financeLabel, { color: colors.textSecondary }]}>{t('artisans.dailyTargetLabel')}</Text>
+            <Text style={[styles.salaryValue, { color: PALETTE.primary }]}>{item.dailyTarget || 0} SP</Text>
          </View>
          <View style={[styles.verticalDivider, { backgroundColor: colors.background }]} />
          <View style={styles.financeItem}>
@@ -429,26 +426,13 @@ export default function ArtisansScreen() {
                       placeholder={t('artisans.phonePlaceholder')}
                    />
                    
-                   <View style={{ flexDirection: 'row', gap: 15 }}>
-                      <View style={{ flex: 1 }}>
-                         <InputField 
-                           label={t('artisans.ageLabel')} 
-                           value={formData.age} 
-                           onChangeText={t => setFormData({...formData, age: t})} 
-                           placeholder="25"
-                           keyboardType="numeric" 
-                         />
-                      </View>
-                      <View style={{ flex: 2 }}>
-                         <InputField 
-                           label={t('artisans.dailyWageLabel')} 
-                           value={formData.dailyWage} 
-                           onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} 
-                           placeholder={t('artisans.wagePlaceholder')} 
-                           keyboardType="numeric" 
-                         />
-                      </View>
-                   </View>
+                   <InputField 
+                     label={t('artisans.ageLabel')} 
+                     value={formData.age} 
+                     onChangeText={t => setFormData({...formData, age: t})} 
+                     placeholder="25"
+                     keyboardType="numeric" 
+                   />
 
                    <InputField 
                       label={t('artisans.dailyTargetLabel')} 
