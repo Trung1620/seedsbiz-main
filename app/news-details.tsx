@@ -51,10 +51,10 @@ export default function NewsDetailsScreen() {
           </Text>
 
           {/* HIỂN THỊ THÊM ẢNH CHI TIẾT */}
-          {news.moreImages && news.moreImages.map((img: string, index: number) => (
+          {news.moreImages && news.moreImages.map((img: any, index: number) => (
             <Image 
               key={index} 
-              source={{ uri: img }} 
+              source={typeof img === 'string' ? { uri: img } : img} 
               style={[styles.additionalImage, { marginTop: 20 }]} 
             />
           ))}

@@ -14,6 +14,8 @@ import {
   SafeAreaView,
   Image,
 } from "react-native";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
@@ -210,6 +212,41 @@ export default function NewQuoteScreen() {
     }
   };
 
+  const handleExportLocal = async () => {
+    try {
+      const header = ["Sản phẩm", "SKU", "Số lượng", "Đơn giá", "Thành tiền"];
+      const rows = items.map(it => [
+        `"${it.nameVi.replace(/"/g, '""')}"`,
+        it.sku,
+        it.quantity,
+        it.unitPrice,
+        it.quantity * it.unitPrice
+      ]);
+      
+      const csvContent = "\uFEFF" + [
+        [`BÁO GIÁ NHÁP - ${orderName || "Không tên"}`],
+        [`Khách hàng: ${custName || "Chưa chọn"}`],
+        [`Ngày: ${quoteDate}`],
+        [],
+        header,
+        ...rows,
+        [],
+        ["TỔNG TIỀN HÀNG", "", "", "", subTotal],
+        ["VAT (%)", "", "", "", taxPercent],
+        ["CHIẾT KHẤU (%)", "", "", "", discountPercent],
+        ["PHÍ VẬN CHUYỂN", "", "", "", shippingFee],
+        ["TỔNG CỘNG", "", "", "", grandTotal]
+      ].map(r => r.join(",")).join("\r\n");
+
+      const filename = `BaoGia_Nhap_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + filename;
+      await FileSystem.writeAsStringAsync(fileUri, csvContent, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t("common.error"), e.message);
+    }
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: colors.background }]}>
       <View style={styles.header}>
@@ -217,7 +254,12 @@ export default function NewQuoteScreen() {
           <Ionicons name="chevron-back" size={28} color={colors.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t('quotes.new_quote')}</Text>
-        <View style={{ width: 44 }} />
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Pressable onPress={handleExportLocal} style={{ marginRight: 15 }}>
+            <MaterialIcons name="file-download" size={26} color={PALETTE.primary} />
+          </Pressable>
+          <View style={{ width: 44 }} />
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>

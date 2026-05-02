@@ -23,6 +23,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
 import { useTranslation } from "react-i18next";
 import ScreenBackground from "@/components/ScreenBackground";
 import * as api from "@/utils/api";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
@@ -101,6 +103,19 @@ export default function ShippingScreen() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await api.exportDeliveries();
+      const csvData = await res.text();
+      const fileName = `VanChuyen_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
     }
   };
 
@@ -276,12 +291,20 @@ export default function ShippingScreen() {
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('shipping.title')}</Text>
-          <Pressable 
-            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
-            onPress={() => { resetForm(); setIsModalVisible(true); }}
-          >
-            <Ionicons name="add" size={24} color="#FFF" />
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Pressable 
+              style={[styles.addSquareBtn, { backgroundColor: '#2E7D32' }]} 
+              onPress={handleExport}
+            >
+              <MaterialIcons name="file-download" size={24} color="#FFF" />
+            </Pressable>
+            <Pressable 
+              style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
+              onPress={() => { resetForm(); setIsModalVisible(true); }}
+            >
+              <Ionicons name="add" size={24} color="#FFF" />
+            </Pressable>
+          </View>
         </View>
 
         {loading ? (

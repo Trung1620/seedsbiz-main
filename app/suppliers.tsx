@@ -8,6 +8,8 @@ import {
 import { useRouter } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import * as api from "@/utils/api";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTranslation } from "react-i18next";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
@@ -65,6 +67,19 @@ export default function SuppliersScreen() {
     finally { setSaving(false); }
   };
 
+  const handleExport = async () => {
+    try {
+      const res = await api.exportSuppliers();
+      const csvData = await res.text();
+      const fileName = `NhaCungCap_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
+    }
+  };
+
   const handleDelete = (id: string) => {
     Alert.alert(
       t('common.confirm'),
@@ -113,6 +128,14 @@ export default function SuppliersScreen() {
         title={t('suppliers.title')}
         subtitle={`${items.length} ${t('suppliers.subtitle')}`}
         onBack={() => router.back()}
+        rightAction={
+          <Pressable 
+            style={{ width: 40, height: 40, borderRadius: 12, backgroundColor: '#2E7D32', alignItems: 'center', justifyContent: 'center' }} 
+            onPress={handleExport}
+          >
+             <MaterialIcons name="file-download" size={22} color="#FFFFFF" />
+          </Pressable>
+        }
       />
 
       <SearchBar value={q} onChangeText={setQ} placeholder={t('suppliers.searchPlaceholder')} />

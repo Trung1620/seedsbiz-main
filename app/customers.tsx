@@ -24,6 +24,8 @@ import { FONTS, NEUMORPHISM, SHADOWS, PALETTE, SIZES } from "@/utils/theme";
 import ScreenBackground from "@/components/ScreenBackground";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { AppHeader } from "@/components/UI";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
@@ -144,6 +146,19 @@ export default function CustomersScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const res = await api.exportCustomers();
+      const csvData = await res.text();
+      const fileName = `KhachHang_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
+    }
+  };
+
   const handleDelete = (id: string) => {
     Alert.alert(
       t('common.confirm'),
@@ -234,6 +249,12 @@ export default function CustomersScreen() {
           <Text style={[styles.title, { color: colors.text }]}>{t('customers.title')}</Text>
           <Text style={[styles.subTitle, { color: colors.textSecondary }]}>{activeOrg?.name}</Text>
         </View>
+        <Pressable 
+          style={[styles.addBtn, { backgroundColor: '#2E7D32', marginRight: 10 }]} 
+          onPress={handleExport}
+        >
+           <MaterialIcons name="file-download" size={22} color="#FFFFFF" />
+        </Pressable>
         <Pressable style={[styles.addBtn, { backgroundColor: PALETTE.primary }]} onPress={() => { setEditingCustomer(null); setForm(EMPTY_FORM); setModalVisible(true); }}>
            <Ionicons name="person-add" size={22} color="#FFFFFF" />
         </Pressable>

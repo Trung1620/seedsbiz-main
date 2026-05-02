@@ -276,7 +276,7 @@ export type ProfitLossReportData = {
 
 const isValidId = (id?: string) => id ? /^[0-9a-fA-F]{24}$/.test(id) : false;
 
-export const BASE_URL = "https://example-app-router-main.vercel.app";
+export const BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || "https://example-app-router-main.vercel.app";
 
 // Bản đồ ánh xạ các đường dẫn ảnh tĩnh sang file require() của Expo
 const LOCAL_ASSET_MAP: Record<string, any> = {
@@ -476,10 +476,18 @@ export async function deleteProduct(id: string) {
   return await readJson(res);
 }
 
+export async function exportProducts() {
+  return await authedFetch("/api/products/export");
+}
+
 // Materials
 export async function listMaterials() {
   const res = await authedFetch("/api/materials");
   return await readJson(res);
+}
+
+export async function exportMaterials() {
+  return await authedFetch("/api/materials/export");
 }
 
 export async function getMaterial(id: string) {
@@ -514,6 +522,10 @@ export async function listArtisans(orgId: string): Promise<Artisan[]> {
   const res = await authedFetch(`/api/artisans?orgId=${orgId}`);
   const data = await readJson(res);
   return data?.artisans || data || [];
+}
+
+export async function exportArtisans() {
+  return await authedFetch("/api/artisans/export");
 }
 
 export async function createArtisan(data: any) {
@@ -562,6 +574,10 @@ export async function deleteSupplier(id: string) {
   return await readJson(res);
 }
 
+export async function exportSuppliers() {
+  return await authedFetch("/api/suppliers/export");
+}
+
 // Customers
 export async function listCustomers(params?: any) {
   const query = new URLSearchParams(params).toString();
@@ -585,6 +601,10 @@ export async function deleteCustomer(id: string) {
   return await readJson(res);
 }
 
+export async function exportCustomers() {
+  return await authedFetch("/api/customers/export");
+}
+
 // Production
 export async function listProductionOrders() {
   const res = await authedFetch("/api/production");
@@ -601,6 +621,10 @@ export async function listDebts(params?: any) {
   const query = new URLSearchParams(params).toString();
   const res = await authedFetch(`/api/debts${query ? `?${query}` : ""}`);
   return await readJson(res);
+}
+
+export async function exportDebts() {
+  return await authedFetch("/api/debts/export");
 }
 
 export async function createDebt(data: any) {
@@ -653,6 +677,10 @@ export async function updateQuote(id: string, data: any) {
 export async function deleteQuote(id: string) {
   const res = await authedFetch(`/api/quotes/${id}`, { method: "DELETE" });
   return await readJson(res);
+}
+
+export async function exportQuotes() {
+  return await authedFetch("/api/quotes/export");
 }
 
 export async function getContractById(id: string) {
@@ -715,6 +743,11 @@ export async function createStockMove(payload: any) {
   return await readJson(res);
 }
 
+export async function createWarehouse(data: any) {
+  const res = await authedFetch("/api/warehouses", { method: "POST", body: JSON.stringify(data) });
+  return await readJson(res);
+}
+
 // Deliveries (standalone — tạo thủ công, không gắn quote)
 export async function createDelivery(data: any) {
   const res = await authedFetch("/api/deliveries", { method: "POST", body: JSON.stringify(data) });
@@ -729,6 +762,10 @@ export async function updateDelivery(id: string, data: any) {
 export async function deleteDelivery(id: string) {
   const res = await authedFetch(`/api/deliveries/${id}`, { method: "DELETE" });
   return await readJson(res);
+}
+
+export async function exportDeliveries() {
+  return await authedFetch("/api/deliveries/export");
 }
 
 // Warranty & Repair
@@ -776,6 +813,10 @@ export async function updateJobSheet(id: string, data: any) {
 export async function deleteJobSheet(id: string) {
   const res = await authedFetch(`/api/job-sheets/${id}`, { method: "DELETE" });
   return await readJson(res);
+}
+
+export async function exportJobSheets() {
+  return await authedFetch("/api/job-sheets/export");
 }
 
 // Production Progress

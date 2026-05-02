@@ -10,6 +10,8 @@ import {
   RefreshControl,
   Alert,
 } from "react-native";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useRouter, useFocusEffect } from "expo-router";
 import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -68,6 +70,32 @@ export default function JobSheetsScreen() {
         }
       ]
     );
+  };
+
+  const handleExport = async () => {
+    try {
+      setLoading(true);
+      const res = await api.exportJobSheets();
+      if (!res.ok) {
+        throw new Error("Lỗi khi tải dữ liệu xuất file");
+      }
+      
+      const content = await res.text();
+      const filename = `PhieuGiaCong_${new Date().toISOString().slice(0, 10)}.csv`;
+      const fileUri = FileSystem.cacheDirectory + filename;
+      
+      await FileSystem.writeAsStringAsync(fileUri, content, { encoding: FileSystem.EncodingType.UTF8 });
+      
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert("Thành công", "Đã lưu file: " + filename);
+      }
+    } catch (e: any) {
+      Alert.alert("Lỗi", e.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatMoney = (val?: number) => {
@@ -134,9 +162,14 @@ export default function JobSheetsScreen() {
           title={t('jobSheet.title')}
           onBack={() => router.back()}
           rightAction={
-            <Pressable onPress={() => router.push("/job-sheet-new")} style={styles.addBtn}>
-               <Ionicons name="add-circle" size={32} color={PALETTE.primary} />
-            </Pressable>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Pressable onPress={handleExport} style={styles.addBtn}>
+                 <MaterialIcons name="file-download" size={28} color={PALETTE.primary} />
+              </Pressable>
+              <Pressable onPress={() => router.push("/job-sheet-new")} style={styles.addBtn}>
+                 <Ionicons name="add-circle" size={32} color={PALETTE.primary} />
+              </Pressable>
+            </View>
           }
         />
 

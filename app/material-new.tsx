@@ -282,8 +282,8 @@ export default function NewMaterialScreen() {
             <Image source={api.getPublicFileUrl(form.image) as any} style={styles.imagePreview} />
           ) : (
             <View style={styles.imagePlaceholder}>
-              <Ionicons name="camera-outline" size={32} color={colors.textSecondary} />
-              <Text style={{ color: colors.textSecondary, marginTop: 8 }}>{t('products.imageLabel')}</Text>
+              <MaterialIcons name="camera-alt" size={40} color={PALETTE.primary} />
+              <Text style={{ color: PALETTE.primary, fontFamily: FONTS.bold, marginTop: 10, fontSize: 16 }}>Thêm vật tư</Text>
             </View>
           )}
           {imageUploading && (

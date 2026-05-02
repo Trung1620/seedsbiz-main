@@ -12,6 +12,8 @@ import {
   Alert,
   RefreshControl
 } from "react-native";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useRouter } from "expo-router";
 import { MaterialIcons, Ionicons, Feather } from "@expo/vector-icons";
 import { useTranslation } from "react-i18next";
@@ -43,6 +45,30 @@ export default function QuotesScreen() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      setLoading(true);
+      const res = await api.exportQuotes();
+      if (!res.ok) throw new Error("Lỗi khi tải dữ liệu");
+      
+      const content = await res.text();
+      const filename = `DanhSachBaoGia_${new Date().toISOString().slice(0, 10)}.csv`;
+      const fileUri = FileSystem.cacheDirectory + filename;
+      
+      await FileSystem.writeAsStringAsync(fileUri, content, { encoding: FileSystem.EncodingType.UTF8 });
+      
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert("Thành công", "Đã lưu file: " + filename);
+      }
+    } catch (e: any) {
+      Alert.alert("Lỗi", e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -93,9 +119,14 @@ export default function QuotesScreen() {
           <Ionicons name="chevron-back" size={28} color={colors.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text }]}>{t('quotes.list_title')}</Text>
-        <Pressable style={styles.addBtn} onPress={() => router.push(H("/quote-new"))}>
-          <Ionicons name="add" size={28} color={PALETTE.primary} />
-        </Pressable>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Pressable style={styles.addBtn} onPress={handleExport}>
+            <MaterialIcons name="file-download" size={26} color={PALETTE.primary} />
+          </Pressable>
+          <Pressable style={styles.addBtn} onPress={() => router.push(H("/quote-new"))}>
+            <Ionicons name="add" size={28} color={PALETTE.primary} />
+          </Pressable>
+        </View>
       </View>
 
       <View style={styles.searchContainer}>

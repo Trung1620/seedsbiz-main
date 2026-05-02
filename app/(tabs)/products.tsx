@@ -22,6 +22,8 @@ import { MaterialIcons, Ionicons } from "@expo/vector-icons";
 import { FONTS, SIZES, NEUMORPHISM, SHADOWS, PALETTE } from "@/utils/theme";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import { LOCAL_PRODUCTS } from "@/constants/localProducts";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 export default function ProductsScreen() {
   const router = useRouter();
@@ -66,6 +68,19 @@ export default function ProductsScreen() {
       setItems(LOCAL_PRODUCTS as any);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await api.exportProducts();
+      const csvData = await res.text();
+      const fileName = `SanPham_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
     }
   };
 
@@ -158,11 +173,17 @@ export default function ProductsScreen() {
         <View style={{ flex: 1 }}>
           <Text style={[styles.title, { color: colors.text }]}>{t("products.title")}</Text>
         </View>
+        <Pressable 
+          style={[styles.addBtn, { backgroundColor: '#2E7D32', marginRight: 10 }]} 
+          onPress={handleExport}
+        >
+           <MaterialIcons name="file-download" size={24} color="#FFFFFF" />
+        </Pressable>
         <Pressable
           style={[styles.addBtn, { backgroundColor: PALETTE.primary }]}
           onPress={() => router.push("/product-new")}
         >
-          <Ionicons name="add" size={28} color="#FFFFFF" />
+           <Ionicons name="add" size={28} color="#FFFFFF" />
         </Pressable>
       </View>
 

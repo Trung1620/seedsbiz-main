@@ -12,6 +12,8 @@ import {
   FlatList,
   Modal,
 } from "react-native";
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -113,6 +115,30 @@ export default function NewJobSheetScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      setLoading(true);
+      const res = await api.exportJobSheets();
+      if (!res.ok) throw new Error("Lỗi khi tải dữ liệu");
+      
+      const content = await res.text();
+      const filename = `PhieuGiaCong_${new Date().toISOString().slice(0, 10)}.csv`;
+      const fileUri = FileSystem.cacheDirectory + filename;
+      
+      await FileSystem.writeAsStringAsync(fileUri, content, { encoding: FileSystem.EncodingType.UTF8 });
+      
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri);
+      } else {
+        Alert.alert("Thành công", "Đã lưu file: " + filename);
+      }
+    } catch (e: any) {
+      Alert.alert("Lỗi", e.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScreenBackground>
       <View style={[styles.container, { paddingTop: insets.top }]}>
@@ -123,9 +149,16 @@ export default function NewJobSheetScreen() {
           <Text style={[styles.title, { color: colors.text }]}>
             {jobId ? t('common.edit') : t('jobSheet.addNew')}
           </Text>
-          <Pressable onPress={handleSave} disabled={loading || fetching}>
-            {loading ? <ActivityIndicator size="small" color={PALETTE.primary} /> : <Text style={styles.saveBtn}>{t('common.saveChanges').toUpperCase()}</Text>}
-          </Pressable>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 15 }}>
+            {jobId && (
+              <Pressable onPress={handleExport}>
+                <Ionicons name="download-outline" size={24} color={PALETTE.primary} />
+              </Pressable>
+            )}
+            <Pressable onPress={handleSave} disabled={loading || fetching}>
+              {loading ? <ActivityIndicator size="small" color={PALETTE.primary} /> : <Text style={styles.saveBtn}>{t('common.saveChanges').toUpperCase()}</Text>}
+            </Pressable>
+          </View>
         </View>
 
         {fetching ? (

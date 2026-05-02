@@ -19,6 +19,8 @@ import { useAuth } from '@/lib/auth/AuthProvider';
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import * as api from '@/utils/api';
 import { MaterialIcons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 const { width } = Dimensions.get('window');
 
@@ -51,6 +53,19 @@ export default function InventoryReportScreen() {
     }
   };
 
+  const handleExport = async () => {
+    try {
+      const res = await api.exportProducts();
+      const csvData = await res.text();
+      const fileName = `TonKho_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      console.error(e);
+    }
+  };
+
   const filteredProducts = products.filter(p => 
     p.nameVi?.toLowerCase().includes(search.toLowerCase()) || 
     p.sku?.toLowerCase().includes(search.toLowerCase())
@@ -73,7 +88,13 @@ export default function InventoryReportScreen() {
         <Pressable style={[styles.backBtn, { backgroundColor: colors.surface }]} onPress={() => router.back()}>
           <MaterialIcons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.pageTitle, { color: colors.text }]}>{t('home.dashboard.reports.inventory')}</Text>
+        <Text style={[styles.pageTitle, { color: colors.text, flex: 1 }]}>{t('home.dashboard.reports.inventory')}</Text>
+        <Pressable 
+          style={[styles.backBtn, { backgroundColor: '#2E7D32' }]} 
+          onPress={handleExport}
+        >
+          <MaterialIcons name="file-download" size={24} color="#FFF" />
+        </Pressable>
       </View>
 
       <View style={styles.searchContainer}>

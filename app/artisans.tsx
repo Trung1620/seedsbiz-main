@@ -26,6 +26,8 @@ import { useTranslation } from "react-i18next";
 import ScreenBackground from "@/components/ScreenBackground";
 import { AppHeader, InputField } from "@/components/UI";
 import * as api from "@/utils/api";
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImageUriToCloudinary } from "@/utils/uploadCloudinaryRN";
@@ -163,6 +165,19 @@ export default function ArtisansScreen() {
       Alert.alert(t('common.error'), (error.message || t('auth.loginFailed')));
     } finally {
       setIsUploading(false);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await api.exportArtisans();
+      const csvData = await res.text();
+      const fileName = `ThoThuCong_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
     }
   };
 
@@ -328,12 +343,20 @@ export default function ArtisansScreen() {
             <MaterialIcons name="arrow-back" size={24} color={colors.text} />
           </Pressable>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t('artisans.title')}</Text>
-          <Pressable 
-            style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
-            onPress={() => { resetForm(); setIsAddModalVisible(true); }}
-          >
-            <Ionicons name="add" size={24} color="#FFF" />
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Pressable 
+              style={[styles.addSquareBtn, { backgroundColor: '#2E7D32' }]} 
+              onPress={handleExport}
+            >
+              <MaterialIcons name="file-download" size={24} color="#FFF" />
+            </Pressable>
+            <Pressable 
+              style={[styles.addSquareBtn, { backgroundColor: colors.primary }]} 
+              onPress={() => { resetForm(); setIsAddModalVisible(true); }}
+            >
+              <Ionicons name="add" size={24} color="#FFF" />
+            </Pressable>
+          </View>
         </View>
 
         <View style={styles.searchContainer}>
@@ -384,35 +407,67 @@ export default function ArtisansScreen() {
                </View>
 
                <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 40 }}>
-                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('artisans.nameLabel')}</Text>
-                  <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} value={formData.name} onChangeText={t => setFormData({...formData, name: t})} />
-                  
-                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('artisans.phoneLabel')}</Text>
-                  <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} keyboardType="phone-pad" value={formData.phone} onChangeText={t => setFormData({...formData, phone: t})} />
-                  
-                  <View style={{ flexDirection: 'row', gap: 15, marginTop: 10 }}>
-                     <View style={{ flex: 1 }}>
-                        <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('artisans.ageLabel')}</Text>
-                        <TextInput 
-                          style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} 
-                          keyboardType="numeric" 
-                          value={formData.age} 
-                          onChangeText={t => setFormData({...formData, age: t})} 
-                          placeholder="25"
-                        />
-                     </View>
-                     <View style={{ flex: 2 }}>
-                        <InputField label={t('artisans.dailyWageLabel')} value={formData.dailyWage} onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} placeholder={t('artisans.wagePlaceholder')} keyboardType="numeric" />
-                     </View>
-                  </View>
+                   <InputField 
+                      label={t('artisans.codeLabel')} 
+                      value={formData.code} 
+                      onChangeText={t => setFormData({...formData, code: t})} 
+                      placeholder="VD: THO001"
+                   />
 
-                  <InputField label={t('artisans.dailyTargetLabel')} value={formData.dailyTarget} onChangeText={(v: string) => setFormData({ ...formData, dailyTarget: v })} placeholder={t('artisans.targetPlaceholder')} keyboardType="numeric" />
+                   <InputField 
+                      label={t('artisans.nameLabel')} 
+                      value={formData.name} 
+                      onChangeText={t => setFormData({...formData, name: t})} 
+                      placeholder={t('artisans.namePlaceholder')}
+                   />
+                   
+                   <InputField 
+                      label={t('artisans.phoneLabel')} 
+                      value={formData.phone} 
+                      onChangeText={t => setFormData({...formData, phone: t})} 
+                      keyboardType="phone-pad"
+                      placeholder={t('artisans.phonePlaceholder')}
+                   />
+                   
+                   <View style={{ flexDirection: 'row', gap: 15 }}>
+                      <View style={{ flex: 1 }}>
+                         <InputField 
+                           label={t('artisans.ageLabel')} 
+                           value={formData.age} 
+                           onChangeText={t => setFormData({...formData, age: t})} 
+                           placeholder="25"
+                           keyboardType="numeric" 
+                         />
+                      </View>
+                      <View style={{ flex: 2 }}>
+                         <InputField 
+                           label={t('artisans.dailyWageLabel')} 
+                           value={formData.dailyWage} 
+                           onChangeText={(v: string) => setFormData({ ...formData, dailyWage: v })} 
+                           placeholder={t('artisans.wagePlaceholder')} 
+                           keyboardType="numeric" 
+                         />
+                      </View>
+                   </View>
 
-                  <TextInput style={[styles.modalInput, { backgroundColor: colors.surface, color: colors.text }]} value={formData.skills} onChangeText={t => setFormData({...formData, skills: t})} placeholder={t('artisans.skillsPlaceholder')} />
+                   <InputField 
+                      label={t('artisans.dailyTargetLabel')} 
+                      value={formData.dailyTarget} 
+                      onChangeText={(v: string) => setFormData({ ...formData, dailyTarget: v })} 
+                      placeholder={t('artisans.targetPlaceholder')} 
+                      keyboardType="numeric" 
+                   />
 
-                  <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>{t('common.image')}</Text>
+                   <InputField 
+                      label={t('artisans.skillsLabel')} 
+                      value={formData.skills} 
+                      onChangeText={t => setFormData({...formData, skills: t})} 
+                      placeholder={t('artisans.skillsPlaceholder')} 
+                   />
+
+                  <Text style={[styles.inputLabel, { color: colors.textSecondary, marginBottom: 8 }]}>{t('common.image')}</Text>
                   <Pressable 
-                    style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline + '40' }]} 
+                    style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline + '40', marginBottom: 20 }]} 
                     onPress={pickImage}
                   >
                     {formData.image ? (

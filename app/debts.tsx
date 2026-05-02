@@ -20,7 +20,9 @@ import { COLORS, FONTS, SIZES, NEUMORPHISM, PALETTE } from '@/utils/theme';
 import { useTheme } from '@/lib/theme/ThemeProvider';
 import ScreenBackground from '@/components/ScreenBackground';
 import { AppHeader, StatusBadge } from '@/components/UI';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 export default function DebtsScreen() {
   const router = useRouter();
@@ -59,6 +61,19 @@ export default function DebtsScreen() {
       setLoading(false);
     }
   }, [activeTab, authReady, token]);
+
+  const handleExport = async () => {
+    try {
+      const res = await api.exportDebts();
+      const csvData = await res.text();
+      const fileName = `CongNo_${new Date().getTime()}.csv`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      await FileSystem.writeAsStringAsync(fileUri, csvData, { encoding: FileSystem.EncodingType.UTF8 });
+      await Sharing.shareAsync(fileUri);
+    } catch (e: any) {
+      Alert.alert(t('common.error'), e.message);
+    }
+  };
 
   useEffect(() => {
     loadDebts();
@@ -193,12 +208,20 @@ export default function DebtsScreen() {
         subtitle={t('extra.openDebtsCount', { count: debts.filter(d => d.status !== 'PAID_OFF').length })}
         onBack={() => router.back()}
         rightAction={
-          <Pressable
-            onPress={handleAddDebt}
-            style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: PALETTE.primary, alignItems: 'center', justifyContent: 'center' }}
-          >
-            <Ionicons name="add" size={24} color="#FFF" />
-          </Pressable>
+          <View style={{ flexDirection: 'row', gap: 10 }}>
+            <Pressable
+              onPress={handleExport}
+              style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: '#2E7D32', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <MaterialIcons name="file-download" size={24} color="#FFF" />
+            </Pressable>
+            <Pressable
+              onPress={handleAddDebt}
+              style={{ width: 44, height: 44, borderRadius: 14, backgroundColor: PALETTE.primary, alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Ionicons name="add" size={24} color="#FFF" />
+            </Pressable>
+          </View>
         }
       />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.container}>
