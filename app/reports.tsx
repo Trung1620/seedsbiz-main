@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FONTS, NEUMORPHISM, PALETTE, SHADOWS } from '@/utils/theme';
@@ -117,11 +117,13 @@ export default function ReportsScreen() {
     }
   }, [activeOrg?.id, period, calculateDates]);
 
-  useEffect(() => {
-    if (authReady && activeOrg?.id) {
-      loadData();
-    }
-  }, [authReady, activeOrg?.id, period, loadData]);
+  useFocusEffect(
+    useCallback(() => {
+      if (authReady && activeOrg?.id) {
+        loadData();
+      }
+    }, [authReady, activeOrg?.id, period, loadData])
+  );
 
   const formatCurrency = (val: any) => {
     try {

@@ -13,7 +13,7 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import * as api from "@/utils/api";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -185,7 +185,11 @@ export default function ExpensesScreen() {
     }
   };
 
-  useEffect(() => { load(period); }, [period]);
+  useFocusEffect(
+    React.useCallback(() => {
+      load(period);
+    }, [period])
+  );
 
   const getCategoryIcon = (cat: string) => {
     switch (cat?.toLowerCase()) {

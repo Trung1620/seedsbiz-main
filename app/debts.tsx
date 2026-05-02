@@ -9,7 +9,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -75,9 +75,11 @@ export default function DebtsScreen() {
     }
   };
 
-  useEffect(() => {
-    loadDebts();
-  }, [loadDebts]);
+  useFocusEffect(
+    useCallback(() => {
+      loadDebts();
+    }, [loadDebts])
+  );
 
   const totalReceivable = debts
     .filter((d) => d.type?.toUpperCase() === 'RECEIVABLE' && d.status !== 'PAID_OFF')
