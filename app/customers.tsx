@@ -117,21 +117,29 @@ export default function CustomersScreen() {
         setIsUploading(false);
       }
 
-      const payload = { 
+      // Gửi đầy đủ dữ liệu để đồng bộ hoàn toàn
+      const payload: any = {
         ...form,
-        name: form.name.trim(), 
-        phone: form.phone.trim() || null, 
+        name: form.name.trim(),
         email: form.email.trim() || null,
-        type: form.type,
-        companyName: form.companyName.trim() || null,
+        phone: form.phone.trim() || null,
+        address: form.address.trim() || null,
         taxId: form.taxId.trim() || null,
-        image: finalImageUrl || null
+        image: finalImageUrl || null,
+        note: form.note.trim() || null,
       };
 
-      if (!payload.name) { Alert.alert(t('common.info'), t('customers.missingNameMsg')); return; }
+      if (!payload.name) { 
+        Alert.alert(t('common.info'), t('customers.missingNameMsg')); 
+        return; 
+      }
       
-      if (editingCustomer?.id) { await api.updateCustomer(editingCustomer.id, payload); }
-      else { await api.createCustomer(payload); }
+      if (editingCustomer?.id) { 
+        await api.updateCustomer(editingCustomer.id, payload); 
+      }
+      else { 
+        await api.createCustomer(payload); 
+      }
       setModalVisible(false);
       setKeyword("");
       setSearchQuery("");

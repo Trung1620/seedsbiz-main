@@ -50,3 +50,4 @@ export const NEWS_DATA = [
     moreImages: []
   }
 ];
+
