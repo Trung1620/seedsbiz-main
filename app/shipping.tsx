@@ -54,21 +54,24 @@ export default function ShippingScreen() {
   const CARRIER_OPTIONS = getCarrierOptions(t);
 
   const [deliveries, setDeliveries] = useState<any[]>([]);
+  const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingDelivery, setEditingDelivery] = useState<any>(null);
+  const [showCustomerPicker, setShowCustomerPicker] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     number: "VN-" + Math.floor(10000 + Math.random() * 90000),
-    carrier: t('shipping.carrierGhtk'),
+    carrier: "Giao hàng tiết kiệm",
     vehicleType: "motorcycle",
     carrierType: "ghtk",
     vehicleNumber: "",
     receiverName: "",
     receiverPhone: "",
+    customerId: "",
     driverName: "",
     driverPhone: "",
     trackingNumber: "",
@@ -77,6 +80,27 @@ export default function ShippingScreen() {
     status: "PENDING",
     image: ""
   });
+  
+  const loadData = async () => {
+    if (!activeOrg?.id) return;
+    setLoading(true);
+    try {
+      const [delRes, custRes] = await Promise.all([
+        api.authedFetch(`/api/deliveries?orgId=${activeOrg.id}`),
+        api.listCustomers({ orgId: activeOrg.id })
+      ]);
+      const delData = await delRes.json();
+      setDeliveries(delData.deliveries || []);
+      setCustomers(Array.isArray(custRes) ? custRes : []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => { loadData(); }, [activeOrg?.id]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,22 +111,6 @@ export default function ShippingScreen() {
 
     if (!result.canceled) {
       setFormData({ ...formData, image: result.assets[0].uri });
-    }
-  };
-
-  const loadDeliveries = async (showLoading = true) => {
-    if (!activeOrg?.id) return;
-    if (showLoading) setLoading(true);
-    try {
-      const res = await api.authedFetch(`/api/deliveries?orgId=${activeOrg.id}`);
-      const data = await res.json();
-      setDeliveries(data.deliveries || []);
-    } catch (e) {
-      console.error(e);
-      setDeliveries([]); 
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
     }
   };
 
@@ -119,8 +127,6 @@ export default function ShippingScreen() {
     }
   };
 
-  useEffect(() => { loadDeliveries(); }, [activeOrg?.id]);
-
   const handleSaveDelivery = async () => {
     if (!formData.receiverName) {
       Alert.alert(t('common.info'), t('shipping.receiverPlaceholder'));
@@ -130,26 +136,28 @@ export default function ShippingScreen() {
     setSaving(true);
     try {
       let finalImageUrl = formData.image;
-
-      // Upload to Cloudinary if it's a local file
       if (formData.image && formData.image.startsWith('file://')) {
         setIsUploading(true);
         finalImageUrl = await uploadImageUriToCloudinary(formData.image);
         setIsUploading(false);
       }
 
-      const payload = { ...formData, image: finalImageUrl };
+      const payload = { 
+        ...formData, 
+        image: finalImageUrl,
+        shippingCost: parseFloat(formData.shippingCost) || 0
+      };
 
       if (editingDelivery) {
         await api.updateDelivery(editingDelivery.id, payload);
         Alert.alert(t('common.success'), t('common.updateSuccess'));
       } else {
-        await api.createDelivery(payload);
+        await api.createDelivery({ ...payload, orgId: activeOrg?.id });
         Alert.alert(t('common.success'), `${t('shipping.alertSuccess')} #${formData.number}`);
       }
       setIsModalVisible(false);
       resetForm();
-      loadDeliveries(false);
+      loadData();
     } catch (error) {
       console.error(error);
       Alert.alert(t('common.error'), t('shipping.alertError'));
@@ -157,26 +165,6 @@ export default function ShippingScreen() {
       setSaving(false);
       setIsUploading(false);
     }
-  };
-
-  const resetForm = () => {
-    setEditingDelivery(null);
-    setFormData({
-      number: "VN-" + Math.floor(10000 + Math.random() * 90000),
-      carrier: t('shipping.carrierGhtk'),
-      vehicleType: "motorcycle",
-      carrierType: "ghtk",
-      vehicleNumber: "",
-      receiverName: "",
-      receiverPhone: "",
-      driverName: "",
-      driverPhone: "",
-      trackingNumber: "",
-      shippingCost: "",
-      note: "",
-      status: "PENDING",
-      image: ""
-    });
   };
 
   const handleDeleteDelivery = (id: string) => {
@@ -191,7 +179,7 @@ export default function ShippingScreen() {
           onPress: async () => {
             try {
               await api.deleteDelivery(id);
-              loadDeliveries(false);
+              loadData();
             } catch (e: any) {
               Alert.alert(t('common.error'), e.message);
             }
@@ -201,12 +189,43 @@ export default function ShippingScreen() {
     );
   };
 
+  const resetForm = () => {
+    setEditingDelivery(null);
+    setFormData({
+      number: "VN-" + Math.floor(10000 + Math.random() * 90000),
+      carrier: "Giao hàng tiết kiệm",
+      vehicleType: "motorcycle",
+      carrierType: "ghtk",
+      vehicleNumber: "",
+      receiverName: "",
+      receiverPhone: "",
+      customerId: "",
+      driverName: "",
+      driverPhone: "",
+      trackingNumber: "",
+      shippingCost: "",
+      note: "",
+      status: "PENDING",
+      image: ""
+    });
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'DELIVERED': return '#4CAF50';
       case 'PICKED_UP': return '#2196F3';
       default: return '#FF9800';
     }
+  };
+  
+  const selectCustomer = (c: any) => {
+    setFormData({
+      ...formData,
+      customerId: c.id,
+      receiverName: c.name,
+      receiverPhone: c.phone || ""
+    });
+    setShowCustomerPicker(false);
   };
 
   const DeliveryCard = ({ item }: { item: any }) => (
@@ -220,8 +239,9 @@ export default function ShippingScreen() {
           vehicleType: item.vehicleType,
           carrierType: item.carrierType,
           vehicleNumber: item.vehicleNumber || "",
-          receiverName: item.receiverName,
+          receiverName: item.receiverName || "",
           receiverPhone: item.receiverPhone || "",
+          customerId: item.customerId || "",
           driverName: item.driverName || "",
           driverPhone: item.driverPhone || "",
           trackingNumber: item.trackingNumber || "",
@@ -264,19 +284,15 @@ export default function ShippingScreen() {
               <Text style={[styles.carrierInfo, { color: colors.textSecondary }]}>
                  {item.carrier} • {CARRIER_OPTIONS.find(c => c.value === item.carrierType)?.label}
               </Text>
-              {item.driverName && (
+              {(item.driverName || item.driverPhone) && (
                 <Text style={[styles.driverInfo, { color: colors.textSecondary }]}>
-                   <Ionicons name="person-outline" size={12} /> {item.driverName} {item.driverPhone ? `(${item.driverPhone})` : ''}
+                   <Ionicons name="person-outline" size={12} /> {item.driverName || t('shipping.driver')} {item.driverPhone ? `(${item.driverPhone})` : ''}
                 </Text>
               )}
            </View>
            <View style={styles.priceInfo}>
                <Text style={[styles.costText, { color: PALETTE.primary }]}>
-                  {new Intl.NumberFormat(i18n.language.startsWith('vi') ? 'vi-VN' : 'en-US', { 
-                    style: 'currency', 
-                    currency: i18n.language.startsWith('vi') ? 'VND' : 'USD',
-                    maximumFractionDigits: i18n.language.startsWith('vi') ? 0 : 2
-                  }).format(i18n.language.startsWith('vi') ? (item.shippingCost || 0) : (item.shippingCost || 0) / 25000)}
+                  {(item.shippingCost || 0).toLocaleString()}{t('common.currencySymbol')}
                </Text>
            </View>
         </View>
@@ -315,7 +331,7 @@ export default function ShippingScreen() {
             renderItem={DeliveryCard}
             keyExtractor={item => item.id}
             contentContainerStyle={styles.listContent}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadDeliveries(false)} tintColor={PALETTE.primary} />}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => loadData()} tintColor={PALETTE.primary} />}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 <Ionicons name="paper-plane-outline" size={80} color={colors.textSecondary} opacity={0.15} />
@@ -380,8 +396,17 @@ export default function ShippingScreen() {
                      ))}
                   </View>
 
-                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.receiverName')}</Text>
-                   <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder={t('shipping.receiverPlaceholder')} value={formData.receiverName} onChangeText={t => setFormData({...formData, receiverName: t})} />
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
+                    <Text style={[styles.label, { color: colors.textSecondary, marginBottom: 0 }]}>{t('shipping.receiverName')}</Text>
+                    <Pressable 
+                      onPress={() => setShowCustomerPicker(true)}
+                      style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}
+                    >
+                      <Ionicons name="people-outline" size={14} color={PALETTE.primary} />
+                      <Text style={{ fontSize: 12, color: PALETTE.primary, fontFamily: FONTS.bold }}>{t('quotes.select_customer')}</Text>
+                    </Pressable>
+                  </View>
+                   <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder={t('shipping.receiverPlaceholder')} value={formData.receiverName} onChangeText={t => setFormData({...formData, receiverName: t, customerId: ""})} />
                    
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 15 }]}>{t('shipping.receiverPhoneLabel')}</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="09xx..." keyboardType="phone-pad" value={formData.receiverPhone} onChangeText={t => setFormData({...formData, receiverPhone: t})} />
@@ -403,6 +428,9 @@ export default function ShippingScreen() {
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.shippingCostLabel')} ({t('common.currencySymbol').toUpperCase()})</Text>
                    <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="e.g. 35000" keyboardType="numeric" value={formData.shippingCost} onChangeText={t => setFormData({...formData, shippingCost: t})} />
                   
+                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('common.note')}</Text>
+                   <TextInput style={[styles.input, { backgroundColor: colors.surface, color: colors.text }]} placeholder="..." value={formData.note} onChangeText={t => setFormData({...formData, note: t})} />
+
                    <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.receiptImageLabel')}</Text>
                    <Pressable 
                      style={[styles.imagePickerBtn, { backgroundColor: colors.surface, borderColor: colors.outline + '40' }]} 
@@ -435,6 +463,33 @@ export default function ShippingScreen() {
                </ScrollView>
             </View>
          </View>
+      </Modal>
+
+      <Modal visible={showCustomerPicker} animationType="fade" transparent>
+        <View style={styles.pickerOverlay}>
+          <View style={[styles.pickerContent, { backgroundColor: colors.surface }]}>
+            <View style={styles.pickerHeader}>
+              <Text style={[styles.pickerTitle, { color: colors.text }]}>{t('quotes.select_customer')}</Text>
+              <Pressable onPress={() => setShowCustomerPicker(false)}>
+                <MaterialIcons name="close" size={24} color={colors.text} />
+              </Pressable>
+            </View>
+            <FlatList
+              data={customers}
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <Pressable 
+                  style={[styles.customerItem, { borderBottomColor: colors.outline + '20' }]}
+                  onPress={() => selectCustomer(item)}
+                >
+                  <Text style={[styles.customerName, { color: colors.text }]}>{item.name}</Text>
+                  {!!item.phone && <Text style={{ color: colors.textSecondary, fontSize: 12 }}>{item.phone}</Text>}
+                </Pressable>
+              )}
+              ListEmptyComponent={<Text style={{ textAlign: 'center', padding: 20 }}>{t('customers.noData')}</Text>}
+            />
+          </View>
+        </View>
       </Modal>
     </ScreenBackground>
   );
@@ -504,4 +559,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  pickerOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', padding: 30 },
+  pickerContent: { borderRadius: 25, padding: 20, maxHeight: '70%', ...SHADOWS.floating },
+  pickerHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
+  pickerTitle: { fontSize: 18, fontFamily: FONTS.bold },
+  customerItem: { paddingVertical: 15, borderBottomWidth: 1 },
+  customerName: { fontSize: 16, fontFamily: FONTS.bold },
 });
