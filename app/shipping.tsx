@@ -143,16 +143,29 @@ export default function ShippingScreen() {
       }
 
       const payload = { 
-        ...formData, 
+        orgId: activeOrg?.id,
+        number: formData.number,
+        carrier: formData.carrier.trim(),
+        vehicleType: formData.vehicleType,
+        carrierType: formData.carrierType,
+        vehicleNumber: formData.vehicleNumber.trim(),
+        receiverName: formData.receiverName.trim(),
+        receiverPhone: formData.receiverPhone.trim(),
+        customerId: formData.customerId,
+        driverName: formData.driverName.trim(),
+        driverPhone: formData.driverPhone.trim(),
+        trackingNumber: formData.trackingNumber.trim(),
+        shippingCost: parseFloat(formData.shippingCost) || 0,
+        note: formData.note.trim(),
         image: finalImageUrl,
-        shippingCost: parseFloat(formData.shippingCost) || 0
+        status: formData.status
       };
 
       if (editingDelivery) {
         await api.updateDelivery(editingDelivery.id, payload);
         Alert.alert(t('common.success'), t('common.updateSuccess'));
       } else {
-        await api.createDelivery({ ...payload, orgId: activeOrg?.id });
+        await api.createDelivery(payload);
         Alert.alert(t('common.success'), `${t('shipping.alertSuccess')} #${formData.number}`);
       }
       setIsModalVisible(false);
@@ -382,6 +395,12 @@ export default function ShippingScreen() {
                        </Pressable>
                      ))}
                   </View>
+                  <TextInput 
+                    style={[styles.input, { backgroundColor: colors.surface, color: colors.text, marginTop: 10 }]} 
+                    placeholder={t('shipping.carrier')} 
+                    value={formData.carrier} 
+                    onChangeText={t => setFormData({...formData, carrier: t, carrierType: "other"})} 
+                  />
 
                   <Text style={[styles.label, { color: colors.textSecondary, marginTop: 20 }]}>{t('shipping.statusLabel')}</Text>
                   <View style={styles.chipRow}>
